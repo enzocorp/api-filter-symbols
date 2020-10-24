@@ -1,0 +1,14 @@
+{"_id":{"$oid":"5f79d6e47739f0420c419356"},"status":"e6","for":"exchange","description":"market sans volume"}
+{"_id":{"$oid":"5f79d6e47739f0420c419357"},"status":"e1","for":"exchange","description":"market à volume faible"}
+{"_id":{"$oid":"5f79d6e47739f0420c419358"},"status":"e2","for":"exchange","description":"market frauduleux"}
+{"_id":{"$oid":"5f79d6e47739f0420c419359"},"status":"e3","for":"exchange","description":"market retrait impossible"}
+{"_id":{"$oid":"5f79d6e47739f0420c41935a"},"status":"e4","for":"exchange","description":"market fees trop élevés"}
+{"_id":{"$oid":"5f79d6e47739f0420c41935b"},"status":"e5","for":"exchange","description":"market jamais rentable"}
+{"_id":{"$oid":"5f79d6e47739f0420c41935c"},"status":"e0","for":"exchange","description":"autre"}
+{"_id":{"$oid":"5f79d6e47739f0420c41935d"},"status":"a1","for":"asset","description":"Monnaie sans volume"}
+{"_id":{"$oid":"5f79d6e47739f0420c419360"},"status":"a0","for":"asset","description":"autre"}
+{"_id":{"$oid":"5f79d6e47739f0420c419362"},"status":"s1","for":"symbole","description":"paire à valeur trop instable"}
+{"_id":{"$oid":"5f79d6e47739f0420c419363"},"status":"s2","for":"symbole","description":"paire sans volume"}
+{"_id":{"$oid":"5f79d6e47739f0420c419364"},"status":"s3","for":"symbole","description":"paire jamais rentable"}
+{"_id":{"$oid":"5f7b2b9738e8f42798c7f8ea"},"status":"s4","for":"symbole","description":"paire contient un asset qui à été exclus"}
+{"_id":{"$oid":"5f79d6e47739f0420c419361"},"status":"s0","for":"symbole","description":"autre"}
