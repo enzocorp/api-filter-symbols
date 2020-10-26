@@ -45,8 +45,11 @@ async function findSymbols (markets : Market[],assets : Asset[]) :  Promise<Symb
       prixMoyen_for15kusd_quote : null,
       prixMoyen_for30kusd_quote : null
     }
+    symbols = symbols.filter(symbol=> symbol.volume_1day_usd >= 200000 && symbol.symbol_type === 'SPOT')
     return <Symbol[]>(
-     symbols.filter(symbol=> symbol.volume_1day_usd >= 200000 && symbol.symbol_type === 'SPOT')
+     symbols.filter(symbol=> (
+       symbols.some(symb => symb.exchange_id !== symbol.exchange_id && symbol.asset_id_quote === symb.asset_id_quote && symbol.asset_id_base === symb.asset_id_base)
+     ))
       .map(symb => ({
         name: symb.exchange_id + '_'+ symb.asset_id_base +'_'+ symb.asset_id_quote,
         market: symb.exchange_id,

@@ -1,9 +1,9 @@
 import axios from 'axios'
-import {Best} from "../../models/interphace/best";
-import {Pair} from "../../models/interphace/pair";
-import {Market} from "../../models/interphace/market";
-import {COINAPI} from "../../app";
-import {Symbol} from "../../models/interphace/symbol";
+import {Best} from "../models/interphace/best";
+import {Pair} from "../models/interphace/pair";
+import {Market} from "../models/interphace/market";
+import {COINAPI} from "../app";
+import {Symbol} from "../models/interphace/symbol";
 
 //LES INTERPHACES
 

@@ -1,4 +1,4 @@
-import makeBests from "../script/crypto/calcul_bests";
+import makeBests from "../script/calcul_bests";
 import modelPair from "../models/mongoose/model.pair";
 import modelBest from "../models/mongoose/model.best";
 import {MongoPaginate} from "../models/interphace/pagination";

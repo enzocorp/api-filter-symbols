@@ -1,15 +1,19 @@
-import findMarkets from "../script/crypto/findMarkets";
-import findAssets from "../script/crypto/findAssets";
-import makeInitPairs from "../script/crypto/make_initPairs";
+import findMarkets from "../script/initialisation/findMarkets";
+import findAssets from "../script/initialisation/findAssets";
+import makeInitPairs from "../script/initialisation/makePairs";
 import modelPair from "../models/mongoose/model.pair";
 import modelMarket from "../models/mongoose/model.market";
 import modelGlobal from "../models/mongoose/model.global";
 import modelReason from "../models/mongoose/model.reason";
 import modelSeverity from "../models/mongoose/model.severity";
 import {Reason} from "../models/interphace/reason";
-import findSymbols from "../script/crypto/findSymbols";
+import findSymbols from "../script/initialisation/findSymbols";
 import modelSymbol from "../models/mongoose/model.symbol";
 import modelAsset from "../models/mongoose/model.asset";
+import doubleFilter from "../script/initialisation/doubleFilter";
+import {Pair} from "../models/interphace/pair";
+import {Asset} from "../models/interphace/asset";
+import {Market} from "../models/interphace/market";
 
 export  const ping = async (req,res)=> {
   try{
@@ -21,13 +25,15 @@ export  const ping = async (req,res)=> {
 }
 export const init_app = async  (req, res)=>{
     try{
-        let [markets,assets] = await Promise.all([
+        let [tempMarkets,tempAssets] = await Promise.all([
             findMarkets(),
             findAssets()
         ])
-        let symbols = await findSymbols(markets,assets)
-        let pairs = await makeInitPairs(symbols)
-
+        let symbols = await findSymbols(tempMarkets,tempAssets)
+        let [[assets,markets],pairs] : [[Asset[],Market[]],Pair[]] = await Promise.all([
+            doubleFilter(symbols,tempAssets,tempMarkets),
+            makeInitPairs(symbols)
+        ])
         const createBulk = async (items : Array<{name : string} & any>) => items.map(item => ({
             updateOne: {
                 filter: { name : item.name },
@@ -42,7 +48,6 @@ export const init_app = async  (req, res)=>{
             createBulk(assets),
             createBulk(symbols)
         ])
-
         const [resPairs,resMarkets,resSymbols,resAssets] = await Promise.all([
             modelPair.collection.bulkWrite(bulkOpsPairs),
             modelMarket.collection.bulkWrite(bulkOpsMarkets),
