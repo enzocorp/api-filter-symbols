@@ -2,7 +2,7 @@ import makeBests from "../script/crypto/make_bests";
 import modelPair from "../models/mongoose/model.pair";
 import modelBest from "../models/mongoose/model.best";
 import {MongoPaginate} from "../models/interphace/pagination";
-import modelAverage from "../models/mongoose/model.average";
+import modelSymbol from "../models/mongoose/model.symbol";
 
 export const get_bests = async  (req, res)=>{
     try{
@@ -64,7 +64,7 @@ export const calcul_bests = async  (req,res)=>{
         let [resPairs,resDocs,resAverage] = await Promise.all([
             modelPair.collection.bulkWrite(bulkOpsPairs),
             modelBest.insertMany(bests),
-            modelAverage.bulkWrite(bulkOpsAverage)
+            modelSymbol.bulkWrite(bulkOpsAverage)
         ])
         res.json({message : 'La base à été mise a jour',resPairs,data : resDocs[0].groupId,resAverage})
     }

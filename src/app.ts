@@ -6,11 +6,12 @@ import cookieParser from "cookie-parser"
 import dotenv from 'dotenv'
 import routeCrypto from './routes/route_crypto'
 import axios from 'axios'
-import routeExclusion from "./routes/route_exclusion";
 import {dbConnexion} from "./db";
 import routeMarket from "./routes/route_market";
 import routeBest from "./routes/route_best";
 import modelGlobal from "./models/mongoose/model.global";
+import routerPair from "./routes/route_pair";
+import routerSymbol from "./routes/route_symbol";
 
 dotenv.config()
 //---------------------------Initialisation de l'App----------------------------
@@ -75,9 +76,10 @@ router.use('/assets',express.static('public'))
 
 
 router.use('/crypto',routeCrypto)
-router.use('/bests',routeBest)
+router.use('/pairs',routerPair)
+router.use('/symbols',routerSymbol)
 router.use('/markets',routeMarket)
-router.use('/exclusions',routeExclusion)
+router.use('/bests',routeBest)
 
 
 const port = process.env.API_PORT || 3000

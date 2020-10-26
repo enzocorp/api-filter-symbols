@@ -1,6 +1,6 @@
-import modelExchange from "../models/mongoose/model.exchange";
+import modelMarket from "../models/mongoose/model.market";
 import {MongoPaginate} from "../models/interphace/pagination";
-import modelPair from "../models/mongoose/model.pair";
+
 
 export const get_markets = async  (req, res)=>{
   try{
@@ -31,57 +31,89 @@ export const get_markets = async  (req, res)=>{
       })
     }
 
-    const [data]  = await modelExchange.aggregate(aggregate)
+    const [data]  = await modelMarket.aggregate(aggregate)
 
-    res.status(200).json(data)
+    res.status(200).json({data})
   }
   catch (err){
     res.status(404).json({title : "Une erreur est survenue", message : err.message})
   }
 }
 
+export const get_market = async (req,res)=> {
+    modelMarket.findOne({name : req.params.name})
+      .then(result=>{
+          res.status(200).json(result)
+      })
+      .catch(err=>{
+          res.status(404).json({title : "Une erreur est survenue", message : err.message})
+      })
+}
 
-export const get_podiumpairs = async  (req, res)=>{
-  try{
-
-    const market = req.params.id
-    const sort : 'positionBuy' | 'positionSell' = req.query?.sort || 'positionBuy'
-    const moyenne = req.query.moyenne
-
-    if (!moyenne)
-      throw 'Il faut préciser la moyenne a comparer'
-
-    const data = await modelPair.aggregate([
-      { $match: {"exchanges.id" : market}},
-      { $lookup: {
-          from: "averages",
-          let : {exid : "$name"},
-          pipeline : [
-            { $match: { $expr: { $eq: [ "$$exid", "$pair" ] }} },
-            { $sort: {["buy." + moyenne] : 1}},
-          ],
-          as: "bestsBuyMarkets"
-        }},
-      { $lookup: {
-          from: "averages",
-          let : {exid : "$name"},
-          pipeline : [
-            { $match: { $expr: { $eq: [ "$$exid", "$pair" ] }} },
-            { $sort: {["sell." + moyenne] : -1}},
-          ],
-          as: "bestsSellMarkets"
-        }},
-      { $addFields: {positionBuy : {$indexOfArray: [ "$bestsBuyMarkets.exchange" , market]}}},
-      { $addFields: {positionSell : {$indexOfArray: [ "$bestsSellMarkets.exchange" , market]}}},
-      { $project : {bestsSellMarkets : 0 , bestsBuyMarkets : 0}},
-      { $sort : {[sort]: 1}}
-    ])
-    res.status(200).json(data)
-  }catch(err){
-    console.log(err)
+export const reset_moyennes_markets = async (req, res)=> {
+  try {
+    const data = await modelMarket.updateMany(
+      {'exclusion.exchangeIsExclude' : false},
+      {$set : { isBestFor : [] }},
+      {}
+    )
+    res.status(200).json({data})
+  }catch (err){
     res.status(404).json({title : "Une erreur est survenue", message : err.message})
   }
+}
 
+export const group_market_unreport = async  (req, res)=>{
+  try{
+    const names : string[] = req.body.list
+    const bulkMarket = names.map(name => ({
+      updateOne: {
+        filter: { name : name },
+        update: { $set: {
+            exclusion : {
+              isExclude : false,
+              reasons : [],
+              severity : null,
+              excludeBy : null,
+              note : null
+            }},
+        },
+        option : {upsert: false}
+      }}));
+
+    const resp = await modelMarket.collection.bulkWrite(bulkMarket)
+    res.status(200).json({title : 'Les markets ont été blanchis',data : resp})
+  }
+  catch (erreur){
+    res.status(500).json({title : "Une erreur s'est produite", message : erreur.message})
+  }
+}
+
+export const group_market_report = async  (req, res)=>{
+  try{
+    const names : string[] = req.body.list
+    const data = req.body.data
+    const bulkMarket = names.map(name => ({
+      updateOne: {
+        filter: { name : name },
+        update: { $set: {
+            exclusion : {
+              isExclude : data.severity === 4,
+              reasons : data.reasons,
+              severity : data.severity,
+              excludeBy : 'unknow',
+              note : data.note || ''
+            }},
+        },
+        option : {upsert: false}
+      }}));
+
+    const resp = await modelMarket.collection.bulkWrite(bulkMarket)
+    res.status(200).json({title : 'Les markets ont bien été signalés',data : resp})
+  }
+  catch (erreur){
+    res.status(500).json({title : "Une erreur s'est produite", message : erreur.message})
+  }
 }
 
 /*
@@ -115,25 +147,3 @@ export const get_marketsv2 = async  (req, res)=>{
 }
 */
 
-export const get_market = async (req,res)=> {
-    modelExchange.findOne({id_exchange : req.params.id})
-      .then(result=>{
-          res.status(200).json(result)
-      })
-      .catch(err=>{
-          res.status(404).json({title : "Une erreur est survenue", message : err.message})
-      })
-}
-
-export const reset_moyennes = async (req,res)=> {
-  try {
-    const data = await modelExchange.updateMany(
-      {'exclusion.exchangeIsExclude' : false},
-      {$set : { isBestFor : [] }},
-      {}
-    )
-    res.status(200).json(data)
-  }catch (err){
-    res.status(404).json({title : "Une erreur est survenue", message : err.message})
-  }
-}

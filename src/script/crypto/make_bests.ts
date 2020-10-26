@@ -1,12 +1,12 @@
 import axios from 'axios'
 import {Best} from "../../models/interphace/best";
 import {Pair} from "../../models/interphace/pair";
-import {Exchange} from "../../models/interphace/exchange";
+import {Market} from "../../models/interphace/market";
 import modelPair from "../../models/mongoose/model.pair";
-import modelExchange from "../../models/mongoose/model.exchange";
+import modelMarket from "../../models/mongoose/model.market";
 import {COINAPI} from "../../app";
-import modelAverage from "../../models/mongoose/model.average";
-import {Average} from "../../models/interphace/average";
+import modelSymbol from "../../models/mongoose/model.symbol";
+import {Symbol} from "../../models/interphace/symbol";
 
 //LES INTERPHACES
 
@@ -37,7 +37,7 @@ async function getAssets (pairs : Pair[]) : Promise<resp_asset[]>{
 }
 
 //2 Pour chaque symbol calcul le "best buy market" et le "best sell market"
-function calculBest(allData : resp_symbole[], pair : Pair,assets : resp_asset[], exchanges : Exchange[], groupId : string) : Best{
+function calculBest(allData : resp_symbole[], pair : Pair, assets : resp_asset[], exchanges : Market[], groupId : string) : Best{
 
   let asset : {quote_usd, base_usd} = {quote_usd : undefined, base_usd : undefined}
 
@@ -203,9 +203,9 @@ function updatePair (best : Best,pair : Pair) : Pair {
 }
 
 //4 Mettre a jour les average pour chaques best positif
-async function  updateAverage(bests : Best[]) : Promise<Average[]> {
-  const averages : Average[] = await modelAverage.find({}).lean()
-  const updtAv : Average[] = []
+async function  updateAverage(bests : Best[]) : Promise<Symbol[]> {
+  const averages : Symbol[] = await modelSymbol.find({}).lean()
+  const updtAv : Symbol[] = []
   bests.forEach((best : Best) => {
     [best.buy,best.sell].forEach((side ,i)=>{
       const index = averages.findIndex(av => av.symbole_id === side.symbol_id)
@@ -243,7 +243,7 @@ async function  updateAverage(bests : Best[]) : Promise<Average[]> {
 
         })
       }else{
-        const obj : Average['sell'] | Average['buy'] = averages[index][i ? 'sell' : 'buy']
+        const obj : Symbol['sell'] | Symbol['buy'] = averages[index][i ? 'sell' : 'buy']
         const { frequence : freq} = obj
         obj.volumeMoyen_for1kusd = (obj.volumeMoyen_for1kusd * freq + side.volume_for1kusd) / freq
         obj.volumeMoyen_for15kusd = (obj.volumeMoyen_for15kusd * freq + side.volume_for15kusd) / freq
@@ -264,7 +264,7 @@ async function  updateAverage(bests : Best[]) : Promise<Average[]> {
 
 /*------------------------ LE PROGRAMME  ---------------------------------*/
 
-async function makeBests () : Promise<{ bests : Best[], updatedPairs : Pair[], updatedAverages : Average[] }>{
+async function makeBests () : Promise<{ bests : Best[], updatedPairs : Pair[], updatedAverages : Symbol[] }>{
 
   let url = `${COINAPI}/v1/quotes/current`
   let filter_symbol_id = []
@@ -272,10 +272,10 @@ async function makeBests () : Promise<{ bests : Best[], updatedPairs : Pair[], u
   pairs.forEach(pair => pair.exchanges.forEach(
     exchange => filter_symbol_id.push(exchange.symbol_id)
   ))
-  let [dataAxios,assets,exchanges] = await Promise.all<any, resp_asset[],Exchange[]>([
+  let [dataAxios,assets,exchanges] = await Promise.all<any, resp_asset[],Market[]>([
     axios.get(url),
     getAssets(pairs),
-    modelExchange.find()
+    modelMarket.find()
   ])
 
   let {data : bigData} : {data : resp_symbole[]} = dataAxios
@@ -291,7 +291,7 @@ async function makeBests () : Promise<{ bests : Best[], updatedPairs : Pair[], u
   })
   bests = bests.filter(best => best.spread_15kusd > 20) // Seulement quand le spread15$ est > 15$
   // let updatedExchanges: Exchange[] = await updateExchanges(bests)
-  let updatedAverages: Average[] = await updateAverage(bests)
+  let updatedAverages: Symbol[] = await updateAverage(bests)
 
 
   let best : Best = undefined

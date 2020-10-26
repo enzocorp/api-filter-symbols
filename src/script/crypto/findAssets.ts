@@ -8,7 +8,7 @@ interface resp_asset {
   "volume_1day_usd": number,
 }
 
-async function getAssets () : Promise<resp_asset[]> {
+async function findAssets () : Promise<resp_asset[]> {
   let url = `${COINAPI}/v1/assets`
   let filteredData : resp_asset[]
   try {
@@ -24,4 +24,4 @@ async function getAssets () : Promise<resp_asset[]> {
   return filteredData
 }
 
-export default getAssets
+export default findAssets

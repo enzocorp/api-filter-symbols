@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {Exchange} from "../../models/interphace/exchange";
+import {Market} from "../../models/interphace/market";
 import {Pair} from "../../models/interphace/pair";
 import {COINAPI} from "../../app";
 
@@ -19,7 +19,7 @@ interface resp_symbols {
   exchange_id : string
 }
 
-async function func_exchanges (exchanges : Exchange[]) {
+async function func_exchanges (exchanges : Market[]) {
   let filteredExchanges : string = ''
   for  (let exchange of exchanges)
     filteredExchanges += `${exchange.id_exchange},`
@@ -32,7 +32,7 @@ async function  func_assets(assets : asset[]) {
   return filteredAssets
 }
 
-async function makeInitPairs (exchanges : Exchange[], assets : asset[]) :Promise< Pair[]> {
+async function makeInitPairs (exchanges : Market[], assets : asset[]) :Promise< Pair[]> {
 
   try {
     let url = `${COINAPI}/v1/symbols`

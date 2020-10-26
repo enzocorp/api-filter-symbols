@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {Exchange} from "../../models/interphace/exchange";
+import {Market} from "../../models/interphace/market";
 import {COINAPI} from "../../app";
 
 
@@ -11,7 +11,7 @@ interface resp_exchanges {
   website: string
 }
 
-async function getExchanges () :  Promise<Exchange[]> {
+async function findMarkets () :  Promise<Market[]> {
   let url = `${COINAPI}/v1/exchanges`
   let tabData = []
   try {
@@ -20,7 +20,7 @@ async function getExchanges () :  Promise<Exchange[]> {
       return  item.volume_1day_usd >= 1000000 && item.data_symbols_count >= 3
     })
     filteredData.forEach(item => {
-      let exchange : Exchange = {
+      let exchange : Market = {
         name : item.name,
         website : item.website,
         symbolsCount : item.data_symbols_count,
@@ -40,7 +40,7 @@ async function getExchanges () :  Promise<Exchange[]> {
     console.log('Il y a eu une erreur dans exchanges ', err)
   }
 
-  return <Exchange[]>tabData
+  return <Market[]>tabData
 }
 
-export default getExchanges
+export default findMarkets

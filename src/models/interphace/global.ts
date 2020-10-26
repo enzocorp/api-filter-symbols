@@ -6,3 +6,9 @@ export interface Global{
     dateReflow : string
   }
 }
+
+
+/*
+export interface Global{
+  identifier : string
+}*/

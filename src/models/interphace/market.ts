@@ -1,10 +1,10 @@
-export interface Exchange{
+export interface Market{
   name : string
-  id_exchange : string
-  symbolsCount : number
+  longName : string
+  pairsCount : number
   website: string
   exclusion : {
-    exchangeIsExclude : boolean
+    isExclude : boolean
     reasons : string[]
     severity : number
     note? : string

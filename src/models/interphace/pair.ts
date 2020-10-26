@@ -1,40 +1,46 @@
 
-export interface InitPair{
+export interface Pair {
   name: string
   base : string
   quote : string
-  exchanges: Array<{ id : string, symbol_id : string }>
-}
-
-export interface Pair extends InitPair{
-  frequences :{
-    positive : number
-    negative: number
-    isBest : number
-  },
-  ifPositiveSpread : {
-    volumeMoyen : number
+  negativeFreq : number
+  ifPositiveSpread_1kusd : {
+    frequence : number
+    frequenceBest : number
+    spreadMoyen_quote : number
+    spreadMoyen_usd : number
+    volumeMoyen_base : number
     volumeMoyen_usd : number
-    spreadMoyen : number
-    spreadMoyen_1usd : number
-    spreadMoyen_15kusd : number
-    profitMaxiMoyen_usd : number
-    ecartType : number
-    variance : number
-    esperance : number
-    medianne : number
-    hightestSpread_15kusd : number
+    hightestSpread_quote : number
+    hightestSpread_usd : number
+  },
+  ifPositiveSpread_15kusd : {
+    frequence : number
+    frequenceBest : number
+    spreadMoyen_quote : number
+    spreadMoyen_usd : number
+    volumeMoyen_base : number
+    volumeMoyen_usd : number
+    hightestSpread_quote : number
+    hightestSpread_usd : number
+  },
+  ifPositiveSpread_30kusd : {
+    frequence : number
+    frequenceBest : number
+    spreadMoyen_quote : number
+    spreadMoyen_usd : number
+    volumeMoyen_base : number
+    volumeMoyen_usd : number
+    hightestSpread_quote : number
+    hightestSpread_usd : number
   },
   exclusion : {
-    pairIsExclude : boolean
-    fromMarkets :    Array<{
-      market : string
-      reasons : string[]
-      severity : number
-      excludeBy? : string
-      note? : string
-      date? : Date
-    }>
+    isExclude : boolean
+    reasons : string[]
+    severity : number
+    note? : string
+    excludeBy : string
+    date? : Date
   }
   date? : Date
 }
