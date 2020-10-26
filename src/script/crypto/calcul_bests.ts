@@ -2,10 +2,7 @@ import axios from 'axios'
 import {Best} from "../../models/interphace/best";
 import {Pair} from "../../models/interphace/pair";
 import {Market} from "../../models/interphace/market";
-import modelPair from "../../models/mongoose/model.pair";
-import modelMarket from "../../models/mongoose/model.market";
 import {COINAPI} from "../../app";
-import modelSymbol from "../../models/mongoose/model.symbol";
 import {Symbol} from "../../models/interphace/symbol";
 
 //LES INTERPHACES
@@ -48,7 +45,7 @@ function calculBest(allData : resp_symbole[], pair : Pair, assets : resp_asset[]
     asset.quote_usd = assets.find(asset => asset.asset_id === pair.quote).price_usd
   else asset.quote_usd = 1
 
-  let best : Best = {
+  let best : Best /* = {
     pair : pair.name,
     quote : pair.quote,
     base : pair.base,
@@ -155,6 +152,7 @@ function calculBest(allData : resp_symbole[], pair : Pair, assets : resp_asset[]
       best.volumeLimiteur = 'sell'
     }
   })
+*/
 
 
   return <Best>best
@@ -162,7 +160,7 @@ function calculBest(allData : resp_symbole[], pair : Pair, assets : resp_asset[]
 
 //3 Mettre a jour les données des pair en fonction de chaque "BEST"
 function updatePair (best : Best,pair : Pair) : Pair {
-
+/*
   let {frequences, ifPositiveSpread} = pair
   if(best.spread > 0 ){
     frequences.positive++
@@ -198,66 +196,68 @@ function updatePair (best : Best,pair : Pair) : Pair {
     ...pair,
     frequences,
     ifPositiveSpread
-  }
+  }*/
+  return pair
 
 }
 
 //4 Mettre a jour les average pour chaques best positif
 async function  updateAverage(bests : Best[]) : Promise<Symbol[]> {
-  const averages : Symbol[] = await modelSymbol.find({}).lean()
+
   const updtAv : Symbol[] = []
-  bests.forEach((best : Best) => {
-    [best.buy,best.sell].forEach((side ,i)=>{
-      const index = averages.findIndex(av => av.symbole_id === side.symbol_id)
-      if (index === -1){
-        updtAv.push({
-          symbole_id : side.symbol_id,
-          pair : best.pair,
-          exchange : side.exchange,
-          best : {
-            buy1k : 0,
-            buy15k : 0,
-            buy30k : 0,
-            sell1k : 0,
-            sell15k : 0,
-            sell30k : 0
-          },
-          buy : {
-            frequence : i === 0 ?  1 : 0,
-            prixMoyen_for1kusd_quote : i === 0 ? side.price_for1kusd_quote : 0,
-            prixMoyen_for15kusd_quote : i === 0 ?  side.price_for15kusd_quote : 0,
-            prixMoyen_for30kusd_quote : i === 0 ?  side.price_for30kusd_quote : 0,
-            volumeMoyen_for1kusd :  i === 0 ?  side.volume_for1kusd : 0,
-            volumeMoyen_for15kusd :  i === 0 ?  side.volume_for15kusd : 0,
-            volumeMoyen_for30kusd :  i === 0 ?  side.volume_for30kusd : 0,
-          },
-          sell : {
-            frequence : i === 1 ?  1 : 0,
-            prixMoyen_for1kusd_quote : i === 1 ? side.price_for1kusd_quote : 0,
-            prixMoyen_for15kusd_quote : i === 1 ?  side.price_for15kusd_quote : 0,
-            prixMoyen_for30kusd_quote : i === 1 ?  side.price_for30kusd_quote : 0,
-            volumeMoyen_for1kusd :  i === 1 ?  side.volume_for1kusd : 0,
-            volumeMoyen_for15kusd :  i === 1 ?  side.volume_for15kusd : 0,
-            volumeMoyen_for30kusd :  i === 1 ?  side.volume_for30kusd : 0,
-          },
+  /*const averages : Symbol[] = await modelSymbol.find({}).lean()
+ bests.forEach((best : Best) => {
+   [best.buy,best.sell].forEach((side ,i)=>{
+     const index = averages.findIndex(av => av.symbole_id === side.symbol_id)
+     if (index === -1){
+       updtAv.push({
+         symbole_id : side.symbol_id,
+         pair : best.pair,
+         exchange : side.exchange,
+         best : {
+           buy1k : 0,
+           buy15k : 0,
+           buy30k : 0,
+           sell1k : 0,
+           sell15k : 0,
+           sell30k : 0
+         },
+         buy : {
+           frequence : i === 0 ?  1 : 0,
+           prixMoyen_for1kusd_quote : i === 0 ? side.price_for1kusd_quote : 0,
+           prixMoyen_for15kusd_quote : i === 0 ?  side.price_for15kusd_quote : 0,
+           prixMoyen_for30kusd_quote : i === 0 ?  side.price_for30kusd_quote : 0,
+           volumeMoyen_for1kusd :  i === 0 ?  side.volume_for1kusd : 0,
+           volumeMoyen_for15kusd :  i === 0 ?  side.volume_for15kusd : 0,
+           volumeMoyen_for30kusd :  i === 0 ?  side.volume_for30kusd : 0,
+         },
+         sell : {
+           frequence : i === 1 ?  1 : 0,
+           prixMoyen_for1kusd_quote : i === 1 ? side.price_for1kusd_quote : 0,
+           prixMoyen_for15kusd_quote : i === 1 ?  side.price_for15kusd_quote : 0,
+           prixMoyen_for30kusd_quote : i === 1 ?  side.price_for30kusd_quote : 0,
+           volumeMoyen_for1kusd :  i === 1 ?  side.volume_for1kusd : 0,
+           volumeMoyen_for15kusd :  i === 1 ?  side.volume_for15kusd : 0,
+           volumeMoyen_for30kusd :  i === 1 ?  side.volume_for30kusd : 0,
+         },
 
-        })
-      }else{
-        const obj : Symbol['sell'] | Symbol['buy'] = averages[index][i ? 'sell' : 'buy']
-        const { frequence : freq} = obj
-        obj.volumeMoyen_for1kusd = (obj.volumeMoyen_for1kusd * freq + side.volume_for1kusd) / freq
-        obj.volumeMoyen_for15kusd = (obj.volumeMoyen_for15kusd * freq + side.volume_for15kusd) / freq
-        obj.volumeMoyen_for30kusd = (obj.volumeMoyen_for30kusd * freq + side.volume_for30kusd) / freq
-        obj.prixMoyen_for1kusd_quote = (obj.prixMoyen_for1kusd_quote * freq + side.price_for1kusd_quote) / freq
-        obj.prixMoyen_for15kusd_quote = (obj.prixMoyen_for15kusd_quote * freq + side.price_for15kusd_quote) / freq
-        obj.prixMoyen_for30kusd_quote = (obj.prixMoyen_for30kusd_quote * freq + side.price_for30kusd_quote) / freq
-        obj.frequence = freq + 1
-        averages[index][i ? 'sell' : 'buy'] = obj
-        updtAv.push(averages[index])
-      }
+       })
+     }else{
+       const obj : Symbol['sell'] | Symbol['buy'] = averages[index][i ? 'sell' : 'buy']
+       const { frequence : freq} = obj
+       obj.volumeMoyen_for1kusd = (obj.volumeMoyen_for1kusd * freq + side.volume_for1kusd) / freq
+       obj.volumeMoyen_for15kusd = (obj.volumeMoyen_for15kusd * freq + side.volume_for15kusd) / freq
+       obj.volumeMoyen_for30kusd = (obj.volumeMoyen_for30kusd * freq + side.volume_for30kusd) / freq
+       obj.prixMoyen_for1kusd_quote = (obj.prixMoyen_for1kusd_quote * freq + side.price_for1kusd_quote) / freq
+       obj.prixMoyen_for15kusd_quote = (obj.prixMoyen_for15kusd_quote * freq + side.price_for15kusd_quote) / freq
+       obj.prixMoyen_for30kusd_quote = (obj.prixMoyen_for30kusd_quote * freq + side.price_for30kusd_quote) / freq
+       obj.frequence = freq + 1
+       averages[index][i ? 'sell' : 'buy'] = obj
+       updtAv.push(averages[index])
+     }
 
-    })
-  })
+   })
+ })*/
   return updtAv
 }
 
@@ -266,7 +266,7 @@ async function  updateAverage(bests : Best[]) : Promise<Symbol[]> {
 
 async function makeBests () : Promise<{ bests : Best[], updatedPairs : Pair[], updatedAverages : Symbol[] }>{
 
-  let url = `${COINAPI}/v1/quotes/current`
+ /* let url = `${COINAPI}/v1/quotes/current`
   let filter_symbol_id = []
   let pairs : Pair[] = await modelPair.find({}).lean()
   pairs.forEach(pair => pair.exchanges.forEach(
@@ -305,7 +305,8 @@ async function makeBests () : Promise<{ bests : Best[], updatedPairs : Pair[], u
       pair.frequences.isBest++
     }
   })
-  return {bests,updatedPairs,updatedAverages}
+  return {bests,updatedPairs,updatedAverages} */
+  return  <any>{}
 }
 
 export default makeBests

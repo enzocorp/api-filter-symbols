@@ -3,6 +3,9 @@ export interface Symbol{
   name: string
   market: string
   pair: string
+  base : string
+  quote : string
+  symbolCoinapi : string
   buy : {
     frequence : number
     prixMoyen_for1kusd_quote : number

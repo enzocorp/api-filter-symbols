@@ -1,5 +1,9 @@
 export interface Asset{
   name : string
+  longName : string
+  price_usd : number
+  typeIsCrypto : boolean
+  inPairCount : number
   exclusion : {
     isExclude : boolean
     reasons : string[]

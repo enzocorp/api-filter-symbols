@@ -8,6 +8,9 @@ const schema = new Schema({
     name : {type : String, required:'Vous devez entrer le nom du symbole',unique : true},
     market : {type : String, required:'Vous devez entrer le nom du market'},
     pair : {type : String, required:'Vous devez entrer le nom de la pair'},
+    symbolCoinapi : {type : String, required:'Vous devez entrer le symbole CoinApi'},
+    base : {type : String, required:'Vous devez entrer la base'},
+    quote : {type : String, required:'Vous devez entrer la quote'},
     sell : {
         frequence :{type : Number, required : true},
         prixMoyen_for1kusd_quote :{type : Number, required : true},

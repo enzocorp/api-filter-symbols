@@ -7,6 +7,9 @@ import modelGlobal from "../models/mongoose/model.global";
 import modelReason from "../models/mongoose/model.reason";
 import modelSeverity from "../models/mongoose/model.severity";
 import {Reason} from "../models/interphace/reason";
+import findSymbols from "../script/crypto/findSymbols";
+import modelSymbol from "../models/mongoose/model.symbol";
+import modelAsset from "../models/mongoose/model.asset";
 
 export  const ping = async (req,res)=> {
   try{
@@ -18,29 +21,35 @@ export  const ping = async (req,res)=> {
 }
 export const init_app = async  (req, res)=>{
     try{
-        let [markets,assets] = await Promise.all([findMarkets(),findAssets()])
-        let pairs = await makeInitPairs(markets,assets)
+        let [markets,assets] = await Promise.all([
+            findMarkets(),
+            findAssets()
+        ])
+        let symbols = await findSymbols(markets,assets)
+        let pairs = await makeInitPairs(symbols)
 
-        const bulkOpsPairs = pairs.map(pair => ({
+        const createBulk = async (items : Array<{name : string} & any>) => items.map(item => ({
             updateOne: {
-                filter: { name : pair.name },
-                update: { $setOnInsert: {...pair} }, //N'applqiue le contenu que sur les INSERTION !
-                upsert: true                         //Ainsi les pairs déjà existante ne seront pas update
-            }
-        }));
-        const bulkOpsExchanges = markets.map(exchange => ({
-            updateOne: {
-                filter: { name : exchange.name },
-                update: { $setOnInsert: {...exchange} },
+                filter: { name : item.name },
+                update: { $setOnInsert: {...item} },
                 upsert: true
             }
-        }));
+        })); //Seul les INSERTION seront traitées grace au "$setOnInsert"!
 
-        let [resPairs,resExchanges] = await Promise.all([
+        const [bulkOpsPairs,bulkOpsMarkets,bulkOpsAssets,bulkOpsSymbols] = await Promise.all([
+            createBulk(pairs),
+            createBulk(markets),
+            createBulk(assets),
+            createBulk(symbols)
+        ])
+
+        const [resPairs,resMarkets,resSymbols,resAssets] = await Promise.all([
             modelPair.collection.bulkWrite(bulkOpsPairs),
-            modelMarket.collection.bulkWrite(bulkOpsExchanges)])
-
-        res.status(200).json({resPairs, resExchanges})
+            modelMarket.collection.bulkWrite(bulkOpsMarkets),
+            modelSymbol.collection.bulkWrite(bulkOpsSymbols),
+            modelAsset.collection.bulkWrite(bulkOpsAssets),
+        ])
+        res.status(200).json({title : 'Initialisation effectuée avec succès',data : {resPairs, resMarkets,resSymbols,resAssets}})
     }
     catch (erreur){
         res.status(500).json({title : "Une erreur lors de l'init est survenue", message : erreur.message})

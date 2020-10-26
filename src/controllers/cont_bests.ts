@@ -1,4 +1,4 @@
-import makeBests from "../script/crypto/make_bests";
+import makeBests from "../script/crypto/calcul_bests";
 import modelPair from "../models/mongoose/model.pair";
 import modelBest from "../models/mongoose/model.best";
 import {MongoPaginate} from "../models/interphace/pagination";
@@ -55,7 +55,7 @@ export const calcul_bests = async  (req,res)=>{
 
         const bulkOpsAverage = updatedAverages.map(average => ({
             updateOne: {
-                filter: { pair : average.pair, exchange : average.exchange },
+                filter: { pair : average.pair, exchange : average.market },
                 update: { $set: average },
                 upsert: true
             }
@@ -73,7 +73,6 @@ export const calcul_bests = async  (req,res)=>{
     }
 
 }
-
 
 export const get_best = async  (req,res)=>{
     modelBest.findOne({_id : req.params.id})

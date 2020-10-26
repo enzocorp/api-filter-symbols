@@ -1,27 +1,41 @@
 import axios from 'axios'
 import {COINAPI} from "../../app";
+import {Asset} from "../../models/interphace/asset";
 
 interface resp_asset {
-  "data_symbols_count": number,
-  "asset_id": string,
-  "name": string,
-  "volume_1day_usd": number,
+  "data_symbols_count": number
+  "asset_id": string
+  "name": string
+  "volume_1day_usd": number
+  type_is_crypto : 1 | 0
+  price_usd : number
 }
 
-async function findAssets () : Promise<resp_asset[]> {
-  let url = `${COINAPI}/v1/assets`
-  let filteredData : resp_asset[]
+async function findAssets () : Promise<Asset[]> {
   try {
-    let {data} : { data : resp_asset[] } =  await axios.get(url)
-    filteredData = data.filter(item=>{
-      return  item.volume_1day_usd >= 1000000 && item.data_symbols_count >= 2
-    })
+    let url = `${COINAPI}/v1/assets`
+    let {data : assets} : { data : resp_asset[] } =  await axios.get(url)
+    return <Asset[]>(
+      assets.filter(asset=> asset.volume_1day_usd >= 1000000 && asset.data_symbols_count >= 2)
+        .map(asset => ({
+          name: asset.asset_id,
+          longName: asset.name,
+          price_usd: asset.price_usd,
+          typeIsCrypto: !!asset.type_is_crypto,
+          inPairCount : asset.data_symbols_count,
+          exclusion: {
+            isExclude: false,
+            reasons: [],
+            severity: 0,
+            excludeBy: null,
+            note: null
+          }
+        }))
+    )
   }
   catch (err){
-    console.log('Il y a eu une erreur dans assets', err)
+    console.log('Il y a eu une erreur dans la recherche d`assets', err)
   }
-
-  return filteredData
 }
 
 export default findAssets

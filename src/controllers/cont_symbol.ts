@@ -1,7 +1,6 @@
 import {MongoPaginate} from "../models/interphace/pagination";
-import modelPair from "../models/mongoose/model.pair";
 import modelSymbol from "../models/mongoose/model.symbol";
-import modelMarket from "../models/mongoose/model.market";
+
 
 export const get_symbols = async  (req, res)=>{
     try{
