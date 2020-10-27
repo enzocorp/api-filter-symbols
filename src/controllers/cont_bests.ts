@@ -1,4 +1,4 @@
-import makeBests from "../script/calcul_bests";
+import makeBests from "../script/calculBests/index.bests";
 import modelPair from "../models/mongoose/model.pair";
 import modelBest from "../models/mongoose/model.best";
 import {MongoPaginate} from "../models/interphace/pagination";
@@ -43,9 +43,9 @@ export const get_bests = async  (req, res)=>{
 
 export const calcul_bests = async  (req,res)=>{
     try{
-        let {bests,updatedPairs,updatedAverages} = await makeBests()
+        let test = await makeBests()
 
-
+/*
         const bulkOpsPairs = updatedPairs.map(pair => ({
             updateOne: {
                 filter: { name : pair.name },
@@ -65,8 +65,8 @@ export const calcul_bests = async  (req,res)=>{
             modelPair.collection.bulkWrite(bulkOpsPairs),
             modelBest.insertMany(bests),
             modelSymbol.bulkWrite(bulkOpsAverage)
-        ])
-        res.json({message : 'La base à été mise a jour',resPairs,data : resDocs[0].groupId,resAverage})
+        ])*/
+        res.json({title : 'La base à été mise a jour'/*,data : resDocs[0].groupId,metaData : {resAverage,resPairs}*/})
     }
     catch (erreur){
         res.status(404).json({title : "Une erreur est survenue", message : erreur.message})

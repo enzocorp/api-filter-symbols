@@ -1,6 +1,6 @@
 import modelGlobal from "../models/mongoose/model.global";
 
-export async function coinapi(req, res, next) {
+export async function coinapiLimit(req, res, next) {
   const oldSend = res.send;
 
   res.send = async function(data){
