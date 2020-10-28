@@ -55,18 +55,20 @@ function makeQties (infos : price['infos'], assets : Asset[]) : price['qty'] {
   }
 }
 
-async function makePrice(qty : number, side : orderbook['bids' | 'asks']) : Promise<number>{
+async function makePrice(quantity : number, side : orderbook['bids' | 'asks']) : Promise<number>{
   const prices = []
+  let qty = quantity
   for(let item of side) {
     if (qty - item.size > 0) {
       prices.push(item.size * item.price)
       qty -= item.size
     }else{
-      prices.push((item.size - qty) * item.price)
+      prices.push(qty * item.price)
       break ;
     }
   }
-  return prices.reduce((acc,val)=> acc + val) / prices.length
+  // console.log(prices)
+  return prices.reduce((acc,val)=> acc + val) / quantity
 }
 
 async function makeSide (side : 'asks' | 'bids', qties : price['qty'],book : orderbook) : Promise<price['buy'|'sell']> {
@@ -100,7 +102,7 @@ async function makeObject (book : orderbook, assets : Asset[]) : Promise<price>{
 async function programme (ordersbooks : orderbook[], assets : Asset[]) : Promise<any>{
   const promises : Array<Promise<price>> = ordersbooks.map(book => makeObject(book,assets))
   const [...prices] = await Promise.all(promises)
-  console.log(prices)
+  return prices
 }
 
 const orderTest  : orderbook[] = [
@@ -108,31 +110,33 @@ const orderTest  : orderbook[] = [
     "symbol_id": "BINANCE_SPOT_BTC_USDT",
     "asks": [
       {
-        "price": 456.35,
-        "size": 123
+        "price": 13126,
+        "size": 2
       },
       {
-        "price": 456.36,
+        "price": 13156.36,
         "size": 23
       },
     ],
     "bids": [
       {
-        "price": 456.10,
+        "price": 13101,
         "size": 42
       },
       {
-        "price": 456.09,
+        "price": 13050,
         "size": 5
       },
     ]
   }
 ]
 
-function test(){
-  modelAsset.find().then(res=>{
-    console.log('okok')
-  })
-}
+const assets : any = [
+  {name : 'BTC', price_usd: 13126},
+  {name : 'USDT', price_usd: 1},
+]
 
-test()
+programme(orderTest, assets).then(resp=>{
+  console.log('------ il y a eu une resp ------------')
+  console.log(resp)
+})

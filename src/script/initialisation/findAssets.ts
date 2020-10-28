@@ -20,7 +20,7 @@ async function findAssets () : Promise<Asset[]> {
         .map(asset => ({
           name: asset.asset_id,
           longName: asset.name,
-          price_usd: asset.price_usd,
+          price_usd: asset.price_usd || 1,
           typeIsCrypto: !!asset.type_is_crypto,
           inPairCount : asset.data_symbols_count,
           exclusion: {
