@@ -12,13 +12,23 @@ const schema = new Schema({
     base : {type : String, required:'Vous devez entrer la base'},
     quote : {type : String, required:'Vous devez entrer la quote'},
     sell : {
-        frequence :{type : Number, required : true},
+        testedFreq :{type : Number, required : true},
+        notData :{type : Number, required : true},
+        notEnoughVolume_1kusd :{type : Number, required : true},
+        notEnoughVolume_15kusd :{type : Number, required : true},
+        notEnoughVolume_30kusd :{type : Number, required : true},
+
         prixMoyen_for1kusd_quote :{type : Number, required : true},
         prixMoyen_for15kusd_quote :{type : Number, required : true},
         prixMoyen_for30kusd_quote :{type : Number, required : true},
     },
     buy : {
-        frequence :{type : Number, required : true},
+        testedFreq :{type : Number, required : true},
+        notData :{type : Number, required : true},
+        notEnoughVolume_1kusd :{type : Number, required : true},
+        notEnoughVolume_15kusd :{type : Number, required : true},
+        notEnoughVolume_30kusd :{type : Number, required : true},
+
         prixMoyen_for1kusd_quote :{type : Number, required : true},
         prixMoyen_for15kusd_quote :{type : Number, required : true},
         prixMoyen_for30kusd_quote :{type : Number, required : true},

@@ -14,6 +14,7 @@ import doubleFilter from "../script/initialisation/doubleFilter";
 import {Pair} from "../models/interphace/pair";
 import {Asset} from "../models/interphace/asset";
 import {Market} from "../models/interphace/market";
+import patchMiss from "../script/initialisation/patchMissing";
 
 export  const ping = async (req,res)=> {
   try{
@@ -30,8 +31,10 @@ export const init_app = async  (req, res)=>{
             findAssets()
         ])
         let symbols = await findSymbols(tempMarkets,tempAssets)
+        let [missAssets,missMarkets] = await patchMiss(tempMarkets,tempAssets,symbols)
+
         let [[assets,markets],pairs] : [[Asset[],Market[]],Pair[]] = await Promise.all([
-            doubleFilter(symbols,tempAssets,tempMarkets),
+            doubleFilter(symbols,tempAssets.concat(missAssets),tempMarkets.concat(missMarkets)),
             makeInitPairs(symbols)
         ])
         const createBulk = async (items : Array<{name : string} & any>) => items.map(item => ({

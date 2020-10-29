@@ -3,6 +3,7 @@ import {Market} from "../../models/interphace/market";
 import {Symbol} from "../../models/interphace/symbol";
 import {COINAPI} from "../../app";
 import {Asset} from "../../models/interphace/asset";
+import {symbol_type, symbol_volume_usd1day} from "./initialisationFilters";
 
 
 interface resp_symbols {
@@ -23,8 +24,9 @@ async function strMarketsNames (markets : Market[]) : Promise<string> {
 
 async function  strAssetsNames(assets : Asset[]) : Promise<string> {
   let str : string = ''
-  for (let asset of assets)
+  for (let asset of assets) {
     str += `${asset.name},`
+  }
   return str
 }
 
@@ -40,12 +42,16 @@ async function findSymbols (markets : Market[],assets : Asset[]) :  Promise<Symb
         filter_asset_id : strAssets
       }})
     const side : Symbol['buy' | 'sell'] = {
-      frequence : 0,
+      testedFreq : 0,
+      notData : 0,
+      notEnoughVolume_1kusd : 0,
+      notEnoughVolume_15kusd : 0,
+      notEnoughVolume_30kusd : 0,
       prixMoyen_for1kusd_quote : null,
       prixMoyen_for15kusd_quote : null,
       prixMoyen_for30kusd_quote : null
     }
-    symbols = symbols.filter(symbol=> symbol.volume_1day_usd >= 200000 && symbol.symbol_type === 'SPOT')
+    symbols = symbols.filter(symbol=> symbol.volume_1day_usd >= symbol_volume_usd1day && symbol.symbol_type === symbol_type)
     return <Symbol[]>(
      symbols.filter(symbol=> (
        symbols.some(symb => symb.exchange_id !== symbol.exchange_id && symbol.asset_id_quote === symb.asset_id_quote && symbol.asset_id_base === symb.asset_id_base)

@@ -1,6 +1,7 @@
 import axios from 'axios'
 import {Market} from "../../models/interphace/market";
 import {COINAPI} from "../../app";
+import {market_symbolsCount, market_volume_usd1day} from "./initialisationFilters";
 
 
 interface resp_exchanges {
@@ -11,12 +12,12 @@ interface resp_exchanges {
   website: string
 }
 
-async function findMarkets () :  Promise<Market[]> {
+async function findMarkets (params = {}) :  Promise<Market[]> {
   try {
     let url = `${COINAPI}/v1/exchanges`
-    let {data : exchanges} : { data : resp_exchanges[] } =  await axios.get(url)
+    let {data : exchanges} : { data : resp_exchanges[] } =  await axios.get(url,{params : params})
     return <Market[]>(
-      exchanges.filter(exchange=> exchange.volume_1day_usd >= 1000000 && exchange.data_symbols_count >= 3)
+      exchanges.filter(exchange=> exchange.volume_1day_usd >= market_volume_usd1day && exchange.data_symbols_count >= market_symbolsCount)
         .map(exchange => ({
               name: exchange.exchange_id,
               longName: exchange.name,

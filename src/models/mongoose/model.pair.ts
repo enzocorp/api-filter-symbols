@@ -8,7 +8,7 @@ const schema = new Schema({
     name : {type : String, required:'Vous devez entrer le nom',unique : true},
     base : {type : String, required:'Vous devez entrer la base'},
     quote : {type : String, required:'Vous devez entrer la quote'},
-    negativeFreq : {type : Number, required:'Vous devez entrez la frequence negative'},
+    negativeFreq : {type : Number, required:'Vous devez entrez la testedFreq negative'},
     ifPositiveSpread_1kusd : {
         frequence :{type : Number, required : true},
         frequenceBest :{type : Number, required : true},

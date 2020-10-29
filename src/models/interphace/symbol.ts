@@ -7,13 +7,21 @@ export interface Symbol{
   quote : string
   symbolCoinapi : string
   buy : {
-    frequence : number
+    testedFreq : number
+    notData : number
+    notEnoughVolume_1kusd : number
+    notEnoughVolume_15kusd : number
+    notEnoughVolume_30kusd : number
     prixMoyen_for1kusd_quote : number
     prixMoyen_for15kusd_quote : number
     prixMoyen_for30kusd_quote : number
   },
   sell : {
-    frequence : number
+    testedFreq : number
+    notData : number
+    notEnoughVolume_1kusd : number
+    notEnoughVolume_15kusd : number
+    notEnoughVolume_30kusd : number
     prixMoyen_for1kusd_quote : number
     prixMoyen_for15kusd_quote : number
     prixMoyen_for30kusd_quote : number

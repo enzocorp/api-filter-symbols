@@ -1,6 +1,7 @@
 import axios from 'axios'
 import {COINAPI} from "../../app";
 import {Asset} from "../../models/interphace/asset";
+import {asset_symbolsCount, asset_volume_usd1day} from "./initialisationFilters";
 
 interface resp_asset {
   "data_symbols_count": number
@@ -11,12 +12,12 @@ interface resp_asset {
   price_usd : number
 }
 
-async function findAssets () : Promise<Asset[]> {
+async function findAssets (params = {}) : Promise<Asset[]> {
   try {
     let url = `${COINAPI}/v1/assets`
-    let {data : assets} : { data : resp_asset[] } =  await axios.get(url)
+    let {data : assets} : { data : resp_asset[] } =  await axios.get(url,{params : params})
     return <Asset[]>(
-      assets.filter(asset=> asset.volume_1day_usd >= 1000000 && asset.data_symbols_count >= 2)
+      assets.filter(asset=> asset.volume_1day_usd >= asset_volume_usd1day && asset.data_symbols_count >= asset_symbolsCount)
         .map(asset => ({
           name: asset.asset_id,
           longName: asset.name,
