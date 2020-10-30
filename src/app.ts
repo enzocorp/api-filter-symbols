@@ -12,6 +12,7 @@ import routeBest from "./routes/route_best";
 import modelGlobal from "./models/mongoose/model.global";
 import routerPair from "./routes/route_pair";
 import routerSymbol from "./routes/route_symbol";
+import routerTest from "./routes/route_test";
 
 dotenv.config()
 //---------------------------Initialisation de l'App----------------------------
@@ -39,13 +40,13 @@ axios.defaults.headers.common['Accept'] = 'application/json';
 axios.interceptors.response.use( async (resp) => {
   if (resp.headers['x-ratelimit-used'])
     await modelGlobal.updateOne(
-      {},
+      {name : 'coinapi'},
       {
-        coinapi :{
-          limit : resp.headers['x-ratelimit-limit'],
-          remaining : resp.headers['x-ratelimit-remaining'],
-          dateReflow : resp.headers['x-ratelimit-reset']
-        }},
+        name : 'coinapi',
+        limit : resp.headers['x-ratelimit-limit'],
+        remaining : resp.headers['x-ratelimit-remaining'],
+        dateReflow : resp.headers['x-ratelimit-reset']
+      },
       { upsert : true})
   return resp;
 });
@@ -75,6 +76,7 @@ app.use('/api1',router)
 router.use('/assets',express.static('public'))
 
 
+router.use('/test',routerTest)
 router.use('/crypto',routeCrypto)
 router.use('/pairs',routerPair)
 router.use('/symbols',routerSymbol)

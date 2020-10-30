@@ -5,12 +5,14 @@ import {Global} from "../interphace/global";
 
 interface IGlobalDoc extends Document,Global {}
 
+const coinapi = {
+    limit : {type : String},
+    remaining : {type : String},
+    dateReflow : {type : String},
+}
 const schema = new Schema({
-    coinapi : {
-        limit : {type : String, required: true},
-        remaining : {type : String, required: true},
-        dateReflow : {type : String, required: true},
-    }
+    name : {type : String, required : true,enum: ['coinapi'], unique : true},
+    ...coinapi,
 })
 
 schema.plugin(uniqueValidator, {

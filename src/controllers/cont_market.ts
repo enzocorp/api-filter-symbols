@@ -1,38 +1,13 @@
 import modelMarket from "../models/mongoose/model.market";
 import {MongoPaginate} from "../models/interphace/pagination";
+import {RequesterMongo} from "../script/mongo_requester/requesterMongo";
 
 
 export const get_markets = async  (req, res)=>{
   try{
-    const query : MongoPaginate = JSON.parse(req.query.filters)
-    const obj : MongoPaginate = {
-      limit : Infinity,
-      match : {},
-      sort : {_id: 1},
-      skip : 0,
-      ...query
-    }
-    const __makedata : Array<any> = [{ $skip: obj.skip }, { $limit: obj.limit }]
-    if (obj.project)
-      __makedata.push(obj.project)
-    const aggregate : Array<any> = [
-      { $match : obj.match  },
-      { $sort : obj.sort },
-      { $facet : {
-          metadata: [ { $count: "total" }],
-          data: __makedata
-        }}
-    ]
-    if (obj.addFields)
-      aggregate.splice(1, 0, {$addFields : obj.addFields})
-    if (obj.lookups){
-      obj.lookups.forEach((lookup,i)=>{
-        aggregate.splice(i + 1, 0, {$lookup : lookup})
-      })
-    }
-
+    const query : MongoPaginate = req.query.filters ? JSON.parse(req.query.filters) : null
+    const aggregate = new RequesterMongo().v1(query)
     const [data]  = await modelMarket.aggregate(aggregate)
-
     res.status(200).json({data})
   }
   catch (err){
@@ -48,19 +23,6 @@ export const get_market = async (req,res)=> {
       .catch(err=>{
           res.status(404).json({title : "Une erreur est survenue", message : err.message})
       })
-}
-
-export const reset_moyennes_markets = async (req, res)=> {
-  try {
-    const data = await modelMarket.updateMany(
-      {'exclusion.exchangeIsExclude' : false},
-      {$set : { isBestFor : [] }},
-      {}
-    )
-    res.status(200).json({data})
-  }catch (err){
-    res.status(404).json({title : "Une erreur est survenue", message : err.message})
-  }
 }
 
 export const group_market_unreport = async  (req, res)=>{
@@ -109,7 +71,7 @@ export const group_market_report = async  (req, res)=>{
       }}));
 
     const resp = await modelMarket.collection.bulkWrite(bulkMarket)
-    res.status(200).json({title : 'Les markets ont bien été signalés',data : resp})
+    res.status(200).json({title : 'Les markets ont bien étés signalés',data : resp})
   }
   catch (erreur){
     res.status(500).json({title : "Une erreur s'est produite", message : erreur.message})

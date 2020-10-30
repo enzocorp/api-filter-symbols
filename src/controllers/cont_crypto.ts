@@ -13,17 +13,9 @@ import modelAsset from "../models/mongoose/model.asset";
 import doubleFilter from "../script/initialisation/doubleFilter";
 import {Pair} from "../models/interphace/pair";
 import {Asset} from "../models/interphace/asset";
-import {Market} from "../models/interphace/market";
 import patchMiss from "../script/initialisation/patchMissing";
+import {Market} from "../models/interphace/market";
 
-export  const ping = async (req,res)=> {
-  try{
-    console.log('-------PING RECU------------')
-    res.status(200).json({title : "J'ai recu un ping", message : 'voici un message'})
-  }catch (err){
-    res.status(404).json({title : 'probleme', message : err.message})
-  }
-}
 export const init_app = async  (req, res)=>{
     try{
         let [tempMarkets,tempAssets] = await Promise.all([
@@ -67,7 +59,7 @@ export const init_app = async  (req, res)=>{
 
 export const get_coinapi = async  (req, res)=>{
     try{
-        const infos = await modelGlobal.findOne()
+        const infos = await modelGlobal.findOne({name :'coinapi'})
         res.status(200).json({data : infos})
     }
     catch (erreur){
@@ -81,7 +73,7 @@ export const autocompleteReasons = async  (req, res)=>{
     try{
         const queryParam = req.query.for ? {for : req.query.for} : {}
         const reasons = await modelReason.find(queryParam)
-        res.status(200).json(reasons)
+        res.status(200).json({data : reasons})
     }
     catch (erreur){
         res.status(500).json({title : "Erreur est survenue", message : erreur.message})
@@ -92,7 +84,7 @@ export const autocompleteReasons = async  (req, res)=>{
 export const autocompleteSeverity= async  (req, res)=>{
     try{
         const severity = await modelSeverity.find({})
-        res.status(200).json(severity)
+        res.status(200).json({data : severity})
     }
     catch (erreur){
         res.status(500).json({title : "Erreur est survenue", message : erreur.message})

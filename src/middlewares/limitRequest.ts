@@ -5,7 +5,7 @@ export async function coinapiLimit(req, res, next) {
 
   res.send = async function(data){
     try{
-      const {coinapi} = await modelGlobal.findOne()
+      const {coinapi} = await modelGlobal.findOne({name : 'coinapi'})
       let arg = JSON.parse(arguments[0])
       arguments[0] = JSON.stringify({...arg,coinapi})
       oldSend.apply(res, arguments);

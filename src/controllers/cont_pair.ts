@@ -1,35 +1,11 @@
 import modelPair from "../models/mongoose/model.pair";
 import {MongoPaginate} from "../models/interphace/pagination";
-import modelMarket from "../models/mongoose/model.market";
+import {RequesterMongo} from "../script/mongo_requester/requesterMongo";
 
 export const get_pairs = async  (req, res)=>{
     try{
-        const query : MongoPaginate =  JSON.parse(req.query.filters)
-        const obj : MongoPaginate = {
-            limit : Infinity,
-            match : {},
-            sort : {_id: 1},
-            skip : 0,
-            ...query
-        }
-        const __makedata : Array<any> = [{ $skip: obj.skip }, { $limit: obj.limit }]
-        if (obj.project)
-            __makedata.push({$project : obj.project})
-        const aggregate : Array<any> = [
-            { $match : obj.match  },
-            { $sort : obj.sort },
-            { $facet : {
-                metadata: [ { $count: "total" }],
-                data: __makedata
-            }}
-        ]
-        if (obj.addFields)
-            aggregate.splice(1, 0, {$addFields : obj.addFields})
-        if (obj.lookups){
-          obj.lookups.forEach((lookup,i)=>{
-            aggregate.splice(i + 1, 0, {$lookup : lookup})
-          })
-        }
+      const query : MongoPaginate = req.query.filters ? JSON.parse(req.query.filters) : null
+      const aggregate = new RequesterMongo().v1(query)
         const [data]  = await modelPair.aggregate(aggregate)
 
         res.status(200).json({data})

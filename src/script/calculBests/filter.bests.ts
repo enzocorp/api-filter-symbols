@@ -18,7 +18,7 @@ async function findBestOne(bests : Best[], isFor : 'for1k' |'for15k' | 'for30k' 
     else if (theBest && theBest[isFor].spread_usd < best[isFor].spread_usd)
       theBest = best
   })
-  return theBest.pair
+  return theBest? theBest.pair : null
 }
 
 async function filterBests (bests : Best[]) : Promise<{bests: Best[], podium : {for1k:string,for15k : string,for30k:string} }>{
