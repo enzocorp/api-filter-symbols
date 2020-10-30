@@ -3,16 +3,19 @@ import helmet from 'helmet'
 import compression from 'compression'
 import bodyParser from "body-parser"
 import cookieParser from "cookie-parser"
+import schedule from "node-schedule"
 import dotenv from 'dotenv'
-import routeCrypto from './routes/route_crypto'
+import routerCrypto from './routes/route_crypto'
 import axios from 'axios'
 import {dbConnexion} from "./db";
-import routeMarket from "./routes/route_market";
-import routeBest from "./routes/route_best";
+import routerMarket from "./routes/route_market";
+import routerBest from "./routes/route_best";
 import modelGlobal from "./models/mongoose/model.global";
 import routerPair from "./routes/route_pair";
 import routerSymbol from "./routes/route_symbol";
 import routerTest from "./routes/route_test";
+import routerAsset from "./routes/route_asset";
+
 
 dotenv.config()
 //---------------------------Initialisation de l'App----------------------------
@@ -24,6 +27,9 @@ app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
 app.use(cookieParser())
 
+//-------------------Connexion à la BDD ------------------------------------------
+dbConnexion()
+
 //---------------------------Definition des headers de réponses ------------------
 
 app.use((req, res, next) => {
@@ -33,6 +39,7 @@ app.use((req, res, next) => {
   res.setHeader('Accept', 'application/json');
   next();
 });
+
 //---------------------------Definition des headers de requête ------------------
 
 axios.defaults.headers.common['X-CoinAPI-Key'] = process.env.API_KEY;
@@ -66,9 +73,9 @@ const defUrl = () => {
 export let COINAPI = defUrl()
 console.log("L'url de CoinAPI est : ",COINAPI)
 
+const updateAssets = schedule.scheduleJob('0 0,6,12,16,20 * * *', () =>{
 
-//-------------------Connexion à la BDD ------------------------------------------
-dbConnexion()
+});
 
 //-------------------Les Routes ------------------------------------------
 let router = express.Router()
@@ -77,11 +84,12 @@ router.use('/assets',express.static('public'))
 
 
 router.use('/test',routerTest)
-router.use('/crypto',routeCrypto)
+router.use('/crypto',routerCrypto)
 router.use('/pairs',routerPair)
 router.use('/symbols',routerSymbol)
-router.use('/markets',routeMarket)
-router.use('/bests',routeBest)
+router.use('/markets',routerMarket)
+router.use('/bests',routerBest)
+router.use('/assets',routerAsset)
 
 
 const port = process.env.API_PORT || 3000
@@ -89,4 +97,7 @@ app.listen(port,()=>{
   console.log('mon node js ecoute sur le port : ',port);
 })
 
+const updateAs = schedule.scheduleJob('*/5 * * * * *', () =>{
+  axios.get(`http://127.0.0.1:${port}/api1/test`)
+});
 

@@ -1,13 +1,14 @@
-import modelPair from "../models/mongoose/model.pair";
+import modelAsset from "../models/mongoose/model.asset";
 import {MongoPaginate} from "../models/interphace/pagination";
 import {RequesterMongo} from "../script/mongo_requester/requesterMongo";
-import {Pair, PairFor} from "../models/interphace/pair";
+import {Asset} from "../models/interphace/asset";
+import refreshAssetsPrice from "../script/other/refresh_assets";
 
-export const get_pairs = async  (req, res)=>{
+export const get_assets = async  (req, res)=>{
     try{
       const query : MongoPaginate = req.query.filters ? JSON.parse(req.query.filters) : null
       const aggregate = new RequesterMongo().v1(query)
-        const [data]  = await modelPair.aggregate(aggregate)
+        const [data]  = await modelAsset.aggregate(aggregate)
 
         res.status(200).json({data})
     }
@@ -17,11 +18,31 @@ export const get_pairs = async  (req, res)=>{
     }
 }
 
+export const refresh_price = async  (req, res)=>{
+  try{
+    const prices = await refreshAssetsPrice()
+    const bulkAssets = prices.map(price => ({
+      updateOne: {
+        filter: { name : price.name },
+        update: { $set: {price_usd : price.price_usd},
+        },
+        option : {upsert: false}
+      }}));
+
+    const resp = await modelAsset.collection.bulkWrite(bulkAssets)
+    res.status(200).json({data : resp})
+  }
+  catch (err){
+    console.log(err)
+    res.status(404).json({title : "Une erreur est survenue", message : err.message})
+  }
+}
 
 
-export const get_pair = async (req,res)=> {
+
+export const get_asset = async (req,res)=> {
   try {
-    const data : Pair = await modelPair.findOne({name : req.params.name})
+    const data : Asset = await modelAsset.findOne({name : req.params.name})
     res.status(200).json({data})
   }
   catch (err){
@@ -30,40 +51,10 @@ export const get_pair = async (req,res)=> {
   }
 }
 
-
-export const reset_moyennes_pairs = async  (req, res)=>{
-  try {
-    const updateFor : PairFor = {
-      isBestFreq : 0,
-      errorFreq : 0,
-      negativeFreq : 0,
-      notEnoughtVolFreq : 0,
-      postiveFreq : 0,
-      spreadMoyen_quote : null,
-      spreadMoyen_usd : null,
-      volumeMoyen_base : null,
-      hightestSpread_usd : null,
-    }
-
-    const dataUpdated = await modelPair.updateMany(
-      {'exclusion.isExclude' : false},
-      {$set : {
-        for1k : updateFor,
-        for15k : updateFor,
-        for30k : updateFor,
-        }},
-    )
-    res.status(200).json({title : 'Les pairs ont été resets',data : dataUpdated})
-  }catch (err){
-    res.status(404).json({title : "Une erreur est survenue", message : err.message})
-  }
-
-}
-
-export const group_pairs_unreport = async  (req, res)=>{
+export const group_assets_unreport = async  (req, res)=>{
   try{
     const names : string[] = req.body.list
-    const bulkPair = names.map(name => ({
+    const bulkAsset = names.map(name => ({
       updateOne: {
         filter: { name : name },
         update: { $set: {
@@ -78,19 +69,19 @@ export const group_pairs_unreport = async  (req, res)=>{
         option : {upsert: false}
       }}));
 
-    const resp = await modelPair.collection.bulkWrite(bulkPair)
-    res.status(200).json({title : 'Les paires ont été blanchies',data : resp})
+    const resp = await modelAsset.collection.bulkWrite(bulkAsset)
+    res.status(200).json({title : 'Les assets ont été blanchies',data : resp})
   }
   catch (erreur){
     res.status(500).json({title : "Une erreur s'est produite", message : erreur.message})
   }
 }
 
-export const group_pairs_report = async  (req, res)=>{
+export const group_assets_report = async  (req, res)=>{
   try{
     const names : string[] = req.body.list
     const data = req.body.data
-    const bulkPairs = names.map(name => ({
+    const bulkAssets = names.map(name => ({
       updateOne: {
         filter: { name : name },
         update: { $set: {
@@ -105,8 +96,8 @@ export const group_pairs_report = async  (req, res)=>{
         option : {upsert: false}
       }}));
 
-    const resp = await modelPair.collection.bulkWrite(bulkPairs)
-    res.status(200).json({title : 'Les paires ont bien été signalés',data : resp})
+    const resp = await modelAsset.collection.bulkWrite(bulkAssets)
+    res.status(200).json({title : 'Les assets ont bien été signalés',data : resp})
   }
   catch (erreur){
     res.status(500).json({title : "Une erreur s'est produite", message : erreur.message})

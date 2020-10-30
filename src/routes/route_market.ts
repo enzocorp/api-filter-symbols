@@ -6,13 +6,13 @@ import {
   group_market_unreport,
 } from "../controllers/cont_market";
 
-const routeMarket = express.Router()
+const routerMarket = express.Router()
 
-routeMarket.post('/unreport',group_market_unreport)
-routeMarket.post('/report',group_market_report)
+routerMarket.post('/unreport',group_market_unreport)
+routerMarket.post('/report',group_market_report)
 
-routeMarket.get('/',get_markets)
-routeMarket.get('/:name',get_market)
+routerMarket.get('/',get_markets)
+routerMarket.get('/:name',get_market)
 
-export default routeMarket
+export default routerMarket
 

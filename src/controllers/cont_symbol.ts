@@ -29,34 +29,6 @@ export const get_symbol = async (req,res)=> {
     }
 }
 
-export const reset_moyennes_symbols = async  (req, res)=>{
-    try {
-       /* const data = await modelPair.updateMany(
-          {'exclusion.pairIsExclude' : false},
-          {$set : { ifPositiveSpread : {
-                      latestSpreads : [],
-                      volumeMoyen : -1,
-                      volumeMoyen_usd : -1,
-                      spreadMoyen : -1,
-                      spreadMoyen_1usd : -1,
-                      spreadMoyen_15kusd : -1,
-                      profitMaxiMoyen_usd : -1,
-                      ecartType : -1,
-                      variance : -1,
-                      esperance : -1,
-                      medianne : -1,
-                      hightestSpread_15kusd : -1
-                  }}},
-          {}
-        )*/
-        res.status(200).json({data : 'Hey'})
-    }catch (err){
-        res.status(404).json({title : "Une erreur est survenue", message : err.message})
-    }
-
-}
-
-
 export const group_symbol_unreport = async  (req, res)=>{
     try{
         const names : string[] = req.body.list
