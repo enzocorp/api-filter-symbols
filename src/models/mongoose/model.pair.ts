@@ -8,35 +8,41 @@ const schema = new Schema({
     name : {type : String, required:'Vous devez entrer le nom',unique : true},
     base : {type : String, required:'Vous devez entrer la base'},
     quote : {type : String, required:'Vous devez entrer la quote'},
-    negativeFreq : {type : Number, required:'Vous devez entrez la testedFreq negative'},
-    ifPositiveSpread_1kusd : {
-        frequence :{type : Number, required : true},
-        frequenceBest :{type : Number, required : true},
-        spreadMoyen_usd :{type : Number, required : true},
+
+    for1k : {
+        postiveFreq :{type : Number, required : true},
+        negativeFreq :{type : Number, required : true},
+        isBestFreq :{type : Number, required : true},
+        notEnoughtVolFreq :{type : Number, required : true},
+        errorFreq :{type : Number, required : true},
+
         spreadMoyen_quote :{type : Number, required : true},
+        spreadMoyen_usd :{type : Number, required : true},
         volumeMoyen_base :{type : Number, required : true},
-        volumeMoyen_usd :{type : Number, required : true},
-        hightestSpread_quote : {type : Number, required : true},
         hightestSpread_usd : {type : Number, required : true},
     },
-    ifPositiveSpread_15kusd : {
-        frequence :{type : Number, required : true},
-        frequenceBest :{type : Number, required : true},
-        spreadMoyen_usd :{type : Number, required : true},
+    for15k : {
+        postiveFreq :{type : Number, required : true},
+        negativeFreq :{type : Number, required : true},
+        isBestFreq :{type : Number, required : true},
+        notEnoughtVolFreq :{type : Number, required : true},
+        errorFreq :{type : Number, required : true},
+
         spreadMoyen_quote :{type : Number, required : true},
+        spreadMoyen_usd :{type : Number, required : true},
         volumeMoyen_base :{type : Number, required : true},
-        volumeMoyen_usd :{type : Number, required : true},
-        hightestSpread_quote : {type : Number, required : true},
         hightestSpread_usd : {type : Number, required : true},
     },
-    ifPositiveSpread_30kusd : {
-        frequence :{type : Number, required : true},
-        frequenceBest :{type : Number, required : true},
-        spreadMoyen_usd :{type : Number, required : true},
+    for30k : {
+        postiveFreq :{type : Number, required : true},
+        negativeFreq :{type : Number, required : true},
+        isBestFreq :{type : Number, required : true},
+        notEnoughtVolFreq :{type : Number, required : true},
+        errorFreq :{type : Number, required : true},
+
         spreadMoyen_quote :{type : Number, required : true},
+        spreadMoyen_usd :{type : Number, required : true},
         volumeMoyen_base :{type : Number, required : true},
-        volumeMoyen_usd :{type : Number, required : true},
-        hightestSpread_quote : {type : Number, required : true},
         hightestSpread_usd : {type : Number, required : true},
     },
     exclusion : {

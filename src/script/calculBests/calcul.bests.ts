@@ -41,7 +41,7 @@ async function calculSortAndFormat(prices : Price[],side : 'buy' | 'sell',forusd
     symbol : topPrice.infos.symbol,
     website : topPrice.infos.website,
     volume_base : qty,
-    price : topPrice[side][forusd]
+    price_quote : topPrice[side][forusd]
   }
 }
 
@@ -55,28 +55,38 @@ async function makeBestFor(prices : Price[]): Promise<[BestFor,BestFor,BestFor]>
     ])
     return {for1k,for15k,for30k}
   }
+
+  const calculSpread =  (itemBuy : BestFor['buy'],itemSell : BestFor['sell']) => {
+
+    if(itemBuy.price_quote && itemSell.price_quote)
+      return itemSell.price_quote - itemBuy.price_quote
+    else
+      return  null
+  }
+
   const [bestsBuy,bestsSell] = await Promise.all([
     makeOneSide('buy'),
     makeOneSide('sell')
   ])
+
   return [
     {
       buy : bestsBuy.for1k,
       sell : bestsSell.for1k,
-      spread_quote : bestsSell.for1k.price - bestsBuy.for1k.price,
-      spread_usd : (bestsSell.for1k.price - bestsBuy.for1k.price) * prices[0].infos.quote_usd
+      spread_quote : calculSpread(bestsBuy.for1k,bestsSell.for1k),
+      spread_usd : calculSpread(bestsBuy.for1k,bestsSell.for1k) * prices[0].infos.quote_usd || null
     },
     {
       buy : bestsBuy.for15k,
       sell : bestsSell.for15k,
-      spread_quote : bestsSell.for15k.price - bestsBuy.for15k.price,
-      spread_usd : (bestsSell.for15k.price - bestsBuy.for15k.price) * prices[0].infos.quote_usd
+      spread_quote : calculSpread(bestsBuy.for15k,bestsSell.for15k),
+      spread_usd : calculSpread(bestsBuy.for15k,bestsSell.for15k) * prices[0].infos.quote_usd || null
     },
     {
       buy : bestsBuy.for30k,
       sell : bestsSell.for30k,
-      spread_quote : bestsSell.for30k.price - bestsBuy.for30k.price,
-      spread_usd : (bestsSell.for30k.price - bestsBuy.for30k.price) * prices[0].infos.quote_usd
+      spread_quote : calculSpread(bestsBuy.for30k,bestsSell.for30k),
+      spread_usd : calculSpread(bestsBuy.for30k,bestsSell.for30k) * prices[0].infos.quote_usd || null
     },
   ]
 }
@@ -95,13 +105,16 @@ async function makeBest(prices : Price[],groupId : string, infos : Price['infos'
     date : new Date()
   }
 }
-
 async function calculBests (prices : Price[]) : Promise<Best[]>{
   const sortedPrices : Array<Price[]> = sortPrices(prices)
   const tabPromises : Promise<Best>[] = []
   const id = Date.now().toString()
-  sortedPrices.forEach(tab => tabPromises.push(makeBest(tab,id,tab[0].infos))
-  )
+  sortedPrices.forEach(tab => {
+    if (tab.length > 1)
+      tabPromises.push(makeBest(tab,id,tab[0].infos))
+    else
+      console.log(`----Erreur : La pair ${tab[0].infos.pair} n'est comparée que sur 1 market (${tab[0].infos.market})----`)
+  } )
   return await Promise.all(tabPromises)
 }
 

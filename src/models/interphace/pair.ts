@@ -1,39 +1,24 @@
+export interface PairFor{
+  postiveFreq : number
+  negativeFreq : number
+  isBestFreq : number
+  notEnoughtVolFreq : number
+  errorFreq : number
+
+  spreadMoyen_quote : number
+  spreadMoyen_usd : number
+  volumeMoyen_base : number
+  hightestSpread_usd : number
+}
+
 
 export interface Pair {
   name: string
   base : string
   quote : string
-  negativeFreq : number
-  ifPositiveSpread_1kusd : {
-    frequence : number
-    frequenceBest : number
-    spreadMoyen_quote : number
-    spreadMoyen_usd : number
-    volumeMoyen_base : number
-    volumeMoyen_usd : number
-    hightestSpread_quote : number
-    hightestSpread_usd : number
-  },
-  ifPositiveSpread_15kusd : {
-    frequence : number
-    frequenceBest : number
-    spreadMoyen_quote : number
-    spreadMoyen_usd : number
-    volumeMoyen_base : number
-    volumeMoyen_usd : number
-    hightestSpread_quote : number
-    hightestSpread_usd : number
-  },
-  ifPositiveSpread_30kusd : {
-    frequence : number
-    frequenceBest : number
-    spreadMoyen_quote : number
-    spreadMoyen_usd : number
-    volumeMoyen_base : number
-    volumeMoyen_usd : number
-    hightestSpread_quote : number
-    hightestSpread_usd : number
-  },
+  for1k : PairFor
+  for15k : PairFor
+  for30k : PairFor
   exclusion : {
     isExclude : boolean
     reasons : string[]

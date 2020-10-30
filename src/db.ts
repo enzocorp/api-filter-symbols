@@ -5,6 +5,7 @@ export function dbConnexion(){
     MONGO_PORT,
     MONGO_DB,
     MONGO_HOSTNAME,
+    MONGO_DB_DEV
   } = process.env
 
   const options = {
@@ -13,7 +14,11 @@ export function dbConnexion(){
     useCreateIndex : true ,
     useFindAndModify: false
   }
-  const url = `mongodb://${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}`
+  let url : string
+  if(process.env.NODE_ENV === 'development')
+      url = `mongodb://${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB_DEV}`
+  else
+      url = `mongodb://${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}`
 
   connect(url,options).then(()=>{
     console.log('MA BASE MONGO EST CONNECTE ET ECOUTE SUR : ',url)

@@ -43,32 +43,31 @@ export const get_bests = async  (req, res)=>{
 
 export const calcul_bests = async  (req,res)=>{
     try{
-        let test = await programmeBests()
-        console.log('calcul Okay ! ')
-/*
-        const bulkOpsPairs = updatedPairs.map(pair => ({
+        let {bests,pairs,symbols} = await programmeBests()
+
+        const bulkPairs = pairs.map(pair => ({
             updateOne: {
                 filter: { name : pair.name },
                 update: { $set: pair },
             }
         }));
 
-        const bulkOpsAverage = updatedAverages.map(average => ({
+        const bulkSymbols = symbols.map(symbol => ({
             updateOne: {
-                filter: { pair : average.pair, exchange : average.market },
-                update: { $set: average },
-                upsert: true
+                filter: { name : symbol.name },
+                update: { $set: symbol },
             }
         }));
 
-        let [resPairs,resDocs,resAverage] = await Promise.all([
-            modelPair.collection.bulkWrite(bulkOpsPairs),
+        const afterUpdate = await Promise.all([
+            modelPair.collection.bulkWrite(bulkPairs),
             modelBest.insertMany(bests),
-            modelSymbol.bulkWrite(bulkOpsAverage)
-        ])*/
-        res.json({title : 'La base à été mise a jour', data2 : test/*,data : resDocs[0].groupId,metaData : {resAverage,resPairs}*/})
+            modelSymbol.collection.bulkWrite(bulkSymbols)
+        ])
+        res.status(200).json({title : 'La base à été mise a jour',data : afterUpdate})
     }
     catch (erreur){
+        console.log(erreur)
         res.status(404).json({title : "Une erreur est survenue", message : erreur.message})
     }
 

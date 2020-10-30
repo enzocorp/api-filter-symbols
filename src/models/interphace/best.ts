@@ -1,13 +1,13 @@
 export interface BestFor {
   buy : {
-    price : number
     market : string
     symbol : string
     website: string
+    price_quote : number
     volume_base : number
   }
   sell : {
-    price : number
+    price_quote : number
     market : string
     symbol : string
     website: string
@@ -19,8 +19,8 @@ export interface BestFor {
 
 export interface Best {
   pair : string
-  quote : string
   base : string
+  quote : string
   groupId : string
   createdBy : string,
   for1k : BestFor

@@ -1,16 +1,17 @@
-import {Pair} from "../../models/interphace/pair";
+import {Pair, PairFor} from "../../models/interphace/pair";
 import {Symbol} from "../../models/interphace/symbol";
 
 async function makeInitPairs (symbols : Symbol[]) :Promise< Pair[]> {
   let pairs : Pair[] = []
-  const schema : Pair['ifPositiveSpread_1kusd' | 'ifPositiveSpread_15kusd' | 'ifPositiveSpread_30kusd'] = {
-    frequence : 0,
-    frequenceBest : 0,
+  const schema : PairFor = {
+    isBestFreq : 0,
+    errorFreq : 0,
+    negativeFreq : 0,
+    notEnoughtVolFreq : 0,
+    postiveFreq : 0,
     spreadMoyen_quote : null,
     spreadMoyen_usd : null,
     volumeMoyen_base : null,
-    volumeMoyen_usd : null,
-    hightestSpread_quote : null,
     hightestSpread_usd : null,
   }
   symbols.forEach(symbol => {
@@ -20,10 +21,9 @@ async function makeInitPairs (symbols : Symbol[]) :Promise< Pair[]> {
         name : symbol.pair,
         base : symbol.base,
         quote : symbol.quote,
-        negativeFreq : 0,
-        ifPositiveSpread_1kusd : schema,
-        ifPositiveSpread_15kusd : schema,
-        ifPositiveSpread_30kusd : schema,
+        for1k : schema,
+        for15k : schema,
+        for30k : schema,
         exclusion: {
           isExclude: false,
           reasons: [],
