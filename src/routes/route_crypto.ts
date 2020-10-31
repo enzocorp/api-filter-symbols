@@ -8,7 +8,7 @@ import {coinapiLimit} from "../middlewares/limitRequest";
 
 const routerCrypto = express.Router()
 
-routerCrypto.get('/coinapiLimit',get_coinapi)
+routerCrypto.get('/coinapi',get_coinapi)
 routerCrypto.get('/init',coinapiLimit,init_app)
 
 routerCrypto.get('/exclusion/severities',autocompleteSeverity)
