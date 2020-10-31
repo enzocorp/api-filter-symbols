@@ -2,13 +2,13 @@ import modelMarket from "../models/mongoose/model.market";
 import {MongoPaginate} from "../models/interphace/pagination";
 import {RequesterMongo} from "../script/mongo_requester/requesterMongo";
 
-
 export const get_markets = async  (req, res)=>{
   try{
     const query : MongoPaginate = req.query.filters ? JSON.parse(req.query.filters) : null
     const aggregate = new RequesterMongo().v1(query)
-    const [data]  = await modelMarket.aggregate(aggregate)
-    res.status(200).json({data})
+    const [tabResp] : Array<{data : any, metadata : any}> = await modelMarket.aggregate(aggregate)
+    const {data, metadata} = tabResp
+    res.status(200).json({data, metadata})
   }
   catch (err){
     res.status(404).json({title : "Une erreur est survenue", message : err.message})

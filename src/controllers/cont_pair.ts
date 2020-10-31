@@ -6,10 +6,10 @@ import {Pair, PairFor} from "../models/interphace/pair";
 export const get_pairs = async  (req, res)=>{
     try{
       const query : MongoPaginate = req.query.filters ? JSON.parse(req.query.filters) : null
-      const aggregate = new RequesterMongo().v1(query)
-        const [data]  = await modelPair.aggregate(aggregate)
-
-        res.status(200).json({data})
+      const aggregate : any[] = new RequesterMongo().v1(query)
+      const [tabResp] : Array<{data : any, metadata : any}> = await modelPair.aggregate(aggregate)
+      const {data, metadata} = tabResp
+      res.status(200).json({data, metadata})
     }
     catch (err){
       console.log(err)
