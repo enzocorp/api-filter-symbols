@@ -31,7 +31,6 @@ async function  strAssetsNames(assets : Asset[]) : Promise<string> {
 }
 
 async function findSymbols (markets : Market[],assets : Asset[]) :  Promise<Symbol[]> {
-  try {
     let url = `${COINAPI}/v1/symbols`
     let [strMarkets, strAssets] = await Promise.all([
       strMarketsNames(markets),
@@ -74,10 +73,6 @@ async function findSymbols (markets : Market[],assets : Asset[]) :  Promise<Symb
         }
       }))
     )
-  }
-  catch (err){
-    console.log('Il y a eu une erreur dans la captrue des symboles :  ', err)
-  }
 }
 
 export default findSymbols

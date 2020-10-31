@@ -10,11 +10,11 @@ import axios from 'axios'
 import {dbConnexion} from "./db";
 import routerMarket from "./routes/route_market";
 import routerBest from "./routes/route_best";
-import modelGlobal from "./models/mongoose/model.global";
 import routerPair from "./routes/route_pair";
 import routerSymbol from "./routes/route_symbol";
 import routerTest from "./routes/route_test";
 import routerAsset from "./routes/route_asset";
+import {saveCoinapiLimitSucces, saveCoinapiLimitError} from "./middlewares/axiosRespInterceptor";
 
 
 dotenv.config()
@@ -44,19 +44,7 @@ app.use((req, res, next) => {
 
 axios.defaults.headers.common['X-CoinAPI-Key'] = process.env.API_KEY;
 axios.defaults.headers.common['Accept'] = 'application/json';
-axios.interceptors.response.use( async (resp) => {
-  if (resp.headers['x-ratelimit-used'])
-    await modelGlobal.updateOne(
-      {name : 'coinapi'},
-      {
-        name : 'coinapi',
-        limit : resp.headers['x-ratelimit-limit'],
-        remaining : resp.headers['x-ratelimit-remaining'],
-        dateReflow : resp.headers['x-ratelimit-reset']
-      },
-      { upsert : true})
-  return resp;
-});
+axios.interceptors.response.use( saveCoinapiLimitSucces,saveCoinapiLimitError);
 
 const defUrl = () => {
   switch (process.env.NODE_ENV) {
@@ -73,13 +61,12 @@ const defUrl = () => {
 export let COINAPI = defUrl()
 console.log("L'url de CoinAPI est : ",COINAPI)
 
-const updateAssets = schedule.scheduleJob('0 0,6,12,16,20 * * *', () =>{
-
-});
-
 //-------------------Les Routes ------------------------------------------
+const apiname = process.env.API_NAME || 'api1'
+console.log(`Le nom de l'api est --"${apiname}"-- `)
+
 let router = express.Router()
-app.use('/api1',router)
+app.use(`/${apiname}`,router)
 router.use('/assets',express.static('public'))
 
 
@@ -91,13 +78,16 @@ router.use('/markets',routerMarket)
 router.use('/bests',routerBest)
 router.use('/assets',routerAsset)
 
-
 const port = process.env.API_PORT || 3000
 app.listen(port,()=>{
-  console.log('mon node js ecoute sur le port : ',port);
+  console.log('Mon node js ecoute sur le port : ',port);
 })
 
-const updateAs = schedule.scheduleJob('*/5 * * * * *', () =>{
-  axios.get(`http://127.0.0.1:${port}/api1/test`)
+schedule.scheduleJob('0 */15 * * *', async () =>{
+  try{
+    await axios.get(`http://127.0.0.1:${port}/${apiname}/assets/refresh`)
+    console.log(" ---Il EST L'HEURE ! LES ASSETS ONT ETE REFRESH ! :D ")
+  }catch (err){
+    console.log(" --HOLALALA ! LES ASSETS N'ONT PAS PUE ETRE REFRESH :( !! : ", err.message)
+  }
 });
-

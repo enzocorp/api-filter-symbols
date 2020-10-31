@@ -9,18 +9,18 @@ async function calculSide(bestFor : BestFor, pairFor : PairFor) : Promise<PairFo
   const doMoyenne = (initVal: number, newVal : number, freq : number) : number => ( initVal * freq + newVal) / (freq + 1)
 
   return {
-    postiveFreq : isPositive(bestFor) ? pairFor.postiveFreq + 1 : pairFor.postiveFreq,
+    positiveFreq : isPositive(bestFor) ? pairFor.positiveFreq + 1 : pairFor.positiveFreq,
     negativeFreq : !isPositive(bestFor) ? pairFor.negativeFreq + 1 : pairFor.negativeFreq,
     notEnoughtVolFreq : bestFor.spread_quote === null ? pairFor.notEnoughtVolFreq + 1 : pairFor.notEnoughtVolFreq,
     errorFreq : bestFor.spread_quote === undefined ? pairFor.errorFreq + 1 : pairFor.errorFreq,
     spreadMoyen_quote  : isPositive(bestFor) ?
-      doMoyenne(pairFor.spreadMoyen_quote,bestFor.spread_quote, pairFor.postiveFreq) : pairFor.spreadMoyen_quote,
+      doMoyenne(pairFor.spreadMoyen_quote,bestFor.spread_quote, pairFor.positiveFreq) : pairFor.spreadMoyen_quote,
 
     spreadMoyen_usd  : isPositive(bestFor) ?
-      doMoyenne(pairFor.spreadMoyen_usd,bestFor.spread_quote, pairFor.postiveFreq) : pairFor.spreadMoyen_usd,
+      doMoyenne(pairFor.spreadMoyen_usd,bestFor.spread_quote, pairFor.positiveFreq) : pairFor.spreadMoyen_usd,
 
     volumeMoyen_base : bestFor.buy.volume_base ?
-      doMoyenne(pairFor.volumeMoyen_base,bestFor.buy.volume_base, pairFor.postiveFreq) : pairFor.volumeMoyen_base,
+      doMoyenne(pairFor.volumeMoyen_base,bestFor.buy.volume_base, pairFor.positiveFreq) : pairFor.volumeMoyen_base,
 
     isBestFreq : pairFor.isBestFreq,
     hightestSpread_usd : pairFor.hightestSpread_usd < bestFor.spread_usd ? bestFor.spread_usd : pairFor.hightestSpread_usd

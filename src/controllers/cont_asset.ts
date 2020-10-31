@@ -30,6 +30,7 @@ export const refresh_price = async  (req, res)=>{
       }}));
 
     const resp = await modelAsset.collection.bulkWrite(bulkAssets)
+    console.log('ok')
     res.status(200).json({data : resp})
   }
   catch (err){

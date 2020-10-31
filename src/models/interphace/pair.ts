@@ -1,5 +1,5 @@
 export interface PairFor{
-  postiveFreq : number
+  positiveFreq : number
   negativeFreq : number
   isBestFreq : number
   notEnoughtVolFreq : number

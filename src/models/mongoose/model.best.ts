@@ -14,8 +14,8 @@ const schema = new Schema({
       market : {type : String, required:"Vous devez entrer le market d'achat 1k $"},
       symbol : {type : String, required:"Vous devez entrer le Symbol d'achat 1k $"},
       website : {type : String, required:"Vous devez entrer le site web d'achat 1k $"},
-      price_quote : {type : Number, required:"Vous devez entrer le prix d'achat 1k $"},
-      volume_base : {type : Number, required:"Vous devez entrer le volume d'achat 1k $"},
+      price_quote : {type : Number, default : null},
+      volume_base : {type : Number, default : null},
     },
     sell : {
       market : {type : String, required:"Vous devez entrer le market de vente 1k $"},
@@ -32,8 +32,8 @@ const schema = new Schema({
       market : {type : String, required:"Vous devez entrer le market d'achat 15k $"},
       symbol : {type : String, required:"Vous devez entrer le Symbol d'achat 15k $"},
       website : {type : String, required:"Vous devez entrer le site web d'achat 15k $"},
-      price_quote : {type : Number, required:"Vous devez entrer le prix d'achat 15k $"},
-      volume_base : {type : Number, required:"Vous devez entrer le volume d'achat 15k $"},
+      price_quote : {type : Number, default : null},
+      volume_base : {type : Number, default : null},
     },
     sell : {
       market : {type : String, required:"Vous devez entrer le market de vente 15k $"},
@@ -50,8 +50,8 @@ const schema = new Schema({
       market : {type : String, required:"Vous devez entrer le market d'achat 30k $"},
       symbol : {type : String, required:"Vous devez entrer le Symbol d'achat 30k $"},
       website : {type : String, required:"Vous devez entrer le site web d'achat 30k $"},
-      price_quote : {type : Number, required:"Vous devez entrer le prix d'achat 30k $"},
-      volume_base : {type : Number, required:"Vous devez entrer le volume d'achat 30k $"},
+      price_quote : {type : Number, default : null},
+      volume_base : {type : Number, default : null},
     },
     sell : {
       market : {type : String, required:"Vous devez entrer le market de vente 30k $"},

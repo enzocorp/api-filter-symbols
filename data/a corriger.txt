@@ -3,3 +3,4 @@ de markets sur cette pair sera faux car pas mis a jour !
 - Pareil pour les assets dans "pairCount"
 - Pour faire un requester Universelle créer un objet pour chaque aggreation pour lequel sa "key" correspond a son ordre dans le pipeline
  Ex: : {"1" : $match ! {...} }
+- Pour faire remonter un problème directement dans le front, on peut créer un utilitaire "warning" qui ajoute directement le warning au corp de la réponse

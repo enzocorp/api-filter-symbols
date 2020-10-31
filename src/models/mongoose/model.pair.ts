@@ -10,7 +10,7 @@ const schema = new Schema({
     quote : {type : String, required:'Vous devez entrer la quote'},
 
     for1k : {
-        postiveFreq :{type : Number, required : true},
+        positiveFreq :{type : Number, required : true},
         negativeFreq :{type : Number, required : true},
         isBestFreq :{type : Number, required : true},
         notEnoughtVolFreq :{type : Number, required : true},
@@ -22,7 +22,7 @@ const schema = new Schema({
         hightestSpread_usd : {type : Number, required : true},
     },
     for15k : {
-        postiveFreq :{type : Number, required : true},
+        positiveFreq :{type : Number, required : true},
         negativeFreq :{type : Number, required : true},
         isBestFreq :{type : Number, required : true},
         notEnoughtVolFreq :{type : Number, required : true},
@@ -34,7 +34,7 @@ const schema = new Schema({
         hightestSpread_usd : {type : Number, required : true},
     },
     for30k : {
-        postiveFreq :{type : Number, required : true},
+        positiveFreq :{type : Number, required : true},
         negativeFreq :{type : Number, required : true},
         isBestFreq :{type : Number, required : true},
         notEnoughtVolFreq :{type : Number, required : true},

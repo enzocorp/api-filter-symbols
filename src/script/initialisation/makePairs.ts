@@ -8,7 +8,7 @@ async function makeInitPairs (symbols : Symbol[]) :Promise< Pair[]> {
     errorFreq : 0,
     negativeFreq : 0,
     notEnoughtVolFreq : 0,
-    postiveFreq : 0,
+    positiveFreq : 0,
     spreadMoyen_quote : null,
     spreadMoyen_usd : null,
     volumeMoyen_base : null,

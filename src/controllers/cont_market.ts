@@ -77,35 +77,3 @@ export const group_market_report = async  (req, res)=>{
     res.status(500).json({title : "Une erreur s'est produite", message : erreur.message})
   }
 }
-
-/*
-export const get_marketsv2 = async  (req, res)=>{
-  try{
-    const filters = req.query.filters
-    const {limit = Infinity ,skip = 0,...query} : MongoPaginatev2 = filters ?
-      JSON.parse(req.query.filters) : {};
-
-    let aggregate : Array<any> = []
-    const dataFacet : Array<any> = [{ $skip: skip}, { $limit: limit }]
-
-    if(query.aggregate)
-      aggregate = query.aggregate
-    if(query.facet){
-      dataFacet.push(...query.facet)
-    }
-    aggregate.push({$facet : {
-        metadata: [ { $count: "total" }],
-        data: dataFacet
-      }})
-
-    const [data]  = await modelExchange.aggregate(aggregate)
-
-    res.status(200).json(data)
-  }
-  catch (err){
-    console.log(err)
-    res.status(404).json({title : "Une erreur est survenue", message : err.message})
-  }
-}
-*/
-

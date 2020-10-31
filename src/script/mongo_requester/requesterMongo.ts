@@ -1,4 +1,4 @@
-import {MongoPaginate} from "../../models/interphace/pagination";
+import {MongoPaginate, MongoPaginatev2} from "../../models/interphace/pagination";
 
 export class RequesterMongo {
 
@@ -31,6 +31,22 @@ export class RequesterMongo {
         aggregate.splice(i + 1, 0, {$lookup : lookup})
       })
     }
+    return aggregate
+  }
+
+  v2(query : MongoPaginatev2 | Object = {},limit = Infinity ,skip = 0){
+    let aggregate : Array<any> = []
+    const dataFacet : Array<any> = [{ $skip: skip}, { $limit: limit }]
+
+    if("aggregate" in query)
+      aggregate = query.aggregate
+    if("facet" in query){
+      dataFacet.push(...query.facet)
+    }
+    aggregate.push({$facet : {
+        metadata: [ { $count: "total" }],
+        data: dataFacet
+      }})
     return aggregate
   }
 }
