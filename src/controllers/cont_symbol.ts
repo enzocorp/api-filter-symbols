@@ -1,6 +1,7 @@
 import {MongoPaginate} from "../models/interphace/pagination";
 import modelSymbol from "../models/mongoose/model.symbol";
 import {RequesterMongo} from "../script/mongo_requester/requesterMongo";
+import modelPair from "../models/mongoose/model.pair";
 
 export const get_symbols = async  (req, res)=>{
     try{
@@ -28,9 +29,9 @@ export const get_symbol = async (req,res)=> {
     }
 }
 
-export const group_symbol_unreport = async  (req, res)=>{
+export const group_symbols_unreport = async  (req, res)=>{
     try{
-        const names : string[] = req.body.list
+        const names : string[] = req.body.data
         const bulkSymbol = names.map(name => ({
             updateOne: {
                 filter: { name : name },
@@ -38,7 +39,7 @@ export const group_symbol_unreport = async  (req, res)=>{
                         exclusion : {
                             isExclude : false,
                             reasons : [],
-                            severity : null,
+                            severity : 0,
                             excludeBy : null,
                             note : null
                         }},
@@ -47,36 +48,37 @@ export const group_symbol_unreport = async  (req, res)=>{
             }}));
 
         const resp = await modelSymbol.collection.bulkWrite(bulkSymbol)
-        res.status(200).json({title : 'Les symbols ont été blanchis',data : resp})
+        res.status(200).json({title : 'Les symboles ont été blanchies',data : resp})
     }
     catch (erreur){
         res.status(500).json({title : "Une erreur s'est produite", message : erreur.message})
     }
 }
 
-export const group_symbol_report = async  (req, res)=>{
-    try{
-        const names : string[] = req.body.list
-        const data = req.body.data
-        const bulkSymbol = names.map(name => ({
+export const group_symbols_report = async  (req, res)=> {
+    try {
+        const {symbols: names, ...data} = req.body.data
+        const bulkSymbols = names.map(name => ({
             updateOne: {
-                filter: { name : name },
-                update: { $set: {
-                        exclusion : {
-                            isExclude : data.severity === 4,
-                            reasons : data.reasons,
-                            severity : data.severity,
-                            excludeBy : 'unknow',
-                            note : data.note || ''
-                        }},
+                filter: {name: name},
+                update: {
+                    $set: {
+                        exclusion: {
+                            isExclude: data.severity === 4,
+                            reasons: data.reasons,
+                            severity: data.severity,
+                            excludeBy: 'unknow',
+                            note: data.note || null
+                        }
+                    },
                 },
-                option : {upsert: false}
-            }}));
+                option: {upsert: false}
+            }
+        }));
 
-        const resp = await modelSymbol.collection.bulkWrite(bulkSymbol)
-        res.status(200).json({title : 'Les symbols ont bien été signalés',data : resp})
-    }
-    catch (erreur){
-        res.status(500).json({title : "Une erreur s'est produite", message : erreur.message})
+        const resp = await modelSymbol.collection.bulkWrite(bulkSymbols)
+        res.status(200).json({title: 'Les symboles ont bien été signalés', data: resp})
+    } catch (erreur) {
+        res.status(500).json({title: "Une erreur s'est produite", message: erreur.message})
     }
 }

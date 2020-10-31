@@ -30,7 +30,6 @@ export const refresh_price = async  (req, res)=>{
       }}));
 
     const resp = await modelAsset.collection.bulkWrite(bulkAssets)
-    console.log('ok')
     res.status(200).json({data : resp})
   }
   catch (err){
@@ -54,7 +53,7 @@ export const get_asset = async (req,res)=> {
 
 export const group_assets_unreport = async  (req, res)=>{
   try{
-    const names : string[] = req.body.list
+    const names : string[] = req.body.data
     const bulkAsset = names.map(name => ({
       updateOne: {
         filter: { name : name },
@@ -62,7 +61,7 @@ export const group_assets_unreport = async  (req, res)=>{
             exclusion : {
               isExclude : false,
               reasons : [],
-              severity : null,
+              severity : 0,
               excludeBy : null,
               note : null
             }},
@@ -71,7 +70,7 @@ export const group_assets_unreport = async  (req, res)=>{
       }}));
 
     const resp = await modelAsset.collection.bulkWrite(bulkAsset)
-    res.status(200).json({title : 'Les assets ont été blanchies',data : resp})
+    res.status(200).json({title : 'Les assetes ont été blanchies',data : resp})
   }
   catch (erreur){
     res.status(500).json({title : "Une erreur s'est produite", message : erreur.message})
@@ -80,8 +79,7 @@ export const group_assets_unreport = async  (req, res)=>{
 
 export const group_assets_report = async  (req, res)=>{
   try{
-    const names : string[] = req.body.list
-    const data = req.body.data
+    const {assets : names ,...data} = req.body.data
     const bulkAssets = names.map(name => ({
       updateOne: {
         filter: { name : name },
@@ -91,14 +89,14 @@ export const group_assets_report = async  (req, res)=>{
               reasons : data.reasons,
               severity : data.severity,
               excludeBy : 'unknow',
-              note : data.note || ''
+              note : data.note || null
             }},
         },
         option : {upsert: false}
       }}));
 
     const resp = await modelAsset.collection.bulkWrite(bulkAssets)
-    res.status(200).json({title : 'Les assets ont bien été signalés',data : resp})
+    res.status(200).json({title : 'Les assetes ont bien été signalés',data : resp})
   }
   catch (erreur){
     res.status(500).json({title : "Une erreur s'est produite", message : erreur.message})

@@ -1,12 +1,5 @@
 import express from 'express'
 import {
-  get_pair,
-  get_pairs,
-  group_pairs_report,
-  group_pairs_unreport,
-  reset_moyennes_pairs
-} from "../controllers/cont_pair";
-import {
   get_asset,
   get_assets,
   group_assets_report,

@@ -1,6 +1,7 @@
 import modelMarket from "../models/mongoose/model.market";
 import {MongoPaginate} from "../models/interphace/pagination";
 import {RequesterMongo} from "../script/mongo_requester/requesterMongo";
+import modelPair from "../models/mongoose/model.pair";
 
 export const get_markets = async  (req, res)=>{
   try{
@@ -25,9 +26,9 @@ export const get_market = async (req,res)=> {
       })
 }
 
-export const group_market_unreport = async  (req, res)=>{
+export const group_markets_unreport = async  (req, res)=>{
   try{
-    const names : string[] = req.body.list
+    const names : string[] = req.body.data
     const bulkMarket = names.map(name => ({
       updateOne: {
         filter: { name : name },
@@ -35,7 +36,7 @@ export const group_market_unreport = async  (req, res)=>{
             exclusion : {
               isExclude : false,
               reasons : [],
-              severity : null,
+              severity : 0,
               excludeBy : null,
               note : null
             }},
@@ -44,36 +45,37 @@ export const group_market_unreport = async  (req, res)=>{
       }}));
 
     const resp = await modelMarket.collection.bulkWrite(bulkMarket)
-    res.status(200).json({title : 'Les markets ont été blanchis',data : resp})
+    res.status(200).json({title : 'Les marketes ont été blanchies',data : resp})
   }
   catch (erreur){
     res.status(500).json({title : "Une erreur s'est produite", message : erreur.message})
   }
 }
 
-export const group_market_report = async  (req, res)=>{
-  try{
-    const names : string[] = req.body.list
-    const data = req.body.data
-    const bulkMarket = names.map(name => ({
+export const group_markets_report = async  (req, res)=> {
+  try {
+    const {markets: names, ...data} = req.body.data
+    const bulkMarkets = names.map(name => ({
       updateOne: {
-        filter: { name : name },
-        update: { $set: {
-            exclusion : {
-              isExclude : data.severity === 4,
-              reasons : data.reasons,
-              severity : data.severity,
-              excludeBy : 'unknow',
-              note : data.note || ''
-            }},
+        filter: {name: name},
+        update: {
+          $set: {
+            exclusion: {
+              isExclude: data.severity === 4,
+              reasons: data.reasons,
+              severity: data.severity,
+              excludeBy: 'unknow',
+              note: data.note || null
+            }
+          },
         },
-        option : {upsert: false}
-      }}));
+        option: {upsert: false}
+      }
+    }));
 
-    const resp = await modelMarket.collection.bulkWrite(bulkMarket)
-    res.status(200).json({title : 'Les markets ont bien étés signalés',data : resp})
-  }
-  catch (erreur){
-    res.status(500).json({title : "Une erreur s'est produite", message : erreur.message})
+    const resp = await modelMarket.collection.bulkWrite(bulkMarkets)
+    res.status(200).json({title: 'Les marketes ont bien été signalés', data: resp})
+  } catch (erreur) {
+    res.status(500).json({title: "Une erreur s'est produite", message: erreur.message})
   }
 }

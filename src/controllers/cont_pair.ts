@@ -62,7 +62,7 @@ export const reset_moyennes_pairs = async  (req, res)=>{
 
 export const group_pairs_unreport = async  (req, res)=>{
   try{
-    const names : string[] = req.body.list
+    const names : string[] = req.body.data
     const bulkPair = names.map(name => ({
       updateOne: {
         filter: { name : name },
@@ -70,7 +70,7 @@ export const group_pairs_unreport = async  (req, res)=>{
             exclusion : {
               isExclude : false,
               reasons : [],
-              severity : null,
+              severity : 0,
               excludeBy : null,
               note : null
             }},
@@ -88,8 +88,7 @@ export const group_pairs_unreport = async  (req, res)=>{
 
 export const group_pairs_report = async  (req, res)=>{
   try{
-    const names : string[] = req.body.list
-    const data = req.body.data
+    const {pairs : names ,...data} = req.body.data
     const bulkPairs = names.map(name => ({
       updateOne: {
         filter: { name : name },
@@ -99,7 +98,7 @@ export const group_pairs_report = async  (req, res)=>{
               reasons : data.reasons,
               severity : data.severity,
               excludeBy : 'unknow',
-              note : data.note || ''
+              note : data.note || null
             }},
         },
         option : {upsert: false}
