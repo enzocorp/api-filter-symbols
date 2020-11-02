@@ -1,16 +1,13 @@
 import modelAsset from "../models/mongoose/model.asset";
-import {MongoPaginate} from "../models/interphace/pagination";
 import {RequesterMongo} from "../script/mongo_requester/requesterMongo";
 import {Asset} from "../models/interphace/asset";
 import refreshAssetsPrice from "../script/other/refresh_assets";
 
 export const get_assets = async  (req, res)=>{
     try{
-      const query : MongoPaginate = req.query.filters ? JSON.parse(req.query.filters) : null
-      const aggregate = new RequesterMongo().v1(query)
-      const [tabResp] : Array<{data : any, metadata : any}> = await modelAsset.aggregate(aggregate)
-      const {data, metadata} = tabResp
-      res.status(200).json({data, metadata})
+      const requester = new RequesterMongo(modelAsset)
+      const content :{data : any,metadata? : any} = await requester.make(req.query.request)
+      res.status(200).json(content)
     }
     catch (err){
       console.log(err)

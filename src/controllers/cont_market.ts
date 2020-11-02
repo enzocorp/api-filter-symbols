@@ -1,15 +1,11 @@
 import modelMarket from "../models/mongoose/model.market";
-import {MongoPaginate} from "../models/interphace/pagination";
 import {RequesterMongo} from "../script/mongo_requester/requesterMongo";
-import modelPair from "../models/mongoose/model.pair";
 
 export const get_markets = async  (req, res)=>{
   try{
-    const query : MongoPaginate = req.query.filters ? JSON.parse(req.query.filters) : null
-    const aggregate = new RequesterMongo().v1(query)
-    const [tabResp] : Array<{data : any, metadata : any}> = await modelMarket.aggregate(aggregate)
-    const {data, metadata} = tabResp
-    res.status(200).json({data, metadata})
+    const requester = new RequesterMongo(modelMarket)
+    const content :{data : any,metadata? : any} = await requester.make(req.query.request)
+    res.status(200).json(content)
   }
   catch (err){
     res.status(404).json({title : "Une erreur est survenue", message : err.message})
@@ -25,7 +21,6 @@ export const get_market = async (req,res)=> {
           res.status(404).json({title : "Une erreur est survenue", message : err.message})
       })
 }
-
 export const group_markets_unreport = async  (req, res)=>{
   try{
     const names : string[] = req.body.data

@@ -1,17 +1,14 @@
 import programmeBests from "../script/calculBests/index.calcul";
 import modelPair from "../models/mongoose/model.pair";
 import modelBest from "../models/mongoose/model.best";
-import {MongoPaginate} from "../models/interphace/pagination";
 import modelSymbol from "../models/mongoose/model.symbol";
 import {RequesterMongo} from "../script/mongo_requester/requesterMongo";
 
 export const get_bests = async  (req, res)=>{
     try{
-        const query : MongoPaginate = req.query.filters ? JSON.parse(req.query.filters) : null
-        const aggregate = new RequesterMongo().v1(query)
-        const [tabResp] : Array<{data : any, metadata : any}> = await modelBest.aggregate(aggregate)
-        const {data, metadata} = tabResp
-        res.status(200).json({data, metadata})
+        const requester = new RequesterMongo(modelBest)
+        const content :{data : any,metadata? : any} = await requester.make(req.query.request)
+        res.status(200).json(content)
     }
     catch (err){
         res.status(404).json({title : "Une erreur est survenue pendant le calcul", message : err.message})

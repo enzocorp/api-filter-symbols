@@ -1,15 +1,12 @@
 import modelPair from "../models/mongoose/model.pair";
-import {MongoPaginate} from "../models/interphace/pagination";
 import {RequesterMongo} from "../script/mongo_requester/requesterMongo";
 import {Pair, PairFor} from "../models/interphace/pair";
 
 export const get_pairs = async  (req, res)=>{
     try{
-      const query : MongoPaginate = req.query.filters ? JSON.parse(req.query.filters) : null
-      const aggregate : any[] = new RequesterMongo().v1(query)
-      const [tabResp] : Array<{data : any, metadata : any}> = await modelPair.aggregate(aggregate)
-      const {data, metadata} = tabResp
-      res.status(200).json({data, metadata})
+      const requester = new RequesterMongo(modelPair)
+      const content :{data : any,metadata? : any} = await requester.make(req.query.request)
+      res.status(200).json(content)
     }
     catch (err){
       console.log(err)
