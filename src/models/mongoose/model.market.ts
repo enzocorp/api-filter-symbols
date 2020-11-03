@@ -10,6 +10,7 @@ const schema = new Schema({
   longName : {type : String, required:'Vous devez entrer le nom' },
   pairsCount : {type : Number, required:'Vous devez entrer le nombre de pairs' },
   website: {type : String, required:'Vous devez entrer le site web' },
+  pairsForThis :{type : Number, default : 0 },
   exclusion : {
     isExclude : {type : Boolean, default : false},
     reasons : [{type : String, required : 'Vous devez renseigner aumoins 1 raison'}],

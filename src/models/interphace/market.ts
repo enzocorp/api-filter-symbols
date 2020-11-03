@@ -3,6 +3,7 @@ export interface Market{
   longName : string
   pairsCount : number
   website: string
+  pairsForThis? : number
   exclusion : {
     isExclude : boolean
     reasons : string[]

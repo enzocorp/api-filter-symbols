@@ -8,7 +8,7 @@ const schema = new Schema({
     name : {type : String, required:'Vous devez entrer le nom',unique : true},
     base : {type : String, required:'Vous devez entrer la base'},
     quote : {type : String, required:'Vous devez entrer la quote'},
-
+    marketsForThis : {type : Number, default : 0},
     for1k : {
         positiveFreq :{type : Number, required : true},
         negativeFreq :{type : Number, required : true},

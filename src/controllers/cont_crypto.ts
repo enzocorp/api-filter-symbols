@@ -15,6 +15,7 @@ import {Pair} from "../models/interphace/pair";
 import {Asset} from "../models/interphace/asset";
 import patchMiss from "../script/initialisation/patchMissing";
 import {Market} from "../models/interphace/market";
+import calculQties from "../script/initialisation/calculQties";
 
 export const init_app = async  (req, res)=>{
     try{
@@ -49,6 +50,8 @@ export const init_app = async  (req, res)=>{
             modelSymbol.collection.bulkWrite(bulkOpsSymbols),
             modelAsset.collection.bulkWrite(bulkOpsAssets),
         ])
+
+        await calculQties()
         res.status(200).json({title : 'Initialisation effectuée avec succès',data : {resPairs, resMarkets,resSymbols,resAssets}})
     }
     catch (erreur){
