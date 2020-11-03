@@ -70,7 +70,8 @@ async function findSymbols (markets : Market[],assets : Asset[]) :  Promise<Symb
           severity: 0,
           excludeBy: null,
           note: null
-        }
+        },
+        date : new Date()
       }))
     )
 }

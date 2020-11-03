@@ -9,26 +9,33 @@ export class RequesterMongo {
   }
 
   private async notraw(request: Object&any) : Promise<{data : any[],metadata?:any}> {
-    const {skip = 0,limit = Infinity,...rawReq}  = request
+    const {skip = 0,limit = Infinity,...req}  = request
+    let bool = true
     const facet = {$facet : {
         metadata: [ { $count: "total" }],
         data: [{ $skip: skip}, { $limit: limit }]
       }}
     let aggregate : Object[] = []
-    if(rawReq){
-      const len : number = Object.keys(rawReq).length
-      for (let key in rawReq ){
+    if(req){
+      const len : number = Object.keys(req).length
+      for (let key in req ){
         if(isNaN(+key))
           throw `La requête est mauvaise car une des clés n'est pas un nombre (${key})`
-        if( +key > len-1)
+        else if( +key > len-1)
           throw `La requête est mauvaise car l'index de la clé(${key}) est supérieur a la taille du tableau -1 (${len-1})`
-        aggregate[+key] = rawReq[+key]
+        else{
+          aggregate[+key] = req[+key]
+          if (typeof req[+key] === 'object' && '$facet' in req[+key])
+            bool = false
+        }
       }
     }
     if(aggregate.includes(undefined))
       throw "La requête est mauvaise car le tableau d'aggrégation possède un Trou de vide OU un champ indéfini ! "
 
-    aggregate.push(facet,{$unwind : "$metadata"})
+    if(bool)
+      aggregate.push(facet,{$unwind : "$metadata"})
+
     const [result] = await this.model.aggregate(aggregate)
     return result
   }

@@ -29,7 +29,8 @@ async function findMarkets (params = {}) :  Promise<Market[]> {
                 severity: 0,
                 excludeBy: null,
                 note: null
-              }
+              },
+          date : new Date()
         }))
     )
   }

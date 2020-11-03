@@ -40,7 +40,7 @@ export const group_markets_unreport = async  (req, res)=>{
       }}));
 
     const resp = await modelMarket.collection.bulkWrite(bulkMarket)
-    res.status(200).json({title : 'Les marketes ont été blanchies',data : resp})
+    res.status(200).json({title : 'Les markets ont été blanchis',data : resp})
   }
   catch (erreur){
     res.status(500).json({title : "Une erreur s'est produite", message : erreur.message})
@@ -69,7 +69,7 @@ export const group_markets_report = async  (req, res)=> {
     }));
 
     const resp = await modelMarket.collection.bulkWrite(bulkMarkets)
-    res.status(200).json({title: 'Les marketes ont bien été signalés', data: resp})
+    res.status(200).json({title: 'Les markets ont bien été signalés', data: resp})
   } catch (erreur) {
     res.status(500).json({title: "Une erreur s'est produite", message: erreur.message})
   }

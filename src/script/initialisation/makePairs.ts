@@ -30,7 +30,8 @@ async function makeInitPairs (symbols : Symbol[]) :Promise< Pair[]> {
           severity: 0,
           excludeBy: null,
           note: null
-        }
+        },
+        date : new Date()
       })
     }
   })

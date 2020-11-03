@@ -9,6 +9,7 @@ export const get_symbols = async  (req, res)=>{
         res.status(200).json(content)
     }
     catch (err){
+        console.log(err)
         res.status(404).json({title : "Une erreur est survenue", message : err.message})
     }
 }
