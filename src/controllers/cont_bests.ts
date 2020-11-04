@@ -3,6 +3,7 @@ import modelPair from "../models/mongoose/model.pair";
 import modelBest from "../models/mongoose/model.best";
 import modelSymbol from "../models/mongoose/model.symbol";
 import {RequesterMongo} from "../script/mongo_requester/requesterMongo";
+import {Best} from "../models/interphace/best";
 
 export const get_bests = async  (req, res)=>{
     try{
@@ -11,7 +12,29 @@ export const get_bests = async  (req, res)=>{
         res.status(200).json(content)
     }
     catch (err){
-        res.status(404).json({title : "Une erreur est survenue pendant le calcul", message : err.message})
+        console.log(err)
+        res.status(404).json({title : "Une erreur est survenue", message : err.message || err})
+    }
+}
+
+export const get_best = async  (req,res)=>{
+    try {
+        const best = await modelBest.findOne({_id : req.params.id})
+        res.status(200).json({data : best})
+    }catch (err){
+        res.status(404).json({title : "Une erreur est survenue", message : err.message})
+    }
+
+}
+
+
+export const get_last_groupId = async  (req, res)=>{
+    try{
+        const best : Best[] = await modelBest.find().sort('-id').limit(1)
+        res.status(200).json({data : best[0]?.groupId})
+    }
+    catch (err){
+        res.status(404).json({title : "Une erreur est survenue", message : err.message})
     }
 }
 
@@ -41,20 +64,11 @@ export const calcul_bests = async  (req,res)=>{
     }
     catch (erreur){
         console.log(erreur)
-        res.status(404).json({title : "Une erreur est survenue", message : erreur.message})
+        res.status(404).json({title : "Une erreur est survenue pendant le calcul", message : erreur.message})
     }
 
 }
 
-export const get_best = async  (req,res)=>{
-    try {
-        const best = await modelBest.findOne({_id : req.params.id})
-        res.status(200).json({data : best})
-    }catch (err){
-        res.status(404).json({title : "Une erreur est survenue", message : err.message})
-    }
-
-}
 
 export const reset_bests = async  (req,res)=>{
     try{

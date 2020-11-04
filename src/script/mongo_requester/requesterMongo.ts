@@ -22,7 +22,7 @@ export class RequesterMongo {
         if(isNaN(+key))
           throw `La requête est mauvaise car une des clés n'est pas un nombre (${key})`
         else if( +key > len-1)
-          throw `La requête est mauvaise car l'index de la clé(${key}) est supérieur a la taille du tableau -1 (${len-1})`
+          throw `La requête est mauvaise car l'index de la clé(${key}) est supérieur a la taille du tableau ( 0 --> ${len-1})`
         else{
           aggregate[+key] = req[+key]
           if (typeof req[+key] === 'object' && '$facet' in req[+key])
@@ -35,7 +35,7 @@ export class RequesterMongo {
 
     if(bool)
       aggregate.push(facet,{$unwind : "$metadata"})
-
+    console.log(aggregate)
     const [result] = await this.model.aggregate(aggregate)
     return result
   }
