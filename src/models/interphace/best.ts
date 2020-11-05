@@ -18,6 +18,7 @@ export interface BestFor {
 }
 
 export interface Best {
+  name : string
   pair : string
   base : string
   quote : string

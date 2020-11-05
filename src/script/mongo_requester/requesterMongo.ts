@@ -35,7 +35,6 @@ export class RequesterMongo {
 
     if(bool)
       aggregate.push(facet,{$unwind : "$metadata"})
-    console.log(aggregate)
     const [result] = await this.model.aggregate(aggregate)
     return result
   }

@@ -12,7 +12,6 @@ export const get_bests = async  (req, res)=>{
         res.status(200).json(content)
     }
     catch (err){
-        console.log(err)
         res.status(404).json({title : "Une erreur est survenue", message : err.message || err})
     }
 }
@@ -30,7 +29,7 @@ export const get_best = async  (req,res)=>{
 
 export const get_last_groupId = async  (req, res)=>{
     try{
-        const best : Best[] = await modelBest.find().sort('-id').limit(1)
+        const best : Best[] = await modelBest.find().sort('-_id').limit(1)
         res.status(200).json({data : best[0]?.groupId})
     }
     catch (err){

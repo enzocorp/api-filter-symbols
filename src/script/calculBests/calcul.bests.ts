@@ -94,6 +94,7 @@ async function makeBestFor(prices : Price[]): Promise<[BestFor,BestFor,BestFor]>
 async function makeBest(prices : Price[],groupId : string, infos : Price['infos']) : Promise<Best> {
   const bestFor : [BestFor,BestFor,BestFor] = await makeBestFor(prices)
   return {
+    name : `${infos.pair}_${groupId}`,
     pair : infos.pair,
     quote : infos.quote,
     base :  infos.base,
