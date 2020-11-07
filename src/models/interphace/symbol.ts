@@ -1,3 +1,19 @@
+export interface SymbolFor {
+  buy : {
+    bestMarketFreq : number
+    okFreq : number
+    notDataFreq : number
+    notEnoughVolFreq : number
+    prixMoyen_quote : number
+  }
+  sell : {
+    bestMarketFreq: number
+    okFreq : number
+    notDataFreq : number
+    notEnoughVolFreq : number
+    prixMoyen_quote : number
+  }
+}
 
 export interface Symbol{
   name: string
@@ -6,26 +22,9 @@ export interface Symbol{
   base : string
   quote : string
   symbolCoinapi : string
-  buy : {
-    testedFreq : number
-    notData : number
-    notEnoughVolume_1kusd : number
-    notEnoughVolume_15kusd : number
-    notEnoughVolume_30kusd : number
-    prixMoyen_for1kusd_quote : number
-    prixMoyen_for15kusd_quote : number
-    prixMoyen_for30kusd_quote : number
-  },
-  sell : {
-    testedFreq : number
-    notData : number
-    notEnoughVolume_1kusd : number
-    notEnoughVolume_15kusd : number
-    notEnoughVolume_30kusd : number
-    prixMoyen_for1kusd_quote : number
-    prixMoyen_for15kusd_quote : number
-    prixMoyen_for30kusd_quote : number
-  }
+  for1k : SymbolFor
+  for15k : SymbolFor
+  for30k : SymbolFor
   exclusion : {
     isExclude : boolean
     reasons : string[]

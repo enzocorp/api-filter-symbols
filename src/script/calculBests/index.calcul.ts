@@ -57,12 +57,10 @@ const aggregateSymbols = [
 //Certaines monnaies ne seront pas renvoyée par l'API et d'autre seront en trop, on filtre celles en trop et on signal celles manquantes
 function filterCoinapiResponse (axiosResp : Array<axiosRequest>, referenceSymbols : string[]) : orderbook[] {
   const orderbooks : orderbook[] = []
-  console.log('demadné symbols', referenceSymbols.length)
   axiosResp.forEach(({data} : {data : orderbook[]}) => {
     const filteredData = data.filter(symbol => referenceSymbols.includes(symbol.symbol_id) )
     orderbooks.push(...filteredData)
   })
-  console.log('retourné',orderbooks.length)
   return orderbooks
 }
 

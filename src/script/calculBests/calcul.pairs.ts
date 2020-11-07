@@ -4,19 +4,26 @@ import {Best, BestFor} from "../../models/interphace/best";
 
 async function calculSide(bestFor : BestFor, pairFor : PairFor) : Promise<PairFor> {
 
-  const isPositive = (bestFor: BestFor) : boolean => bestFor.spread_quote > 0
+  const testSpread = () : 1 | -1 | null | undefined => {
+    if (bestFor.spread_quote === null) return null
+    else if (bestFor.spread_quote === undefined) return undefined
+    else if (bestFor.spread_quote > 0) return 1
+    else if (bestFor.spread_quote < 0) return -1
+    else return undefined
+  }
 
   const doMoyenne = (initVal: number, newVal : number, freq : number) : number => ( initVal * freq + newVal) / (freq + 1)
 
+  const infoSp = testSpread()
   return {
-    positiveFreq : isPositive(bestFor) ? pairFor.positiveFreq + 1 : pairFor.positiveFreq,
-    negativeFreq : !isPositive(bestFor) ? pairFor.negativeFreq + 1 : pairFor.negativeFreq,
-    notEnoughtVolFreq : bestFor.spread_quote === null ? pairFor.notEnoughtVolFreq + 1 : pairFor.notEnoughtVolFreq,
-    errorFreq : bestFor.spread_quote === undefined ? pairFor.errorFreq + 1 : pairFor.errorFreq,
-    spreadMoyen_quote  : isPositive(bestFor) ?
+    positiveFreq : infoSp === 1 ? pairFor.positiveFreq + 1 : pairFor.positiveFreq,
+    negativeFreq : infoSp === -1 ? pairFor.negativeFreq + 1 : pairFor.negativeFreq,
+    notEnoughtVolFreq :infoSp === null ? pairFor.notEnoughtVolFreq + 1 : pairFor.notEnoughtVolFreq,
+    errorFreq : infoSp === undefined ? pairFor.errorFreq + 1 : pairFor.errorFreq,
+    spreadMoyen_quote  : infoSp === 1 ?
       doMoyenne(pairFor.spreadMoyen_quote,bestFor.spread_quote, pairFor.positiveFreq) : pairFor.spreadMoyen_quote,
 
-    spreadMoyen_usd  : isPositive(bestFor) ?
+    spreadMoyen_usd  : infoSp === 1 ?
       doMoyenne(pairFor.spreadMoyen_usd,bestFor.spread_quote, pairFor.positiveFreq) : pairFor.spreadMoyen_usd,
 
     volumeMoyen_base : bestFor.buy.volume_base ?
