@@ -95,7 +95,8 @@ export const group_pairs_report = async  (req, res)=>{
               reasons : data.reasons,
               severity : data.severity,
               excludeBy : 'unknow',
-              note : data.note || null
+              note : data.note || null,
+              date : new Date()
             }},
         },
         option : {upsert: false}

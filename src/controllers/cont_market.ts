@@ -60,7 +60,8 @@ export const group_markets_report = async  (req, res)=> {
               reasons: data.reasons,
               severity: data.severity,
               excludeBy: 'unknow',
-              note: data.note || null
+              note: data.note || null,
+              date : new Date()
             }
           },
         },
