@@ -62,8 +62,7 @@ export const init_app = async  (req, res)=>{
 
 export const get_coinapi = async  (req, res)=>{
     try{
-        const infos = await modelGlobal.findOne({name :'coinapi'})
-        res.status(200).json({data : infos})
+        res.status(200).json({title : "Les infos de requêtes ont étés mises a jours"})
     }
     catch (erreur){
         res.status(500).json({title : "Une erreur lors de l'init est survenue", message : erreur.message})

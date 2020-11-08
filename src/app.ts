@@ -16,7 +16,6 @@ import routerTest from "./routes/route_test";
 import routerAsset from "./routes/route_asset";
 import {saveCoinapiLimitSucces, saveCoinapiLimitError} from "./middlewares/axiosRespInterceptor";
 
-
 dotenv.config()
 //---------------------------Initialisation de l'App----------------------------
 
@@ -67,8 +66,6 @@ console.log(`Le nom de l'api est --"${apiname}"-- `)
 
 let router = express.Router()
 app.use(`/${apiname}`,router)
-router.use('/assets',express.static('public'))
-
 
 router.use('/test',routerTest)
 router.use('/crypto',routerCrypto)

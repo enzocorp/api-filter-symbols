@@ -4,11 +4,11 @@ import {
   autocompleteSeverity,
   get_coinapi, init_app, newReason,
 } from "../controllers/cont_crypto";
-import {coinapiLimit} from "../middlewares/limitRequest";
+import {coinapiLimit} from "../middlewares/sendCoinapiLimit";
 
 const routerCrypto = express.Router()
 
-routerCrypto.get('/coinapi',get_coinapi)
+routerCrypto.get('/coinapi',coinapiLimit,get_coinapi)
 routerCrypto.get('/init',coinapiLimit,init_app)
 
 routerCrypto.get('/exclusion/severities',autocompleteSeverity)

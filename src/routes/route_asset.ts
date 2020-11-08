@@ -6,7 +6,7 @@ import {
   group_assets_unreport,
   refresh_price
 } from "../controllers/cont_asset";
-import {coinapiLimit} from "../middlewares/limitRequest";
+import {coinapiLimit} from "../middlewares/sendCoinapiLimit";
 
 const routerAsset = express.Router()
 

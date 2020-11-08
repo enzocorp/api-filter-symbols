@@ -28,6 +28,7 @@ export const ping = async (req,res)=> {
 }
 
 const best : Best = {
+    name : 'BTC_USD_1604010537241',
     pair: 'BTC_USD',
     quote: 'USD',
     base: 'BTC',

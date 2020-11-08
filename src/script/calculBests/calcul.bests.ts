@@ -57,36 +57,38 @@ async function makeBestFor(prices : Price[]): Promise<[BestFor,BestFor,BestFor]>
   }
 
   const calculSpread =  (itemBuy : BestFor['buy'],itemSell : BestFor['sell']) => {
-
     if(itemBuy.price_quote && itemSell.price_quote)
       return itemSell.price_quote - itemBuy.price_quote
     else
       return  null
   }
 
-  const [bestsBuy,bestsSell] = await Promise.all([
+  const [bestBuy,bestSell] = await Promise.all([
     makeOneSide('buy'),
     makeOneSide('sell')
   ])
 
+  if(prices[0].infos.pair === "BTC_USD"){
+    console.log(bestSell)
+  }
   return [
     {
-      buy : bestsBuy.for1k,
-      sell : bestsSell.for1k,
-      spread_quote : calculSpread(bestsBuy.for1k,bestsSell.for1k),
-      spread_usd : calculSpread(bestsBuy.for1k,bestsSell.for1k) * prices[0].infos.quote_usd || null
+      buy : bestBuy.for1k,
+      sell : bestSell.for1k,
+      spread_quote : calculSpread(bestBuy.for1k,bestSell.for1k),
+      spread_usd : calculSpread(bestBuy.for1k,bestSell.for1k) * prices[0].infos.quote_usd || null
     },
     {
-      buy : bestsBuy.for15k,
-      sell : bestsSell.for15k,
-      spread_quote : calculSpread(bestsBuy.for15k,bestsSell.for15k),
-      spread_usd : calculSpread(bestsBuy.for15k,bestsSell.for15k) * prices[0].infos.quote_usd || null
+      buy : bestBuy.for15k,
+      sell : bestSell.for15k,
+      spread_quote : calculSpread(bestBuy.for15k,bestSell.for15k),
+      spread_usd : calculSpread(bestBuy.for15k,bestSell.for15k) * prices[0].infos.quote_usd || null
     },
     {
-      buy : bestsBuy.for30k,
-      sell : bestsSell.for30k,
-      spread_quote : calculSpread(bestsBuy.for30k,bestsSell.for30k),
-      spread_usd : calculSpread(bestsBuy.for30k,bestsSell.for30k) * prices[0].infos.quote_usd || null
+      buy : bestBuy.for30k,
+      sell : bestSell.for30k,
+      spread_quote : calculSpread(bestBuy.for30k,bestSell.for30k),
+      spread_usd : calculSpread(bestBuy.for30k,bestSell.for30k) * prices[0].infos.quote_usd || null
     },
   ]
 }

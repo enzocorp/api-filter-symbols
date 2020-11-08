@@ -1,6 +1,6 @@
 import express from 'express'
 import {calcul_bests, get_best, get_bests, get_last_groupId, reset_bests} from "../controllers/cont_bests";
-import {coinapiLimit} from "../middlewares/limitRequest";
+import {coinapiLimit} from "../middlewares/sendCoinapiLimit";
 
 const routerBest = express.Router()
 
