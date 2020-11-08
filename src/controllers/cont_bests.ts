@@ -74,7 +74,6 @@ export const calcul_bests = async  (req,res)=>{
         res.status(200).json({title : "Calcul effectué avec succès",data : bests, metadata : {pairs : updtPairs, symbols : updtSymbs}})
     }
     catch (erreur){
-        console.log(erreur)
         res.status(404).json({title : "Une erreur est survenue pendant le calcul", message : erreur.message ||erreur})
     }
 
