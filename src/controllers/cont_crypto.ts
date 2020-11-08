@@ -3,7 +3,6 @@ import findAssets from "../script/initialisation/findAssets";
 import makeInitPairs from "../script/initialisation/makePairs";
 import modelPair from "../models/mongoose/model.pair";
 import modelMarket from "../models/mongoose/model.market";
-import modelGlobal from "../models/mongoose/model.global";
 import modelReason from "../models/mongoose/model.reason";
 import modelSeverity from "../models/mongoose/model.severity";
 import {Reason} from "../models/interphace/reason";

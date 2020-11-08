@@ -10,25 +10,24 @@ async function filterNegatives(bests : Best[]) : Promise<Best[]>{ //Enelves les 
 async function findBestOne(bests : Best[], isFor : 'for1k' |'for15k' | 'for30k' ) : Promise<string> {
   let theBest : Best = null
   bests.forEach(best => {
-    if(!best[isFor].spread_usd){
-      //Ne rien faire si le spread vaut null
+    if(best[isFor].spread_quote && best[isFor].spread_usd){
+      if (!theBest && best[isFor].spread_usd > 0)
+        theBest = best
+      else if (theBest && theBest[isFor].spread_usd < best[isFor].spread_usd)
+        theBest = best
     }
-    else if (!theBest && best[isFor].spread_usd > 0)
-      theBest = best
-    else if (theBest && theBest[isFor].spread_usd < best[isFor].spread_usd)
-      theBest = best
   })
   return theBest? theBest.pair : null
 }
 
-async function filterBests (bests : Best[]) : Promise<{bests: Best[], podium : {for1k:string,for15k : string,for30k:string} }>{
-  let [filteredBests,for1k,for15k,for30k] = await Promise.all([
+async function filterBests (bests : Best[]) : Promise<{bests: Best[], podium : [string,string,string] }>{
+  let [filteredBests,strBestFor1k,strBestFor15k,strBestFor30k] = await Promise.all([
     filterNegatives(bests),
     findBestOne(bests,'for1k'),
     findBestOne(bests,'for15k'),
     findBestOne(bests,'for30k'),
   ])
-  return {bests : filteredBests, podium : {for1k,for15k,for30k}}
+  return {bests : filteredBests, podium : [strBestFor1k,strBestFor15k,strBestFor30k]}
 }
 
 export default filterBests

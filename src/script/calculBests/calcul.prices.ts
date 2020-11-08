@@ -74,7 +74,7 @@ async function makePrice(wantedQty : number, sideOrderbook : orderbook['bids' | 
     return undefined
   else if(qty === 0) //Si tout va bien
     return prices.reduce((acc,val)=> acc + val) / wantedQty
-  else //Si il n'y avais pas assez de volume pour écheter jusqu'au wantedVolume
+  else //Si il n'y avais pas assez de volume pour acheter jusqu'au wantedVolume
     return null
 }
 
@@ -96,6 +96,7 @@ async function getSides(qties : Price['qty'],orderbook : orderbook) : Promise<{b
     makeSide('asks',qties, orderbook),
     makeSide('bids',qties, orderbook)
   ])
+
   return {buy : asks, sell : bids}
 }
 

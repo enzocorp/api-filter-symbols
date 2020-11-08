@@ -14,17 +14,17 @@ async function calculSide(bestFor : BestFor, pairFor : PairFor) : Promise<PairFo
 
   const doMoyenne = (initVal: number, newVal : number, freq : number) : number => ( initVal * freq + newVal) / (freq + 1)
 
-  const infoSp = testSpread()
+  const infoSpread = testSpread()
   return {
-    positiveFreq : infoSp === 1 ? pairFor.positiveFreq + 1 : pairFor.positiveFreq,
-    negativeFreq : infoSp === -1 ? pairFor.negativeFreq + 1 : pairFor.negativeFreq,
-    notEnoughtVolFreq :infoSp === null ? pairFor.notEnoughtVolFreq + 1 : pairFor.notEnoughtVolFreq,
-    errorFreq : infoSp === undefined ? pairFor.errorFreq + 1 : pairFor.errorFreq,
-    spreadMoyen_quote  : infoSp === 1 ?
+    positiveFreq : infoSpread === 1 ? pairFor.positiveFreq + 1 : pairFor.positiveFreq,
+    negativeFreq : infoSpread === -1 ? pairFor.negativeFreq + 1 : pairFor.negativeFreq,
+    notEnoughtVolFreq :infoSpread === null ? pairFor.notEnoughtVolFreq + 1 : pairFor.notEnoughtVolFreq,
+    errorFreq : infoSpread === undefined ? pairFor.errorFreq + 1 : pairFor.errorFreq,
+    spreadMoyen_quote  : infoSpread === 1 ?
       doMoyenne(pairFor.spreadMoyen_quote,bestFor.spread_quote, pairFor.positiveFreq) : pairFor.spreadMoyen_quote,
 
-    spreadMoyen_usd  : infoSp === 1 ?
-      doMoyenne(pairFor.spreadMoyen_usd,bestFor.spread_quote, pairFor.positiveFreq) : pairFor.spreadMoyen_usd,
+    spreadMoyen_usd  : infoSpread === 1 ?
+      doMoyenne(pairFor.spreadMoyen_usd,bestFor.spread_usd, pairFor.positiveFreq) : pairFor.spreadMoyen_usd,
 
     volumeMoyen_base : bestFor.buy.volume_base ?
       doMoyenne(pairFor.volumeMoyen_base,bestFor.buy.volume_base, pairFor.positiveFreq) : pairFor.volumeMoyen_base,

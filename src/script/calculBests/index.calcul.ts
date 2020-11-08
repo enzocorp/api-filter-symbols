@@ -58,6 +58,8 @@ const aggregateSymbols = [
 function filterCoinapiResponse (axiosResp : Array<axiosRequest>, referenceSymbols : string[]) : orderbook[] {
   const orderbooks : orderbook[] = []
   axiosResp.forEach(({data} : {data : orderbook[]}) => {
+    if(!data)
+      throw "Vous n'avez plus de requêtes"
     const filteredData = data.filter(symbol => referenceSymbols.includes(symbol.symbol_id) )
     orderbooks.push(...filteredData)
   })
@@ -92,18 +94,20 @@ async function getPrices (strSymbs : string[], assets : Asset[],markets : Market
   return await calculPrices(orderbooks, assets, markets)
 }
 
-function awardPairs(pairs: Pair[], podium: Object){
-  for(let key in podium){
-    if (!podium[key])
-      continue
-    const index : number = pairs.findIndex(pair => pair.name === podium[key])
-    if (index !== -1)
-      pairs[index][key].isBestFreq++
-    else
-      console.log(`-----ERREUR : Le best "${key}" de '${podium[key]}' n'as pa pue être attribué----`)
-  }
+function awardPairs(pairs: Pair[], podium: [string,string,string]){
+  const isForTab = ['for1k','for15k','for30k']
+  isForTab.forEach((isFor,i) => {
+    if(podium[i]){
+      const index : number = pairs.findIndex(pair => pair.name === podium[i])
+      if (index !== -1)
+        ++pairs[index][isFor].isBestFreq
+      else
+        console.log(`-----ERREUR : Le best "${isFor}" de '${podium[i]}' n'as pa pue être attribué----`)
+    }
+  })
   return pairs
 }
+
 
 async function programmeBests () : Promise<{ positivesBests : Best[], symbols : Symbol[], pairs : Pair[]}>{
   const [nameSymbs,assets, markets] : [{symbolCoinapi : string}[], Asset[],Market[]] = await Promise.all([
@@ -121,7 +125,7 @@ async function programmeBests () : Promise<{ positivesBests : Best[], symbols : 
     calculSymbols(prices),
     calculBests(prices)
   ])
-  let [uptPairs, positivesBests] : [Pair[], {bests : Best[],podium : Object }] = await Promise.all([
+  let [uptPairs, positivesBests] : [Pair[], {bests : Best[],podium : [string,string,string] }] = await Promise.all([
     calculPairs(bests),
     filterBests(bests)
   ])

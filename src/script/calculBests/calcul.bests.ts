@@ -57,8 +57,8 @@ async function makeBestFor(prices : Price[]): Promise<[BestFor,BestFor,BestFor]>
   }
 
   const calculSpread =  (itemBuy : BestFor['buy'],itemSell : BestFor['sell']) => {
-    if(itemBuy.price_quote && itemSell.price_quote)
-      return itemSell.price_quote - itemBuy.price_quote
+    if(itemBuy.price_quote && itemSell.price_quote && (itemSell.volume_base || itemBuy.volume_base))
+      return (itemSell.price_quote - itemBuy.price_quote) * (itemSell.volume_base || itemBuy.volume_base)
     else
       return  null
   }
@@ -68,8 +68,9 @@ async function makeBestFor(prices : Price[]): Promise<[BestFor,BestFor,BestFor]>
     makeOneSide('sell')
   ])
 
+  console.log(bestBuy)
+
   if(prices[0].infos.pair === "BTC_USD"){
-    console.log(bestSell)
   }
   return [
     {

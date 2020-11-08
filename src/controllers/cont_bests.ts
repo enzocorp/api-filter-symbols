@@ -41,6 +41,18 @@ export const calcul_bests = async  (req,res)=>{
     try{
         let {positivesBests,pairs,symbols} = await programmeBests()
 
+        const tab : ['for1k','for15k','for30k'] = ['for1k','for15k','for30k']
+        positivesBests.forEach(best => {
+            tab.forEach(isFor => {
+                let indexBuy : number = symbols.findIndex(symb => symb.name === best[isFor].buy.symbol)
+                let indexSell : number= symbols.findIndex(symb => symb.name === best[isFor].sell.symbol)
+                if ( best[isFor].buy.price_quote)
+                    symbols[indexBuy][isFor].buy.bestMarketFreq = symbols[indexBuy][isFor].buy.bestMarketFreq + 1
+                if ( best[isFor].sell.price_quote)
+                    symbols[indexSell][isFor].sell.bestMarketFreq = symbols[indexBuy][isFor].sell.bestMarketFreq + 1
+            })
+        })
+
         const bulkPairs = pairs.map(pair => ({
             updateOne: {
                 filter: { name : pair.name },
@@ -63,7 +75,7 @@ export const calcul_bests = async  (req,res)=>{
     }
     catch (erreur){
         console.log(erreur)
-        res.status(404).json({title : "Une erreur est survenue pendant le calcul", message : erreur.message})
+        res.status(404).json({title : "Une erreur est survenue pendant le calcul", message : erreur.message ||erreur})
     }
 
 }

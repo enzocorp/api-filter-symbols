@@ -22,14 +22,14 @@ async function calculIsFor(price : Price,symb:SymbolFor,isFor : string):Promise<
       notDataFreq : testbuy === undefined ? symb.buy.notDataFreq + 1 : symb.buy.notDataFreq,
       notEnoughVolFreq : testbuy === null ? symb.buy.notEnoughVolFreq + 1 : symb.buy.notEnoughVolFreq,
       prixMoyen_quote : testbuy ? (symb.buy.prixMoyen_quote + price.buy[isFor]) / (symb.buy.okFreq + 1) : symb.buy.prixMoyen_quote,
-      bestMarketFreq : symb.buy.bestMarketFreq === 0 ?  Math.floor(Math.random() * 7) : symb.sell.bestMarketFreq
+      bestMarketFreq : symb.buy.bestMarketFreq
     },
     sell : {
       okFreq : testsell ? symb.sell.okFreq + 1 : symb.sell.okFreq,
       notDataFreq : testsell === undefined ? symb.sell.notDataFreq + 1 : symb.sell.notDataFreq,
       notEnoughVolFreq : testsell === null ? symb.sell.notEnoughVolFreq + 1 : symb.sell.notEnoughVolFreq,
       prixMoyen_quote : testsell ? (symb.sell.prixMoyen_quote + price.sell[isFor]) / (symb.sell.okFreq + 1) : symb.sell.prixMoyen_quote,
-      bestMarketFreq : symb.sell.bestMarketFreq === 0 ?  Math.floor(Math.random() * 7) : symb.sell.bestMarketFreq
+      bestMarketFreq : symb.sell.bestMarketFreq
     }
   }
 }
