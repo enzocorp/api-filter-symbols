@@ -4,8 +4,11 @@ export function dbConnexion(){
   const {
     MONGO_PORT,
     MONGO_DB,
+    MONGO_DB_DEV,
     MONGO_HOSTNAME,
-    MONGO_DB_DEV
+    MONGO_INITDB_USERNAME : user,
+    MONGO_INITDB_PASSWORD : pwd,
+
   } = process.env
 
   const options = {
@@ -16,11 +19,12 @@ export function dbConnexion(){
   }
   let url : string
   if(process.env.NODE_ENV === 'development')
-      url = `mongodb://${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB_DEV}`
+    url = `mongodb://${user}:${pwd}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB_DEV}?authSource=${MONGO_DB}`
   else
-      url = `mongodb://${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}`
+    url = `mongodb://${user}:${pwd}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}`
 
-  connect(url,options).then(()=>{
+  connect(url,options)
+    .then(()=>{
     console.log('BDD MONGO EST CONNECTE SUR : ',url)
   })
     .catch((err)=>{

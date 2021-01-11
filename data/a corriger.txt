@@ -1,3 +1,0 @@
-- Lors de multiples initilialisaitions si un nouveau market est rajouté et qu'il contient une pair deja existante, alors le nombre total
-de markets sur cette pair sera faux car pas mis a jour !
-- Pareil pour les assets dans "pairCount"

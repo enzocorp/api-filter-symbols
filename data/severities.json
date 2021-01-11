@@ -1,5 +1,0 @@
-{"_id":{"$oid":"5f79db3b7739f0420c419389"},"severity":{"$numberInt":"4"},"description":"éliminatoir"}
-{"_id":{"$oid":"5f79dbcb7739f0420c41938d"},"severity":{"$numberInt":"3"},"description":"majeur"}
-{"_id":{"$oid":"5f79dbe67739f0420c41938e"},"severity":{"$numberInt":"2"},"description":"à surveiller"}
-{"_id":{"$oid":"5f79dbf37739f0420c41938f"},"severity":{"$numberInt":"1"},"description":"mineur"}
-{"_id":{"$oid":"5f79dbf37739f0420c419390"},"severity":{"$numberInt":"0"},"description":"RAS"}

@@ -15,6 +15,8 @@ import {Asset} from "../models/interphace/asset";
 import patchMiss from "../script/initialisation/patchMissing";
 import {Market} from "../models/interphace/market";
 import calculQties from "../script/initialisation/calculQties";
+import modelGlobal from "../models/mongoose/model.global";
+import {Global} from "../models/interphace/global";
 
 export const init_app = async  (req, res)=>{
     try{
@@ -61,10 +63,18 @@ export const init_app = async  (req, res)=>{
 
 export const get_coinapi = async  (req, res)=>{
     try{
-        res.status(200).json({title : "Les infos de requêtes ont étés mises a jours"})
+        const coinapi : Global['coinapi'] = await modelGlobal.findOne({name :'coinapi'}).lean()
+        const verifyDate = (coin_api) => {
+            if (Date.parse(coin_api.dateReflow) < Date.now())
+                return {dateReflow : coin_api.dateReflow, remaining : '100', limit : '100'}
+            else
+                return coin_api
+        }
+        const infos = verifyDate(coinapi)
+          res.status(200).json({title : "Les infos de CoinAPI ont été récup de la base de donnée",coinapi : infos})
     }
     catch (erreur){
-        res.status(500).json({title : "Une erreur lors de l'init est survenue", message : erreur.message})
+        res.status(500).json({title : "Impossible de recup les infos CoinAPI depuis la bdd", message : erreur.message})
     }
 
 }
