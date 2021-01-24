@@ -68,8 +68,6 @@ async function makeBestFor(prices : Price[]): Promise<[BestFor,BestFor,BestFor]>
     makeOneSide('sell')
   ])
 
-  console.log(bestBuy)
-
   if(prices[0].infos.pair === "BTC_USD"){
   }
   return [

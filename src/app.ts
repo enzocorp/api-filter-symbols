@@ -41,6 +41,7 @@ app.use((req, res, next) => {
 //---------------------------Definition des headers de requête ------------------
 
 axios.defaults.headers.common['X-CoinAPI-Key'] = process.env.COINAPI_KEY;
+axios.defaults.headers.common['Accept-Encoding'] = 'deflate, gzip';
 axios.defaults.headers.common['Accept'] = 'application/json';
 axios.interceptors.response.use( saveCoinapiLimitSucces,saveCoinapiLimitError);
 
@@ -62,6 +63,7 @@ console.log("L'url de CoinAPI est : ",COINAPI)
 //-------------------Les Routes ------------------------------------------
 const apiname = process.env.API_NAME || 'api1'
 console.log(`Le nom de l'api est --"${apiname}"-- `)
+console.log("LA clé d'api est",process.env.COINAPI_KEY )
 
 let router = express.Router()
 app.use(`/${apiname}`,router)
@@ -86,4 +88,5 @@ schedule.scheduleJob('0 */15 * * *', async () =>{
   }catch (err){
     console.log(" --HOLALALA ! LES ASSETS N'ONT PAS PUE ETRE REFRESH :( !! : ", err.message)
   }
+
 });

@@ -20,10 +20,14 @@ import {Global} from "../models/interphace/global";
 
 export const init_app = async  (req, res)=>{
     try{
-        let [tempMarkets,tempAssets] = await Promise.all([
+
+       /* let [tempMarkets,tempAssets] = await Promise.all([
             findMarkets(),
             findAssets()
-        ])
+        ])*/
+        let tempMarkets = await findMarkets()
+        let tempAssets = await findAssets()
+
         let symbols = await findSymbols(tempMarkets,tempAssets)
         let [missAssets,missMarkets] = await patchMiss(tempMarkets,tempAssets,symbols)
 

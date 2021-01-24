@@ -15,7 +15,7 @@ interface resp_asset {
 async function findAssets (params = {}) : Promise<Asset[]> {
   try {
     let url = `${COINAPI}/v1/assets`
-    let {data : assets} : { data : resp_asset[] } =  await axios.get(url,{params : params})
+    let {data : assets} : { data : resp_asset[] } =  await axios.get(url,{params})
     return <Asset[]>(
       assets.filter(asset=> asset.volume_1day_usd >= asset_volume_usd1day && asset.data_symbols_count >= asset_symbolsCount)
         .map(asset => ({

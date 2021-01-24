@@ -15,7 +15,7 @@ interface resp_exchanges {
 async function findMarkets (params = {}) :  Promise<Market[]> {
   try {
     let url = `${COINAPI}/v1/exchanges`
-    let {data : exchanges} : { data : resp_exchanges[] } =  await axios.get(url,{params : params})
+    let {data : exchanges} : { data : resp_exchanges[] } =  await axios.get(url,{params})
     return <Market[]>(
       exchanges.filter(exchange=> exchange.volume_1day_usd >= market_volume_usd1day && exchange.data_symbols_count >= market_symbolsCount)
         .map(exchange => ({

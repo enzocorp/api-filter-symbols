@@ -1,9 +1,10 @@
-import programmeBests from "../script/calculBests/index.calcul";
+import programmeBests from "../script/calculBests/index.calcul-sync";
 import modelPair from "../models/mongoose/model.pair";
 import modelBest from "../models/mongoose/model.best";
 import modelSymbol from "../models/mongoose/model.symbol";
 import {RequesterMongo} from "../script/mongo_requester/requesterMongo";
 import {Best} from "../models/interphace/best";
+import {log} from "util";
 
 export const get_bests = async  (req, res)=>{
     try{
@@ -40,7 +41,7 @@ export const get_last_groupId = async  (req, res)=>{
 export const calcul_bests = async  (req,res)=>{
     try{
         let {positivesBests,pairs,symbols} = await programmeBests()
-
+        console.log('f')
         const tab : ['for1k','for15k','for30k'] = ['for1k','for15k','for30k']
         positivesBests.forEach(best => {
             tab.forEach(isFor => {
@@ -52,13 +53,14 @@ export const calcul_bests = async  (req,res)=>{
                     symbols[indexSell][isFor].sell.bestMarketFreq = symbols[indexBuy][isFor].sell.bestMarketFreq + 1
             })
         })
-
+        console.log('g')
         const bulkPairs = pairs.map(pair => ({
             updateOne: {
                 filter: { name : pair.name },
                 update: { $set: pair },
             }
         }));
+        console.log('h')
 
         const bulkSymbols = symbols.map(symbol => ({
             updateOne: {
@@ -66,11 +68,16 @@ export const calcul_bests = async  (req,res)=>{
                 update: { $set: symbol },
             }
         }));
+        console.log("symbols : ",symbols.length)
+        console.log("pair : ",pairs.length)
+        console.log("best : ",positivesBests.length)
+        console.log('i')
         const [updtPairs,bests,updtSymbs] = await Promise.all([
             modelPair.collection.bulkWrite(bulkPairs),
             modelBest.insertMany(positivesBests),
             modelSymbol.collection.bulkWrite(bulkSymbols)
         ])
+        console.log('calcul fini avec succes')
         res.status(200).json({title : "Calcul effectué avec succès",data : bests, metadata : {pairs : updtPairs, symbols : updtSymbs}})
     }
     catch (erreur){
