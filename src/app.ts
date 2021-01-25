@@ -4,16 +4,16 @@ import compression from 'compression'
 import bodyParser from "body-parser"
 import cookieParser from "cookie-parser"
 import schedule from "node-schedule"
-import routerCrypto from './routes/route_crypto'
+import routerCrypto from './api/components/crypto/route_crypto'
 import axios from 'axios'
-import {dbConnexion} from "./db";
-import routerMarket from "./routes/route_market";
-import routerBest from "./routes/route_best";
-import routerPair from "./routes/route_pair";
-import routerSymbol from "./routes/route_symbol";
-import routerTest from "./routes/route_test";
-import routerAsset from "./routes/route_asset";
-import {saveCoinapiLimitSucces, saveCoinapiLimitError} from "./middlewares/axiosRespInterceptor";
+import {dbConnexion} from "./config/db";
+import routerMarket from "./api/components/markets/route_market";
+import routerBest from "./api/components/bests/route_best";
+import routerPair from "./api/components/pairs/route_pair";
+import routerSymbol from "./api/components/symbols/route_symbol";
+import routerTest from "./api/components/tests/route_test";
+import routerAsset from "./api/components/assets/route_asset";
+import {saveCoinapiLimitSucces, saveCoinapiLimitError} from "./api/middleware/axiosRespInterceptor";
 
 //---------------------------Initialisation de l'App----------------------------
 
