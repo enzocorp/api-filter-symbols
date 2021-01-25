@@ -1,7 +1,7 @@
 import axios from 'axios'
 import {Market} from "../../../models/interphace/market";
 import {Symbol, SymbolFor} from "../../../models/interphace/symbol";
-import {COINAPI} from "../../../../app";
+import {COINAPI} from "../../../app";
 import {Asset} from "../../../models/interphace/asset";
 import {symbol_type, symbol_volume_usd1day} from "./initialisationFilters";
 

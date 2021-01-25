@@ -1,10 +1,9 @@
-import {COINAPI} from "../../../../../app";
+import {COINAPI} from "../../../../app";
 import axios from 'axios'
 import modelSymbol from "../../../../models/mongoose/model.symbol";
 import calculPrices from "./calcul.prices";
 import {Asset} from "../../../../models/interphace/asset";
 import modelAsset from "../../../../models/mongoose/model.asset";
-import {Price} from "../../../../models/interphace/price";
 import calculSymbols from "./calcul.symbols";
 import {Market} from "../../../../models/interphace/market";
 import modelMarket from "../../../../models/mongoose/model.market";
@@ -14,8 +13,8 @@ import {Symbol} from "../../../../models/interphace/symbol";
 import {Pair} from "../../../../models/interphace/pair";
 import calculPairs from "./calcul.pairs";
 import filterBests from "./filter.bests";
-import {Error} from "mongoose";
-import {log} from "util";
+import debuger from "debug";
+
 
 interface orderbook {
   symbol_id: string
@@ -28,7 +27,6 @@ interface orderbook {
     size: number
   }>
 }
-
 
 interface axiosResponse {
   data? : orderbook[],
@@ -67,6 +65,8 @@ const aggregateSymbols = [
   }}
 ]
 
+const debug = debuger("api:index-calcul")
+
 //Incrémente de +1 la pté "isBestFreq" sur la meilleur pair de chaque categorie de prix ( 1k,15k,30k )
 function awardPairs(pairs: Pair[], podium: [string,string,string]){
   const isForTab = ['for1k','for15k','for30k']
@@ -76,20 +76,20 @@ function awardPairs(pairs: Pair[], podium: [string,string,string]){
       if (index !== -1)
         ++pairs[index][isFor].isBestFreq
       else
-        console.log(`-----ERREUR : Le best "${isFor}" de '${podium[i]}' n'as pa pue être attribué----`)
+        debug(`-----ERREUR : Le best "${isFor}" de '${podium[i]}' n'as pa pue être attribué----`)
     }
   })
   return pairs
 }
 
 //On récupère l'orderbook de chaque symbole de manière synchrone
-async function getOrderbooks (requestGroup : Array<string[]>,qty : number ) : Promise<orderbook[]>{
+async function getOrderbooks (requestGroup : Array<string[]> ) : Promise<orderbook[]>{
   const x = 100/ requestGroup.length
   let result = 0
   let url = `${COINAPI}/v1/orderbooks/current`
   const orderbooks : orderbook[] = []
   for(const group of requestGroup) {
-    console.log("chargement: ", result.toFixed(0) , " %")
+    debug("chargement: ", result.toFixed(0) , " %")
     result += x
     let axiosResp : axiosResponse = await axios.get(url, {params: {filter_symbol_id: group.toString()}})
     if(axiosResp.isAxiosError)
@@ -120,7 +120,6 @@ function createGroupsRequest(symbolsGroups : Array<{_id : string,symbs:string[] 
 }
 
 
-
 //Execute chaque parties du programme
 async function programmeBests () : Promise<{ positivesBests : Best[], symbols : Symbol[], pairs : Pair[]}>{
   const [symbsGroups,assets, markets] : [ Array<{_id : string,symbs:string[] }>, Asset[],Market[] ] = await Promise.all([
@@ -128,11 +127,10 @@ async function programmeBests () : Promise<{ positivesBests : Best[], symbols : 
     modelAsset.find().lean(),
     modelMarket.find().lean(),
   ])
-
   let symbols : string[] = []
   symbsGroups.forEach(group => symbols.push(...group.symbs))
   const requestGroup = createGroupsRequest([...symbsGroups])
-  const raw_orderbooks = await getOrderbooks(requestGroup,symbols.length)
+  const raw_orderbooks = await getOrderbooks(requestGroup)
 
   //Certains symboles ne seront pas renvoyée par l'API et d'autre seront en trop, on filtre celles en trop et on signal celles manquantes
 

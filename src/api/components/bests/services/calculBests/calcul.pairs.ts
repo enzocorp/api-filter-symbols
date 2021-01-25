@@ -1,6 +1,9 @@
 import {Pair, PairFor} from "../../../../models/interphace/pair";
 import modelPair from "../../../../models/mongoose/model.pair";
 import {Best, BestFor} from "../../../../models/interphace/best";
+import debuger from "debug";
+
+const debug = debuger("api:calcul-pairs")
 
 async function calculSide(bestFor : BestFor, pairFor : PairFor) : Promise<PairFor> {
 
@@ -58,12 +61,12 @@ async function calculPairs (bests : Best[]) : Promise<Pair[]>{
       if (pair)
         promisePairs.push(updatePair(best, pair))
       else
-        console.log(`--- Erreur : La pair ${best.pair} n'as pas pue être mise a jour car elle n'existe pas dans la BDD---`)
+        debug(`--- Erreur : La pair ${best.pair} n'as pas pue être mise a jour car elle n'existe pas dans la BDD---`)
     })
     return await Promise.all(promisePairs)
   }
   catch (err){
-    console.log(err)
+    debug(err)
   }
 }
 

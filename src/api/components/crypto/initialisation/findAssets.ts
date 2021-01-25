@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {COINAPI} from "../../../../app";
+import {COINAPI} from "../../../app";
 import {Asset} from "../../../models/interphace/asset";
 import {asset_symbolsCount, asset_volume_usd1day} from "./initialisationFilters";
 

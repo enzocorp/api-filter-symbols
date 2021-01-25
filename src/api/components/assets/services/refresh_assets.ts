@@ -1,5 +1,5 @@
 import modelAsset from "../../../models/mongoose/model.asset";
-import {COINAPI} from "../../../../app";
+import {COINAPI} from "../../../app";
 import axios from "axios";
 
 interface axios_resp {

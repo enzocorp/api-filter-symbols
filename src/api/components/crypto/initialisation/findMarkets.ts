@@ -1,6 +1,6 @@
 import axios from 'axios'
 import {Market} from "../../../models/interphace/market";
-import {COINAPI} from "../../../../app";
+import {COINAPI} from "../../../app";
 import {market_symbolsCount, market_volume_usd1day} from "./initialisationFilters";
 
 

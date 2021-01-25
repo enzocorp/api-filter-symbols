@@ -1,5 +1,8 @@
 import {Best, BestFor} from "../../../../models/interphace/best";
 import {Price} from "../../../../models/interphace/price";
+import debuger from "debug";
+
+const debug = debuger("api:calcul-bests")
 
 function sortPrices(prices : Price[]) : Array<Price[]> {
   let categories : Record<string,Price[]> = {}
@@ -115,7 +118,7 @@ async function calculBests (prices : Price[]) : Promise<Best[]>{
     if (tab.length > 1)
       tabPromises.push(makeBest(tab,id,tab[0].infos))
     else
-      console.log(`----Erreur : La pair ${tab[0].infos.pair} n'est comparée que sur 1 market (${tab[0].infos.market})----`)
+      debug(`----Erreur : La pair ${tab[0].infos.pair} n'est comparée que sur 1 market (${tab[0].infos.market})----`)
   } )
   return await Promise.all(tabPromises)
 }

@@ -9,7 +9,7 @@ import {Reason} from "../../models/interphace/reason";
 import findSymbols from "./initialisation/findSymbols";
 import modelSymbol from "../../models/mongoose/model.symbol";
 import modelAsset from "../../models/mongoose/model.asset";
-import doubleFilter from "./initialisation/doubleFilter";
+import filterAssetsMarkets from "./initialisation/filterAssetsMarkets";
 import {Pair} from "../../models/interphace/pair";
 import {Asset} from "../../models/interphace/asset";
 import patchMiss from "./initialisation/patchMissing";
@@ -20,11 +20,6 @@ import {Global} from "../../models/interphace/global";
 
 export const init_app = async  (req, res)=>{
     try{
-
-       /* let [tempMarkets,tempAssets] = await Promise.all([
-            findMarkets(),
-            findAssets()
-        ])*/
         let tempMarkets = await findMarkets()
         let tempAssets = await findAssets()
 
@@ -32,7 +27,7 @@ export const init_app = async  (req, res)=>{
         let [missAssets,missMarkets] = await patchMiss(tempMarkets,tempAssets,symbols)
 
         let [[assets,markets],pairs] : [[Asset[],Market[]],Pair[]] = await Promise.all([
-            doubleFilter(symbols,tempAssets.concat(missAssets),tempMarkets.concat(missMarkets)),
+            filterAssetsMarkets(symbols,tempAssets.concat(missAssets),tempMarkets.concat(missMarkets)),
             makeInitPairs(symbols)
         ])
         const createBulk = async (items : Array<{name : string} & any>) => items.map(item => ({
