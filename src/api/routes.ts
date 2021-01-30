@@ -6,6 +6,7 @@ import routerSymbol from "./components/symbols/route_symbol";
 import routerMarket from "./components/markets/route_market";
 import routerBest from "./components/bests/route_best";
 import routerAsset from "./components/assets/route_asset";
+import errorsHandler from "./middleware/md_errors";
 
 const router = express.Router()
 
@@ -16,6 +17,7 @@ router.use('/symbols',routerSymbol)
 router.use('/markets',routerMarket)
 router.use('/bests',routerBest)
 router.use('/assets',routerAsset)
+router.use(errorsHandler)
 
 export default router
 

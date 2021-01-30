@@ -18,13 +18,13 @@ import {Market} from "../../models/interphace/market";
 import {Best} from "../../models/interphace/best";
 import modelBest from "../../models/mongoose/model.best";
 
-export const ping = async (req,res)=> {
-  try{
-    console.log('-------PING RECU------------')
-    res.status(200).json({title : "J'ai recu un ping", message : 'voici un message'})
-  }catch (err){
-    res.status(404).json({title : 'probleme', message : err.message})
-  }
+export const ping = async (req,res,next)=> {
+    try {
+        console.log('-------PING RECU------------')
+        res.status(200).json({title: "J'ai recu un ping", message: 'voici un message'})
+    } catch (error) {
+        return next(error)
+    }
 }
 
 const best : Best = {
@@ -91,42 +91,42 @@ const best : Best = {
 }
 
 
-export const test1 = async  (req, res)=>{
+export const test1 = async  (req,res,next)=>{
     try{
         await modelBest.insertMany([best])
         res.status(200).json('OkoK')
     }
-    catch (erreur){
-        res.status(500).json({title : "Erreur est survenue", message : erreur.message})
+    catch (error){
+        return next(error)
     }
 
 }
 
-export const test2 = async  (req, res)=>{
+export const test2 = async  (req,res,next)=>{
     try{
         const infos = await modelGlobal.findOne({name :'coinapi'})
         res.status(200).json({data : infos})
     }
-    catch (erreur){
-        res.status(500).json({title : "Une erreur lors de l'init est survenue", message : erreur.message})
+    catch (error){
+        res.status(500).json({title : "Une error lors de l'init est survenue", message : error.message})
     }
 
 }
 
 
-export const test3 = async  (req, res)=>{
+export const test3 = async  (req,res,next)=>{
     try{
         const queryParam = req.query.for ? {for : req.query.for} : {}
         const reasons = await modelReason.find(queryParam)
         res.status(200).json(reasons)
     }
-    catch (erreur){
-        res.status(500).json({title : "Erreur est survenue", message : erreur.message})
+    catch (error){
+        return next(error)
     }
 
 }
 
-export const test4 = async  (req, res)=>{
+export const test4 = async  (req,res,next)=>{
     try{
         let [tempMarkets,tempAssets] = await Promise.all([
             findMarkets(),
@@ -161,8 +161,8 @@ export const test4 = async  (req, res)=>{
         ])
         res.status(200).json({title : 'Initialisation effectuée avec succès',data : {resPairs, resMarkets,resSymbols,resAssets}})
     }
-    catch (erreur){
-        res.status(500).json({title : "Une erreur lors de l'init est survenue", message : erreur.message})
+    catch (error){
+        return  next(error)
     }
 
 }

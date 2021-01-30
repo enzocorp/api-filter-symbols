@@ -17,11 +17,15 @@ import {Market} from "../../models/interphace/market";
 import calculQties from "./initialisation/calculQties";
 import modelGlobal from "../../models/mongoose/model.global";
 import {Global} from "../../models/interphace/global";
+import ErrorsGenerator from "../../../services/ErrorsGenerator";
+import {StatusCodes} from "http-status-codes";
 
-export const init_app = async  (req, res)=>{
+export const init_app = async  (req,res,next)=>{
     try{
-        let tempMarkets = await findMarkets()
         let tempAssets = await findAssets()
+        console.log("markets ok")
+        let tempMarkets = await findMarkets()
+
 
         let symbols = await findSymbols(tempMarkets,tempAssets)
         let [missAssets,missMarkets] = await patchMiss(tempMarkets,tempAssets,symbols)
@@ -54,15 +58,17 @@ export const init_app = async  (req, res)=>{
         await calculQties()
         res.status(200).json({title : 'Initialisation effectuée avec succès',data : {resPairs, resMarkets,resSymbols,resAssets}})
     }
-    catch (erreur){
-        res.status(500).json({title : "Une erreur lors de l'init est survenue", message : erreur.message})
+    catch (error){
+        return next(error)
     }
 
 }
 
-export const get_coinapi = async  (req, res)=>{
+export const get_coinapi = async  (req,res,next)=>{
     try{
         const coinapi : Global['coinapi'] = await modelGlobal.findOne({name :'coinapi'}).lean()
+        if (!coinapi)
+            throw new ErrorsGenerator("Pas de données","La base de donnée n'as pas d'infos sur les res CoinAPI restantes",StatusCodes.NOT_FOUND)
         const verifyDate = (coin_api) => {
             if (Date.parse(coin_api.dateReflow) < Date.now())
                 return {dateReflow : coin_api.dateReflow, remaining : '100', limit : '100'}
@@ -72,43 +78,43 @@ export const get_coinapi = async  (req, res)=>{
         const infos = verifyDate(coinapi)
           res.status(200).json({title : "Les infos de CoinAPI ont été récup de la base de donnée",coinapi : infos})
     }
-    catch (erreur){
-        res.status(500).json({title : "Impossible de recup les infos CoinAPI depuis la bdd", message : erreur.message})
+    catch (error){
+        return next(error)
     }
 
 }
 
 
-export const autocompleteReasons = async  (req, res)=>{
+export const autocompleteReasons = async  (req,res,next)=>{
     try{
         const queryParam = req.query.for ? {for : req.query.for} : {}
         const reasons = await modelReason.find(queryParam)
         res.status(200).json({data : reasons})
     }
-    catch (erreur){
-        res.status(500).json({title : "Erreur est survenue", message : erreur.message})
+    catch (error){
+        return next(error)
     }
 
 }
 
-export const autocompleteSeverity= async  (req, res)=>{
+export const autocompleteSeverity= async  (req,res,next)=>{
     try{
         const severity = await modelSeverity.find({})
         res.status(200).json({data : severity})
     }
-    catch (erreur){
-        res.status(500).json({title : "Erreur est survenue", message : erreur.message})
+    catch (error){
+        return next(error)
     }
 
 }
 
-export const newReason = async  (req, res)=>{
+export const newReason = async  (req,res,next)=>{
     try{
         const newReason : Reason = await new modelReason(req.body).save()
         res.status(200).json({title : "Ajout effectué", data : newReason})
     }
-    catch (erreur){
-        res.status(500).json({title : "Erreur est survenue", message : erreur.message})
+    catch (error){
+        return next(error)
     }
 
 }

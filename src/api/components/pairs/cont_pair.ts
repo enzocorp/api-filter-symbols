@@ -2,33 +2,32 @@ import modelPair from "../../models/mongoose/model.pair";
 import {RequesterMongo} from "../../../services/requesterMongo";
 import {Pair, PairFor} from "../../models/interphace/pair";
 
-export const get_pairs = async  (req, res)=>{
+export const get_pairs = async  (req,res,next)=>{
     try{
       const requester = new RequesterMongo(modelPair)
       const content :{data : any,metadata? : any} = await requester.make(req.query.request)
       res.status(200).json(content)
     }
-    catch (err){
-      console.log(err)
-      res.status(404).json({title : "Une erreur est survenue", message : err.message})
+    catch (error){
+      return  next(error)
     }
 }
 
 
 
-export const get_pair = async (req,res)=> {
+export const get_pair = async (req,res,next)=> {
   try {
     const data : Pair = await modelPair.findOne({name : req.params.name})
     res.status(200).json({data})
   }
-  catch (err){
-    res.status(404).json({title : "Une erreur est survenue", message : err.message})
+  catch (error){
+    return  next(error)
 
   }
 }
 
 
-export const reset_moyennes_pairs = async  (req, res)=>{
+export const reset_moyennes_pairs = async  (req,res,next)=>{
   try {
     const updateFor : PairFor = {
       isBestFreq : 0,
@@ -51,13 +50,13 @@ export const reset_moyennes_pairs = async  (req, res)=>{
         }},
     )
     res.status(200).json({title : 'Les pairs ont été resets',data : dataUpdated})
-  }catch (err){
-    res.status(404).json({title : "Une erreur est survenue", message : err.message})
   }
-
+  catch (error){
+    return  next(error)
+  }
 }
 
-export const group_pairs_unreport = async  (req, res)=>{
+export const group_pairs_unreport = async  (req,res,next)=>{
   try{
     const names : string[] = req.body.data
     const bulkPair = names.map(name => ({
@@ -78,12 +77,12 @@ export const group_pairs_unreport = async  (req, res)=>{
     const resp = await modelPair.collection.bulkWrite(bulkPair)
     res.status(200).json({title : 'Les paires ont été blanchies',data : resp})
   }
-  catch (erreur){
-    res.status(500).json({title : "Une erreur s'est produite", message : erreur.message})
+  catch (error){
+    return  next(error)
   }
 }
 
-export const group_pairs_report = async  (req, res)=>{
+export const group_pairs_report = async  (req,res,next)=>{
   try{
     const {pairs : names ,...data} = req.body.data
     const bulkPairs = names.map(name => ({
@@ -105,7 +104,7 @@ export const group_pairs_report = async  (req, res)=>{
     const resp = await modelPair.collection.bulkWrite(bulkPairs)
     res.status(200).json({title : 'Les paires ont bien été signalés',data : resp})
   }
-  catch (erreur){
-    res.status(500).json({title : "Une erreur s'est produite", message : erreur.message})
+  catch (error){
+    return  next(error)
   }
 }

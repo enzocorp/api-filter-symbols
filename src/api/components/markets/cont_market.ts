@@ -1,27 +1,28 @@
 import modelMarket from "../../models/mongoose/model.market";
 import {RequesterMongo} from "../../../services/requesterMongo";
 
-export const get_markets = async  (req, res)=>{
+export const get_markets = async  (req,res,next)=>{
   try{
     const requester = new RequesterMongo(modelMarket)
     const content :{data : any,metadata? : any} = await requester.make(req.query.request)
     res.status(200).json(content)
   }
-  catch (err){
-    res.status(404).json({title : "Une erreur est survenue", message : err.message})
+  catch (error){
+    return  next(error)
   }
 }
 
-export const get_market = async (req,res)=> {
+export const get_market = async (req,res,next)=> {
     modelMarket.findOne({name : req.params.name})
       .then(result=>{
           res.status(200).json(result)
       })
-      .catch(err=>{
-          res.status(404).json({title : "Une erreur est survenue", message : err.message})
+      .catch(error=>{
+          return next(error)
       })
 }
-export const group_markets_unreport = async  (req, res)=>{
+
+export const group_markets_unreport = async  (req,res,next)=>{
   try{
     const names : string[] = req.body.data
     const bulkMarket = names.map(name => ({
@@ -42,12 +43,12 @@ export const group_markets_unreport = async  (req, res)=>{
     const resp = await modelMarket.collection.bulkWrite(bulkMarket)
     res.status(200).json({title : 'Les markets ont été blanchis',data : resp})
   }
-  catch (erreur){
-    res.status(500).json({title : "Une erreur s'est produite", message : erreur.message})
+  catch (error){
+    return next(error)
   }
 }
 
-export const group_markets_report = async  (req, res)=> {
+export const group_markets_report = async  (req,res,next)=>{
   try {
     const {markets: names, ...data} = req.body.data
     const bulkMarkets = names.map(name => ({
@@ -71,7 +72,8 @@ export const group_markets_report = async  (req, res)=> {
 
     const resp = await modelMarket.collection.bulkWrite(bulkMarkets)
     res.status(200).json({title: 'Les markets ont bien été signalés', data: resp})
-  } catch (erreur) {
-    res.status(500).json({title: "Une erreur s'est produite", message: erreur.message})
+  }
+  catch (error){
+    return next(error)
   }
 }

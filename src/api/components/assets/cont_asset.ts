@@ -3,19 +3,18 @@ import {RequesterMongo} from "../../../services/requesterMongo";
 import {Asset} from "../../models/interphace/asset";
 import refreshAssetsPrice from "./services/refresh_assets";
 
-export const get_assets = async  (req, res)=>{
+export const get_assets = async  (req,res,next)=>{
     try{
       const requester = new RequesterMongo(modelAsset)
       const content :{data : any,metadata? : any} = await requester.make(req.query.request)
       res.status(200).json(content)
     }
-    catch (err){
-      console.log(err)
-      res.status(404).json({title : "Une erreur est survenue", message : err.message})
+    catch (error){
+      return  next(error)
     }
 }
 
-export const refresh_price = async  (req, res)=>{
+export const refresh_price = async  (req,res,next)=>{
   try{
     const prices = await refreshAssetsPrice()
     const bulkAssets = prices.map(price => ({
@@ -29,26 +28,25 @@ export const refresh_price = async  (req, res)=>{
     const resp = await modelAsset.collection.bulkWrite(bulkAssets)
     res.status(200).json({data : resp})
   }
-  catch (err){
-    console.log(err)
-    res.status(404).json({title : "Une erreur est survenue", message : err.message})
+  catch (error){
+    return  next(error)
   }
 }
 
 
 
-export const get_asset = async (req,res)=> {
+export const get_asset = async (req,res,next)=> {
   try {
     const data : Asset = await modelAsset.findOne({name : req.params.name})
     res.status(200).json({data})
   }
-  catch (err){
-    res.status(404).json({title : "Une erreur est survenue", message : err.message})
+  catch (error){
+    return  next(error)
 
   }
 }
 
-export const group_assets_unreport = async  (req, res)=>{
+export const group_assets_unreport = async  (req,res,next)=>{
   try{
     const names : string[] = req.body.data
     const bulkAsset = names.map(name => ({
@@ -74,7 +72,7 @@ export const group_assets_unreport = async  (req, res)=>{
   }
 }
 
-export const group_assets_report = async  (req, res)=>{
+export const group_assets_report = async  (req,res,next)=>{
   try{
     const {assets : names ,...data} = req.body.data
     const bulkAssets = names.map(name => ({

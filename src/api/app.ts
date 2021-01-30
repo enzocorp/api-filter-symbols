@@ -5,11 +5,10 @@ import helmet from "helmet";
 import compression from "compression";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
-import {dbConnexion} from "../config/db";
 import axios from "axios";
 import {saveCoinapiLimitError, saveCoinapiLimitSucces} from "./middleware/axiosRespInterceptor";
 import router from "./routes";
-import {apiname, coinapi_key, coinapi_url} from "../config/globals";
+import {API_NAME, COINAPI_KEY} from "../config/globals";
 
 const app = express()
 app.use(helmet())
@@ -32,13 +31,13 @@ app.use((req, res, next) => {
 
 //---------------------------Definition des headers de requête ------------------
 
-axios.defaults.headers.common['X-CoinAPI-Key'] = coinapi_key;
+axios.defaults.headers.common['X-CoinAPI-Key'] = COINAPI_KEY;
 axios.defaults.headers.common['Accept-Encoding'] = 'deflate, gzip';
 axios.defaults.headers.common['Accept'] = 'application/json';
 axios.interceptors.response.use( saveCoinapiLimitSucces,saveCoinapiLimitError);
 
 
 //-------------------Les Routes ------------------------------------------
-app.use(`/${apiname}`,router)
+app.use(`/${API_NAME}`,router)
 
 export default app

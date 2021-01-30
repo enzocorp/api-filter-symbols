@@ -1,4 +1,3 @@
-import {COINAPI} from "../../../../app";
 import axios from 'axios'
 import modelSymbol from "../../../../models/mongoose/model.symbol";
 import calculPrices from "./calcul.prices";
@@ -14,6 +13,7 @@ import {Pair} from "../../../../models/interphace/pair";
 import calculPairs from "./calcul.pairs";
 import filterBests from "./filter.bests";
 import debuger from "debug";
+import {COINAPI_URL} from "../../../../../config/globals";
 
 
 interface orderbook {
@@ -86,7 +86,7 @@ function awardPairs(pairs: Pair[], podium: [string,string,string]){
 async function getOrderbooks (requestGroup : Array<string[]> ) : Promise<orderbook[]>{
   const x = 100/ requestGroup.length
   let result = 0
-  let url = `${COINAPI}/v1/orderbooks/current`
+  let url = `${COINAPI_URL}/v1/orderbooks/current`
   const orderbooks : orderbook[] = []
   for(const group of requestGroup) {
     debug("chargement: ", result.toFixed(0) , " %")
@@ -102,7 +102,6 @@ async function getOrderbooks (requestGroup : Array<string[]> ) : Promise<orderbo
   }
   return orderbooks
 }
-
 
 function createGroupsRequest(symbolsGroups : Array<{_id : string,symbs:string[] }>) :  Array<string[]> {
   // On crée des groupes de requêtes par "pairs" , ainsi chaque groupe de symboles d'une même pair sera récupérer au même moment !

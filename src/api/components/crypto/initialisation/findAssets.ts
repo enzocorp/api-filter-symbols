@@ -1,7 +1,17 @@
 import axios from 'axios'
-import {COINAPI} from "../../../app";
 import {Asset} from "../../../models/interphace/asset";
-import {asset_symbolsCount, asset_volume_usd1day} from "./initialisationFilters";
+import {COINAPI_KEY, COINAPI_URL} from "../../../../config/globals";
+import {asset_symbolsCount, asset_volume_usd1day} from "./config_filter";
+import ErrorsGenerator from "../../../../services/ErrorsGenerator";
+import {StatusCodes} from "http-status-codes";
+import path from "path";
+import debuger, {Debugger} from "debug";
+
+
+interface axios_resp  {
+  data? : resp_asset[]
+  response? : { data : {error : string}}
+}
 
 interface resp_asset {
   "data_symbols_count": number
@@ -12,10 +22,30 @@ interface resp_asset {
   price_usd : number
 }
 
+const debug : Debugger = debuger('api:findAssets')
+
 async function findAssets (params = {}) : Promise<Asset[]> {
-  try {
-    let url = `${COINAPI}/v1/assets`
-    let {data : assets} : { data : resp_asset[] } =  await axios.get(url,{params})
+    let url = `${COINAPI_URL}/v1/assets`
+    let axiosResp : axios_resp =  await axios.get(url,{params})
+    if(!axiosResp.data && axiosResp.response?.data?.error){
+      throw new ErrorsGenerator(
+        "Probleme coinApi",
+        axiosResp.response.data.error,
+        StatusCodes.PRECONDITION_FAILED,
+        "/" + path.basename(__filename)
+      )
+    }
+    else if(!axiosResp.data){
+      debug("%O", axiosResp)
+      throw new ErrorsGenerator(
+        "Probleme CoinAPI",
+        "Echec de récupération des assets sur coinApi",
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        "/" + path.basename(__filename)
+      )
+    }
+    const assets : resp_asset[] = axiosResp.data
+
     return <Asset[]>(
       assets.filter(asset=> asset.volume_1day_usd >= asset_volume_usd1day && asset.data_symbols_count >= asset_symbolsCount)
         .map(asset => ({
@@ -34,10 +64,6 @@ async function findAssets (params = {}) : Promise<Asset[]> {
           date : new Date()
         }))
     )
-  }
-  catch (err){
-    console.log('Il y a eu une erreur dans la recherche d`assets', err)
-  }
 }
 
 export default findAssets
