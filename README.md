@@ -1,12 +1,18 @@
-#Le fichier .env
+# ENV VARIABLES UTILISEES
 
-- MONGO_PORT= number
-- MONGO_DB= string
-- MONGO_DB_DEV= string
-- MONGO_HOSTNAME= string
-- API_PORT= string
-- NODE_ENV= test | development | production
-- API_NAME="api1"
-- API_KEY= string
+### ---Base de données---
+MONGO_PORT= {number}
+MONGO_DB= {string}
+MONGO_DB_DEV= {string}
+MONGO_HOSTNAME= {string}
+MONGO_INITDB_USERNAME= {string} (user readwrite)
+MONGO_INITDB_PASSWORD= {string} (pwd user readwrite)
 
+### ---Api---
 
+API_NAME={string} (nom de l'api qui sera utilisé dans l'url)
+API_PORT={number}
+API_HOSTNAME={string} (pour le DNS docker)
+COINAPI_KEY={string} (clé d'api du site coinapi)
+NODE_ENV= "development" | "test" | "production"
+DEBUG= "api:*" | " " (permet d'activer ou desactiver le debuger)
