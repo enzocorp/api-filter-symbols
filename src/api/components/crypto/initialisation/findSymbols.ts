@@ -1,9 +1,10 @@
 import axios from 'axios'
 import {Market} from "../../../models/interphace/market";
 import {Symbol, SymbolFor} from "../../../models/interphace/symbol";
-import {COINAPI} from "../../../../app";
+
 import {Asset} from "../../../models/interphace/asset";
-import {symbol_type, symbol_volume_usd1day} from "./initialisationFilters";
+import {COINAPI_URL} from "../../../../config/globals";
+import {symbol_type, symbol_volume_usd1day} from "./config_filter";
 
 
 interface resp_symbols {
@@ -31,7 +32,7 @@ async function  strAssetsNames(assets : Asset[]) : Promise<string> {
 }
 
 async function findSymbols (markets : Market[],assets : Asset[]) :  Promise<Symbol[]> {
-  let url = `${COINAPI}/v1/symbols`
+  let url = `${COINAPI_URL}/v1/symbols`
   let [strMarkets, strAssets] = await Promise.all([
     strMarketsNames(markets),
     strAssetsNames(assets)
@@ -78,5 +79,6 @@ async function findSymbols (markets : Market[],assets : Asset[]) :  Promise<Symb
     }))
   )
 }
+
 
 export default findSymbols

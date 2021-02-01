@@ -1,7 +1,10 @@
 import modelGlobal from "../models/mongoose/model.global";
+import debuger, {Debugger} from "debug";
+
+const debug : Debugger = debuger('api:axiosInterceptor')
 
 export async function saveCoinapiLimitSucces (resp) {
-  if (resp.headers['x-ratelimit-used'])
+  if (resp && resp.headers['x-ratelimit-used'])
     await modelGlobal.updateOne(
       {name : 'coinapi'},
       {
@@ -14,9 +17,10 @@ export async function saveCoinapiLimitSucces (resp) {
   return resp;
 }
 
+
 export async function saveCoinapiLimitError (error) {
   const {response} = error
-  if (response.headers['x-ratelimit-used'])
+  if (response && response.headers['x-ratelimit-used'])
     await modelGlobal.updateOne(
       {name : 'coinapi'},
       {

@@ -1,6 +1,6 @@
 import modelAsset from "../../../models/mongoose/model.asset";
-import {COINAPI} from "../../../../app";
 import axios from "axios";
+import {COINAPI_URL} from "../../../../config/globals";
 
 interface axios_resp {
   data : Array<{
@@ -11,7 +11,7 @@ interface axios_resp {
 
 async function refreshAssetsPrice () : Promise<{name : string, price_usd : number}[]> {
   const strAssets : string[] = await modelAsset.find().distinct('name')
-  let url = `${COINAPI}/v1/assets`
+  let url = `${COINAPI_URL}/v1/assets`
   const division = Math.ceil(strAssets.length / 1200)
   const axiosPromises : Promise<axios_resp>[] = []
   for(let i = 0; i < division; i++){

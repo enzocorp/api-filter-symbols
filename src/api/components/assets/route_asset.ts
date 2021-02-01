@@ -17,4 +17,3 @@ routerAsset.post('/unreport',group_assets_unreport)
 routerAsset.get('/:name',get_asset)
 
 export default routerAsset
-

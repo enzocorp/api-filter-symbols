@@ -3,6 +3,9 @@ import {Symbol} from "../../../models/interphace/symbol";
 import {Asset} from "../../../models/interphace/asset";
 import findAssets from "./findAssets";
 import findMarkets from "./findMarkets";
+import debuger from "debug";
+
+const debug = debuger("api:patchMissing")
 
 async function  searchMissAssets(assets : Asset[], symbs : Symbol[]) : Promise<Asset[]> {
   const miss = new Set()
@@ -16,7 +19,7 @@ async function  searchMissAssets(assets : Asset[], symbs : Symbol[]) : Promise<A
   })
   const tabmiss = [...miss]
   if (tabmiss.length){
-    console.log('il manquais des assets : ', tabmiss.toString())
+    debug('il manquais des assets : ', tabmiss.toString())
     return await findAssets({filter_asset_id : tabmiss.toString()})
   }
   return  []
@@ -31,7 +34,7 @@ async function  searchMissMarkets(markets : Market[], symbs : Symbol[]) : Promis
   })
   const tabmiss = [...miss]
   if (tabmiss.length){
-    console.log('il manquais des markets : ', tabmiss.toString())
+    debug('il manquais des markets : ', tabmiss.toString())
     return await findMarkets({filter_exchange_id : tabmiss.toString()})
   }
   return  []
@@ -46,7 +49,7 @@ async function patchMiss (markets : Market[], assets : Asset[],symbols : Symbol[
     return [missingAssets,missingMarkets]
   }
   catch (err){
-    console.log('Il y a eu une erreur dans la captrue des symboles :  ', err)
+    debug('Il y a eu une erreur dans la capture des symboles :  ', err)
   }
 }
 
