@@ -6,7 +6,7 @@ import modelAsset from "../../../../models/mongoose/model.asset";
 import updateSymbols from "./updateSymbols";
 import {Market} from "../../../../models/interphace/market";
 import modelMarket from "../../../../models/mongoose/model.market";
-import calculBests from "./calcul.bests";
+import makeBests from "./makeBests";
 import {Best} from "../../../../models/interphace/best";
 import {Symbol} from "../../../../models/interphace/symbol";
 import {Pair} from "../../../../models/interphace/pair";
@@ -16,6 +16,9 @@ import debuger from "debug";
 import {COINAPI_URL} from "../../../../../config/globals";
 import {Price} from "../../../../models/interphace/price";
 import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../../config_bests";
+import ErrorsGenerator from "../../../../../services/ErrorsGenerator";
+import {StatusCodes} from "http-status-codes";
+import path from "path";
 
 
 interface orderbook {
@@ -149,6 +152,13 @@ async function programmeBests () : Promise<{ positivesBests : Best[], symbols : 
     modelAsset.find().lean(),
     modelMarket.find().lean(),
   ])
+  if(!symbsGroups.length){
+    throw new ErrorsGenerator(
+      "Préconditons Requisent",
+      "Il faut initialiser l'app avant de pouvoir effectuer un calcul",
+      StatusCodes.PRECONDITION_REQUIRED,
+    )
+  }
   let symbols : string[] = []
   symbsGroups.forEach(group => symbols.push(...group.symbs))
   const requestGroup = createGroupsRequest([...symbsGroups])
@@ -161,7 +171,7 @@ async function programmeBests () : Promise<{ positivesBests : Best[], symbols : 
 
   const [uptSymbols, bests] = await Promise.all([
     updateSymbols(prices),
-    calculBests(prices)
+    makeBests(prices)
   ])
   const positivesBests : Best[] = ejectNegativesBests(bests)
   let [uptPairs, podium] : [Pair[], podium : Record<number, string>[]] = await Promise.all([

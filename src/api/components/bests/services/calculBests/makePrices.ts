@@ -2,7 +2,14 @@ import {Asset} from "../../../../models/interphace/asset";
 import {Price} from "../../../../models/interphace/price";
 import {Market} from "../../../../models/interphace/market";
 import debuger from "debug";
-import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../../config_bests";
+import {
+  END_GRAPH,
+  NOT_BASEUSD_INFOS,
+  NOT_DATA_IN_ORDERBOOK,
+  NOT_ENOUGHT_VOLUME,
+  PAS_GRAPH,
+  START_GRAPH
+} from "../../config_bests";
 
 
 interface orderbook {
@@ -20,12 +27,13 @@ interface orderbook {
 const debug = debuger("api:makePrices")
 
 //Calcul le prix moyen(en QUOTE) qu'on dépense pour échanger la qté de BASE souhaitée.
-function makePrice(wantedQty : number, bookSide : orderbook['bids' | 'asks']) : number {
-  if(wantedQty === undefined) //Si la quantitée souhaitée n'est pas définie (= On jète : c'est une pair parasite non présente en BDD qui n'as pas été filtrée par coinapi)
-    return undefined
+function makePrice(wantedQty : number|string, bookSide : orderbook['bids' | 'asks']) : number| string {
+
+  if(wantedQty === NOT_BASEUSD_INFOS) //Si la quantitée souhaitée n'est pas définie (= On jète : c'est une pair parasite non présente en BDD qui n'as pas été filtrée par coinapi)
+    return NOT_BASEUSD_INFOS
 
   const prices = [] //Le tableau des prix d'échanges
-  let reste = wantedQty //Le reste est le reste de BASE a acheter/Vendre pour atteindre l'objetif
+  let reste : number = +wantedQty //Le reste est le reste de BASE a acheter/Vendre pour atteindre l'objetif
 
   for(let order of bookSide) {
     if (order.size === 0) //Si le volume de la ligne du book est incunnu alors on passe a la ligne suivante
@@ -42,11 +50,11 @@ function makePrice(wantedQty : number, bookSide : orderbook['bids' | 'asks']) : 
   }
 
   if (reste === wantedQty) //Si le volume de chaque ordre est indéfini dans l'orderbook (= On garde : c'est coinapi n'as pas fourni les volumes de l'orderbook)
-    return undefined
+    return NOT_DATA_IN_ORDERBOOK
   else if(reste === 0) //Si tout va bien on fait la moyenne en QUOTE du prix d'echange
-    return prices.reduce((acc,val)=> acc + val) / wantedQty
+    return prices.reduce((acc,val)=> acc + val) / +wantedQty
   else //Si il n'y avais pas assez de volume pour échanger jusqu'au wantedVolume alors on renvoi null
-    return null
+    return NOT_ENOUGHT_VOLUME
 }
 
 //Parse les infos de l'orderbook et y ajoute le siteWeb ainsi que la valeur USD des "base" et "quote"
@@ -93,7 +101,7 @@ async function makeObject (orderbook : orderbook, assets : Asset[],markets : Mar
   let isfor : Price['isfor']=  {}
 
   for (let usdQty = START_GRAPH; usdQty < END_GRAPH; usdQty += PAS_GRAPH){
-    const qtyBase : number = usdQty / infos.base_usd
+    const qtyBase : number|string = infos.base_usd ? usdQty / infos.base_usd : NOT_BASEUSD_INFOS
     isfor[usdQty] = {
       qtyBase : qtyBase, //Qté de "BASE" acheté&vendu de part et d'autre
       buy : makePrice(qtyBase,orderbook.asks), //Prix d'achat en "QUOTE"

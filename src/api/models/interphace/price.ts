@@ -1,8 +1,8 @@
 
 export interface PriceIsfor {
-  qtyBase: number
-  buy: number //(en quote)
-  sell: number  //(en quote)
+  qtyBase: number|string //(en base) ou code erreur
+  buy: number|string //(en quote) ou code erreur
+  sell: number|string  //(en quote) ou code erreur
 }
 
 export interface Price {

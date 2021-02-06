@@ -1,9 +1,16 @@
 import {Best, BestFor} from "../../../../models/interphace/best";
-import {Price, PriceIsfor} from "../../../../models/interphace/price";
+import {Price} from "../../../../models/interphace/price";
 import debuger from "debug";
-import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../../config_bests";
+import {
+  END_GRAPH, NO_SPREAD_QUOTE,
+  NOT_BASEUSD_INFOS,
+  NOT_DATA_IN_ORDERBOOK,
+  NOT_ENOUGHT_VOLUME,
+  PAS_GRAPH,
+  START_GRAPH
+} from "../../config_bests";
 
-const debug = debuger("api:calcul-bests")
+const debug = debuger("api:makeBests")
 /*
 * 1 - Recupérer toutes les valeurs d'achat
 * - recuếrer toutes les valeurs de vente
@@ -43,17 +50,23 @@ async function calculFor(isfor : number,prices : Price[]): Promise<{[key:number]
   ])
 
   const calculSpread =  (itemBuy : BestFor['buy'],itemSell : BestFor['sell']) => {
-    if(itemBuy.price_quote && itemSell.price_quote && (itemSell.volume_base || itemBuy.volume_base))
-      return (itemSell.price_quote - itemBuy.price_quote) * (itemSell.volume_base || itemBuy.volume_base)
+    if(itemBuy.price_quote === NOT_ENOUGHT_VOLUME || itemSell.price_quote === NOT_ENOUGHT_VOLUME)
+      return NOT_ENOUGHT_VOLUME
+    else  if(itemBuy.price_quote === NOT_DATA_IN_ORDERBOOK || itemSell.price_quote === NOT_DATA_IN_ORDERBOOK)
+      return NOT_DATA_IN_ORDERBOOK
+    else if (itemBuy.volume_base === NOT_BASEUSD_INFOS && itemSell.volume_base === NOT_BASEUSD_INFOS )
+      return NOT_BASEUSD_INFOS
     else
-      return  null
+      return (+itemSell.price_quote - +itemBuy.price_quote) * (+itemSell.volume_base || +itemBuy.volume_base)
+
+
   }
 
   const bestfor : BestFor= {
     buy : bestBuy,
     sell : bestSell,
     spread_quote : calculSpread(bestBuy,bestSell),
-    spread_usd : calculSpread(bestBuy,bestSell) * prices[0].infos.quote_usd || null
+    spread_usd : +calculSpread(bestBuy,bestSell) * prices[0].infos.quote_usd || NO_SPREAD_QUOTE
   }
 
   return {[isfor]: bestfor}
@@ -81,6 +94,7 @@ async function makeBest(prices : Price[],groupId : string, infos : Price['infos'
   }
 }
 
+
 //Regroupe les prix par groupes de pairs
 function makeGroups(prices : Price[]) : Array<Price[]> {
   let categories : Record<string,Price[]> = {}
@@ -94,7 +108,7 @@ function makeGroups(prices : Price[]) : Array<Price[]> {
 }
 
 //Effectue le calcule d'arbitrage de chaque pair pour déterminer leurs rentabilitée
-async function calculBests (prices : Price[]) : Promise<Best[]>{
+async function makeBests (prices : Price[]) : Promise<Best[]>{
   const groupsPrice : Array<Price[]> = makeGroups(prices)
   const tabPromises : Promise<Best>[] = []
   const id = Date.now().toString()
@@ -107,4 +121,4 @@ async function calculBests (prices : Price[]) : Promise<Best[]>{
   return await Promise.all(tabPromises)
 }
 
-export default calculBests
+export default makeBests
