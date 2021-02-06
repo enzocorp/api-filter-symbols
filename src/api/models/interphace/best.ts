@@ -24,8 +24,6 @@ export interface Best {
   quote : string
   groupId : string
   createdBy : string,
-  for1k : BestFor
-  for15k : BestFor
-  for30k : BestFor
+  isfor : Record<number, BestFor>
   date? : Date
 }

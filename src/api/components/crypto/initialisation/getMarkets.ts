@@ -1,7 +1,7 @@
 import axios from 'axios'
 import {Market} from "../../../models/interphace/market";
 import {COINAPI_URL} from "../../../../config/globals";
-import {market_symbolsCount, market_volume_usd1day} from "./config_filter";
+import {market_symbolsCount, market_volume_usd1day} from "../config_init";
 import debuger, {Debugger} from "debug";
 import ErrorsGenerator from "../../../../services/ErrorsGenerator";
 import {StatusCodes} from "http-status-codes";
@@ -23,7 +23,8 @@ interface resp_exchanges {
   website: string
 }
 
-async function findMarkets (params = {}) :  Promise<Market[]> {
+//Recupere les markets sur coinapi
+async function getMarkets (params = {}) :  Promise<Market[]> {
   let url = `${COINAPI_URL}/v1/exchanges`
   let axiosResp : axios_resp =  await axios.get(url,{params})
   if(!axiosResp.data && axiosResp.response?.data?.error){
@@ -65,4 +66,4 @@ async function findMarkets (params = {}) :  Promise<Market[]> {
 }
 
 
-export default findMarkets
+export default getMarkets

@@ -1,7 +1,10 @@
 import {Pair, PairFor} from "../../../models/interphace/pair";
 import {Symbol} from "../../../models/interphace/symbol";
+import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../../bests/config_bests";
 
-async function makeInitPairs (symbols : Symbol[]) :Promise< Pair[]> {
+
+//Construit les pairs a partir des symboles finaux
+async function buildPairs (symbols : Symbol[]) :Promise< Pair[]> {
   let pairs : Pair[] = []
   const schema : PairFor = {
     isBestFreq : 0,
@@ -14,6 +17,10 @@ async function makeInitPairs (symbols : Symbol[]) :Promise< Pair[]> {
     volumeMoyen_base : null,
     hightestSpread_usd : null,
   }
+  let isfor = {}
+  for (let i = START_GRAPH; i < END_GRAPH; i += PAS_GRAPH){
+    isfor[i] = schema
+  }
   symbols.forEach(symbol => {
     const index = pairs.findIndex(pair => pair.name === symbol.name)
     if(index === -1 ){
@@ -21,9 +28,7 @@ async function makeInitPairs (symbols : Symbol[]) :Promise< Pair[]> {
         name : symbol.pair,
         base : symbol.base,
         quote : symbol.quote,
-        for1k : schema,
-        for15k : schema,
-        for30k : schema,
+        isfor,
         exclusion: {
           isExclude: false,
           reasons: [],
@@ -38,4 +43,4 @@ async function makeInitPairs (symbols : Symbol[]) :Promise< Pair[]> {
   return pairs
 }
 
-export default makeInitPairs
+export default buildPairs

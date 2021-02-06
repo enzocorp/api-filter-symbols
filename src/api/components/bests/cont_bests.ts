@@ -4,6 +4,7 @@ import modelBest from "../../models/mongoose/model.best";
 import modelSymbol from "../../models/mongoose/model.symbol";
 import {RequesterMongo} from "../../../services/requesterMongo";
 import {Best} from "../../models/interphace/best";
+import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "./config_bests";
 
 export const get_bests = async  (req,res,next)=>{
     try{
@@ -40,17 +41,7 @@ export const get_last_groupId = async  (req, res,next)=>{
 export const calcul_bests = async  (req,res,next)=>{
   try{
     let {positivesBests,pairs,symbols} = await programmeBests()
-    const tab : ['for1k','for15k','for30k'] = ['for1k','for15k','for30k']
-    positivesBests.forEach(best => {
-        tab.forEach(isFor => {
-            let indexBuy : number = symbols.findIndex(symb => symb.name === best[isFor].buy.symbol)
-            let indexSell : number= symbols.findIndex(symb => symb.name === best[isFor].sell.symbol)
-            if ( best[isFor].buy.price_quote)
-                symbols[indexBuy][isFor].buy.bestMarketFreq = symbols[indexBuy][isFor].buy.bestMarketFreq + 1
-            if ( best[isFor].sell.price_quote)
-                symbols[indexSell][isFor].sell.bestMarketFreq = symbols[indexBuy][isFor].sell.bestMarketFreq + 1
-        })
-    })
+
     const bulkPairs = pairs.map(pair => ({
         updateOne: {
             filter: { name : pair.name },

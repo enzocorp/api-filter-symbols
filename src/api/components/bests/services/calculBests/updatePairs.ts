@@ -2,12 +2,13 @@ import {Pair, PairFor} from "../../../../models/interphace/pair";
 import modelPair from "../../../../models/mongoose/model.pair";
 import {Best, BestFor} from "../../../../models/interphace/best";
 import debuger from "debug";
+import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../../config_bests";
 
-const debug = debuger("api:calcul-pairs")
+const debug = debuger("api:updatePairs")
 
-async function calculSide(bestFor : BestFor, pairFor : PairFor) : Promise<PairFor> {
+async function calculFor(isfor : number, bestFor : BestFor, pairFor : PairFor) : Promise<{[key : string] : PairFor}> {
 
-  const testSpread = () : 1 | -1 | null | undefined => {
+  const checkSpread = () : 1 | -1 | null | undefined => {
     if (bestFor.spread_quote === null) return null
     else if (bestFor.spread_quote === undefined) return undefined
     else if (bestFor.spread_quote > 0) return 1
@@ -17,8 +18,8 @@ async function calculSide(bestFor : BestFor, pairFor : PairFor) : Promise<PairFo
 
   const doMoyenne = (initVal: number, newVal : number, freq : number) : number => ( initVal * freq + newVal) / (freq + 1)
 
-  const infoSpread = testSpread()
-  return {
+  const infoSpread = checkSpread()
+  const pairforUpdated   = {
     positiveFreq : infoSpread === 1 ? pairFor.positiveFreq + 1 : pairFor.positiveFreq,
     negativeFreq : infoSpread === -1 ? pairFor.negativeFreq + 1 : pairFor.negativeFreq,
     notEnoughtVolFreq :infoSpread === null ? pairFor.notEnoughtVolFreq + 1 : pairFor.notEnoughtVolFreq,
@@ -35,24 +36,26 @@ async function calculSide(bestFor : BestFor, pairFor : PairFor) : Promise<PairFo
     isBestFreq : pairFor.isBestFreq,
     hightestSpread_usd : pairFor.hightestSpread_usd < bestFor.spread_usd ? bestFor.spread_usd : pairFor.hightestSpread_usd
   }
+
+  return {[isfor] : pairforUpdated}
 }
 
 
 async function updatePair (best : Best, pair : Pair) : Promise<Pair>{
-  const [for1k,for15k,for30k] = await Promise.all([
-    calculSide(best.for1k,pair.for1k),
-    calculSide(best.for15k,pair.for15k),
-    calculSide(best.for30k,pair.for30k),
-  ])
-  return {
-    ...pair,
-    for1k,
-    for15k,
-    for30k,
+  const promises : Promise<{[key : string] : PairFor}>[] = []
+  for (let i = START_GRAPH; i < END_GRAPH; i += PAS_GRAPH){
+    promises.push(calculFor(i,best.isfor[i],pair.isfor[i]))
   }
+  const allIsfor = await Promise.all(promises)
+  let updatedPair : Pair  = {...pair}
+  allIsfor.forEach(pairFor => {
+    updatedPair.isfor = {...updatedPair.isfor, ...pairFor}
+  })
+  return updatedPair
 }
 
-async function calculPairs (bests : Best[]) : Promise<Pair[]>{
+//Met a jour chaque pair
+async function updatePairs (bests : Best[]) : Promise<Pair[]>{
   try{
     let pairs : Pair[] = await modelPair.find().lean()
     const promisePairs : Promise<Pair>[]  =  []
@@ -61,7 +64,7 @@ async function calculPairs (bests : Best[]) : Promise<Pair[]>{
       if (pair)
         promisePairs.push(updatePair(best, pair))
       else
-        debug(`--- Erreur : La pair ${best.pair} n'as pas pue être mise a jour car elle n'existe pas dans la BDD---`)
+        debug(`--- Attention : La pair ${best.pair} n'as pas pue être mise a jour car elle n'existe pas dans la BDD---`)
     })
     return await Promise.all(promisePairs)
   }
@@ -70,4 +73,4 @@ async function calculPairs (bests : Best[]) : Promise<Pair[]>{
   }
 }
 
-export default calculPairs
+export default updatePairs

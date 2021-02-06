@@ -1,12 +1,12 @@
-import findMarkets from "./initialisation/findMarkets";
-import findAssets from "./initialisation/findAssets";
-import makeInitPairs from "./initialisation/makePairs";
+import getMarkets from "./initialisation/getMarkets";
+import getAsssets from "./initialisation/getAsssets";
+import buildPairs from "./initialisation/buildPairs";
 import modelPair from "../../models/mongoose/model.pair";
 import modelMarket from "../../models/mongoose/model.market";
 import modelReason from "../../models/mongoose/model.reason";
 import modelSeverity from "../../models/mongoose/model.severity";
 import {Reason} from "../../models/interphace/reason";
-import findSymbols from "./initialisation/findSymbols";
+import getSymbols from "./initialisation/getSymbols";
 import modelSymbol from "../../models/mongoose/model.symbol";
 import modelAsset from "../../models/mongoose/model.asset";
 import filterAssetsMarkets from "./initialisation/filterAssetsMarkets";
@@ -16,23 +16,20 @@ import patchMiss from "./initialisation/patchMissing";
 import {Market} from "../../models/interphace/market";
 import calculQties from "./initialisation/calculQties";
 import modelGlobal from "../../models/mongoose/model.global";
-import {Global} from "../../models/interphace/global";
 import ErrorsGenerator from "../../../services/ErrorsGenerator";
 import {StatusCodes} from "http-status-codes";
+import {Coinapi} from "../../models/interphace/global";
 
 export const init_app = async  (req,res,next)=>{
     try{
-        let tempAssets = await findAssets()
-        console.log("markets ok")
-        let tempMarkets = await findMarkets()
-
-
-        let symbols = await findSymbols(tempMarkets,tempAssets)
+        let tempAssets = await getAsssets()
+        let tempMarkets = await getMarkets()
+        let symbols = await getSymbols(tempMarkets,tempAssets)
         let [missAssets,missMarkets] = await patchMiss(tempMarkets,tempAssets,symbols)
 
         let [[assets,markets],pairs] : [[Asset[],Market[]],Pair[]] = await Promise.all([
             filterAssetsMarkets(symbols,tempAssets.concat(missAssets),tempMarkets.concat(missMarkets)),
-            makeInitPairs(symbols)
+            buildPairs(symbols)
         ])
         const createBulk = async (items : Array<{name : string} & any>) => items.map(item => ({
             updateOne: {
@@ -66,7 +63,7 @@ export const init_app = async  (req,res,next)=>{
 
 export const get_coinapi = async  (req,res,next)=>{
     try{
-        const coinapi : Global['coinapi'] = await modelGlobal.findOne({name :'coinapi'}).lean()
+        const coinapi : Coinapi = await modelGlobal.findOne({name :'coinapi'}).lean()
         if (!coinapi)
             throw new ErrorsGenerator("Pas de données","La base de donnée n'as pas d'infos sur les res CoinAPI restantes",StatusCodes.NOT_FOUND)
         const verifyDate = (coin_api) => {

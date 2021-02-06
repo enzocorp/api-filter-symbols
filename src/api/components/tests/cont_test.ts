@@ -1,13 +1,11 @@
-import findMarkets from "../crypto/initialisation/findMarkets";
-import findAssets from "../crypto/initialisation/findAssets";
-import makeInitPairs from "../crypto/initialisation/makePairs";
+import getMarkets from "../crypto/initialisation/getMarkets";
+import getAsssets from "../crypto/initialisation/getAsssets";
+import buildPairs from "../crypto/initialisation/buildPairs";
 import modelPair from "../../models/mongoose/model.pair";
 import modelMarket from "../../models/mongoose/model.market";
 import modelGlobal from "../../models/mongoose/model.global";
 import modelReason from "../../models/mongoose/model.reason";
-import modelSeverity from "../../models/mongoose/model.severity";
-import {Reason} from "../../models/interphace/reason";
-import findSymbols from "../crypto/initialisation/findSymbols";
+import getSymbols from "../crypto/initialisation/getSymbols";
 import modelSymbol from "../../models/mongoose/model.symbol";
 import modelAsset from "../../models/mongoose/model.asset";
 import filterAssetsMarkets from "../crypto/initialisation/filterAssetsMarkets";
@@ -34,60 +32,62 @@ const best : Best = {
     base: 'BTC',
     createdBy: 'unknow',
     groupId: '1604010537241',
-    for1k: {
-        buy: {
-            market: 'LMAXDIGITALUAT',
-            symbol: 'LMAXDIGITALUAT_BTC_USD',
-            website: 'https://www.lmaxdigital.com/',
-            volume_base: 0.07406628799218742,
-            price_quote: 2547,
+    isfor  : {
+        200: {
+            buy: {
+                market: 'LMAXDIGITALUAT',
+                symbol: 'LMAXDIGITALUAT_BTC_USD',
+                website: 'https://www.lmaxdigital.com/',
+                volume_base: 0.07406628799218742,
+                price_quote: 2547,
+            },
+            sell: {
+                market: 'COINBASE',
+                symbol: 'COINBASE_BTC_USD',
+                website: 'https://pro.coinbase.com/',
+                volume_base: 0.07406628799218742,
+                price_quote: 3573,
+            },
+            spread_quote: null,
+            spread_usd: null,
         },
-        sell: {
-            market: 'COINBASE',
-            symbol: 'COINBASE_BTC_USD',
-            website: 'https://pro.coinbase.com/',
-            volume_base: 0.07406628799218742,
-            price_quote: 3573,
+        400: {
+            buy: {
+                market: 'LMAXDIGITALUAT',
+                symbol: 'LMAXDIGITALUAT_BTC_USD',
+                website: 'https://www.lmaxdigital.com/',
+                volume_base: 1.1109943198828114,
+                price_quote: 13475.7,
+            },
+            sell: {
+                market: 'COINBASE',
+                symbol: 'COINBASE_BTC_USD',
+                website: 'https://pro.coinbase.com/',
+                volume_base: 1.1109943198828114,
+                price_quote: 13481.3683385973,
+            },
+            spread_quote: 5.60833859737977,
+            spread_usd: 5.6083385973797,
         },
-        spread_quote: null,
-        spread_usd: null,
-    },
-    for15k: {
-        buy: {
-            market: 'LMAXDIGITALUAT',
-            symbol: 'LMAXDIGITALUAT_BTC_USD',
-            website: 'https://www.lmaxdigital.com/',
-            volume_base: 1.1109943198828114,
-            price_quote: 13475.7,
+        600: {
+            buy: {
+                market: 'LMAXDIGITALUAT',
+                symbol: 'LMAXDIGITALUAT_BTC_USD',
+                website: 'https://www.lmaxdigital.com/',
+                volume_base: 2.2219886397656228,
+                price_quote: 13475.7,
+            },
+            sell: {
+                market: 'COINBASE',
+                symbol: 'COINBASE_BTC_USD',
+                website: 'https://pro.coinbase.com/',
+                volume_base: 2.2219886397656228,
+                price_quote: 13478.72459808534,
+            },
+            spread_quote: 2.964598085347461,
+            spread_usd: 2.96459808534746,
         },
-        sell: {
-            market: 'COINBASE',
-            symbol: 'COINBASE_BTC_USD',
-            website: 'https://pro.coinbase.com/',
-            volume_base: 1.1109943198828114,
-            price_quote: 13481.3683385973,
-        },
-        spread_quote: 5.60833859737977,
-        spread_usd: 5.6083385973797,
-    },
-    for30k: {
-        buy: {
-            market: 'LMAXDIGITALUAT',
-            symbol: 'LMAXDIGITALUAT_BTC_USD',
-            website: 'https://www.lmaxdigital.com/',
-            volume_base: 2.2219886397656228,
-            price_quote: 13475.7,
-        },
-        sell: {
-            market: 'COINBASE',
-            symbol: 'COINBASE_BTC_USD',
-            website: 'https://pro.coinbase.com/',
-            volume_base: 2.2219886397656228,
-            price_quote: 13478.72459808534,
-        },
-        spread_quote: 2.964598085347461,
-        spread_usd: 2.96459808534746,
-    },
+    }
 }
 
 
@@ -129,15 +129,15 @@ export const test3 = async  (req,res,next)=>{
 export const test4 = async  (req,res,next)=>{
     try{
         let [tempMarkets,tempAssets] = await Promise.all([
-            findMarkets(),
-            findAssets()
+            getMarkets(),
+            getAsssets()
         ])
-        let symbols = await findSymbols(tempMarkets,tempAssets)
+        let symbols = await getSymbols(tempMarkets,tempAssets)
         let [missAssets,missMarkets] = await patchMiss(tempMarkets,tempAssets,symbols)
 
         let [[assets,markets],pairs] : [[Asset[],Market[]],Pair[]] = await Promise.all([
             filterAssetsMarkets(symbols,tempAssets.concat(missAssets),tempMarkets.concat(missMarkets)),
-            makeInitPairs(symbols)
+            buildPairs(symbols)
         ])
         const createBulk = async (items : Array<{name : string} & any>) => items.map(item => ({
             updateOne: {
