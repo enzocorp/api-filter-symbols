@@ -100,7 +100,7 @@ async function makeObject (orderbook : orderbook, assets : Asset[],markets : Mar
 
   let isfor : Price['isfor']=  {}
 
-  for (let usdQty = START_GRAPH; usdQty < END_GRAPH; usdQty += PAS_GRAPH){
+  for (let usdQty = START_GRAPH; usdQty <= END_GRAPH; usdQty += PAS_GRAPH){
     const qtyBase : number|string = infos.base_usd ? usdQty / infos.base_usd : NOT_BASEUSD_INFOS
     isfor[usdQty] = {
       qtyBase : qtyBase, //Qté de "BASE" acheté&vendu de part et d'autre

@@ -76,7 +76,7 @@ async function calculFor(isfor : number,prices : Price[]): Promise<{[key:number]
 //Recupere les BESTs d'une pair pour chaque valeur de "isfor"
 async function makeBest(prices : Price[],groupId : string, infos : Price['infos']) : Promise<Best> {
   const promises : Promise<{[key : string] : BestFor}>[] = []
-  for (let i = START_GRAPH; i < END_GRAPH; i += PAS_GRAPH){
+  for (let i = START_GRAPH; i <= END_GRAPH; i += PAS_GRAPH){
     promises.push(calculFor(i,prices))
   }
   const bestsfor : Array<Record<number, BestFor> > = await Promise.all(promises)

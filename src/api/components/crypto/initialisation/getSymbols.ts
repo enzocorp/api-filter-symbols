@@ -53,7 +53,7 @@ async function getSymbols (markets : Market[], assets : Asset[]) :  Promise<Symb
   }
 
   let isfor = {}
-  for (let i = START_GRAPH; i < END_GRAPH; i += PAS_GRAPH){
+  for (let i = START_GRAPH; i <= END_GRAPH; i += PAS_GRAPH){
     isfor[i] = {
       buy : side,
       sell : side,

@@ -4,7 +4,6 @@ import modelBest from "../../models/mongoose/model.best";
 import modelSymbol from "../../models/mongoose/model.symbol";
 import {RequesterMongo} from "../../../services/requesterMongo";
 import {Best} from "../../models/interphace/best";
-import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "./config_bests";
 
 export const get_bests = async  (req,res,next)=>{
     try{

@@ -18,7 +18,7 @@ async function buildPairs (symbols : Symbol[]) :Promise< Pair[]> {
     hightestSpread_usd : null,
   }
   let isfor = {}
-  for (let i = START_GRAPH; i < END_GRAPH; i += PAS_GRAPH){
+  for (let i = START_GRAPH; i <= END_GRAPH; i += PAS_GRAPH){
     isfor[i] = schema
   }
   symbols.forEach(symbol => {

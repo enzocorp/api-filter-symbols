@@ -18,8 +18,6 @@ import {Price} from "../../../../models/interphace/price";
 import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../../config_bests";
 import ErrorsGenerator from "../../../../../services/ErrorsGenerator";
 import {StatusCodes} from "http-status-codes";
-import path from "path";
-
 
 interface orderbook {
   symbol_id: string
@@ -74,7 +72,7 @@ const debug = debuger("api:index-calcul")
 //Incrémente de +1 la pté "isBestFreq" sur la meilleur pair de chaque categorie de prix (100, 200, 400 ...)
 function awardPairs(pairs: Pair[], podium: Record<number, string>[]) : Pair[] {
   let pairsCopy : Pair[] = [...pairs]
-  for (let i = START_GRAPH; i < END_GRAPH; i += PAS_GRAPH){
+  for (let i = START_GRAPH; i <= END_GRAPH; i += PAS_GRAPH){
     if(podium[i]){
       const index : number = pairs.findIndex(pair => pair.name === podium[i])
       if (index !== -1)
@@ -90,7 +88,7 @@ function awardPairs(pairs: Pair[], podium: Record<number, string>[]) : Pair[] {
 //Incrémente de +1 la pté "isBestFreq" sur le meilleur market de chaque symbole qui a été positif (100, 200, 400 ...)
 function awardMarkets (symbols : Symbol[],  bests : Best[]) : Symbol[]{
   bests.forEach(best => {
-    for (let i = START_GRAPH; i < END_GRAPH; i += PAS_GRAPH){
+    for (let i = START_GRAPH; i <= END_GRAPH; i += PAS_GRAPH){
       let indexBuy : number = symbols.findIndex(symb => symb.name === best.isfor[i].buy.symbol)
       let indexSell : number= symbols.findIndex(symb => symb.name === best.isfor[i].sell.symbol)
       if ( best.isfor[i].buy.price_quote)

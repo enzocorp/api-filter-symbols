@@ -43,7 +43,7 @@ async function calculIsFor(isfor : number, pricefor : PriceIsfor,symbolFor:Symbo
 //Lance le calcul asynchrone de tous les "isfor" pour mettre a jour 1 symbole
 async function updateSymbol (price : Price, symb : Symbol) : Promise<Symbol>{
   const promises : Promise<{[key: number]: SymbolFor}>[] = []
-  for (let i = START_GRAPH; i < END_GRAPH; i += PAS_GRAPH){
+  for (let i = START_GRAPH; i <= END_GRAPH; i += PAS_GRAPH){
     promises.push(calculIsFor(i,price.isfor[i],symb.isfor[i]))
   }
   const all : Array<{[key: number]: SymbolFor} >= await Promise.all(promises)

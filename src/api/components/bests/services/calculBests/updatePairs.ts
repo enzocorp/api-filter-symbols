@@ -48,7 +48,7 @@ async function calculFor(isfor : number, bestFor : BestFor, pairFor : PairFor) :
 
 async function updatePair (best : Best, pair : Pair) : Promise<Pair>{
   const promises : Promise<{[key : string] : PairFor}>[] = []
-  for (let i = START_GRAPH; i < END_GRAPH; i += PAS_GRAPH){
+  for (let i = START_GRAPH; i <= END_GRAPH; i += PAS_GRAPH){
     promises.push(calculFor(i,best.isfor[i],pair.isfor[i]))
   }
   const allIsfor = await Promise.all(promises)

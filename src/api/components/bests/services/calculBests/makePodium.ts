@@ -19,7 +19,7 @@ async function calculPodium(isFor : number, bests : Best[]) : Promise<{[key:numb
 //Fabrique le podium de chaque valeur en dollar
 async function makePodium (bests : Best[]) : Promise<Record<number, string>[]>{
   const promises: Promise<{[key:number]: string}>[] = []
-  for (let i = START_GRAPH; i < END_GRAPH; i += PAS_GRAPH){
+  for (let i = START_GRAPH; i <= END_GRAPH; i += PAS_GRAPH){
     promises.push(calculPodium(i,bests))
   }
   return await Promise.all(promises)
