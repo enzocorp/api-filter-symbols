@@ -1,7 +1,7 @@
 import axios from 'axios'
 import {Asset} from "../../../models/interphace/asset";
 import {COINAPI_KEY, COINAPI_URL} from "../../../../config/globals";
-import {asset_symbolsCount, asset_volume_usd1day} from "./config_filter";
+import {asset_symbolsCount, asset_volume_usd1day} from "../config_init";
 import ErrorsGenerator from "../../../../services/ErrorsGenerator";
 import {StatusCodes} from "http-status-codes";
 import path from "path";
@@ -24,7 +24,9 @@ interface resp_asset {
 
 const debug : Debugger = debuger('api:findAssets')
 
-async function findAssets (params = {}) : Promise<Asset[]> {
+
+//Recupere les assets sur l'api coinapi
+async function getAsssets (params = {}) : Promise<Asset[]> {
     let url = `${COINAPI_URL}/v1/assets`
     let axiosResp : axios_resp =  await axios.get(url,{params})
     if(!axiosResp.data && axiosResp.response?.data?.error){
@@ -66,4 +68,4 @@ async function findAssets (params = {}) : Promise<Asset[]> {
     )
 }
 
-export default findAssets
+export default getAsssets
