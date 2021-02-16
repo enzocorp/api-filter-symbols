@@ -19,7 +19,7 @@ app.listen(API_PORT,()=>{
 //-------------------Executions récurantes ------------------------------------------
 
 
-//Execute un raffraichissement des assets tous les 15h
+//Execute un raffraichissement des assets toutes les 15 heures
 schedule.scheduleJob('0 */15 * * *', async () =>{
   try{
     await axios.get(`http://127.0.0.1:${API_PORT}/${API_NAME}/assets/refresh`)
@@ -32,8 +32,8 @@ schedule.scheduleJob('0 */15 * * *', async () =>{
 
 
 
-//Lance un calcul des best tous les jours à 14h(UTC Coordinated Universal Time) = 13h UTC+1 (Paris)
-schedule.scheduleJob('* 14 * * *', async () =>{
+//Lance un calcul des best tous les jours à 14h00(UTC Coordinated Universal Time) = 15h00 UTC+1 (Paris)
+schedule.scheduleJob('0 14 * * *', async () =>{
   try{
     if (NODE_ENV === "production")
       await axios.get(`http://127.0.0.1:${API_PORT}/${API_NAME}/bests/calcul`)

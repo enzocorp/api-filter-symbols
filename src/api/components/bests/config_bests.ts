@@ -7,5 +7,5 @@ export const PAS_GRAPH = 200//Saut entre chaque points du graphique
 /*Problemes liés a la récupération de l'orderbook*/
 export const NOT_ENOUGHT_VOLUME = "not_enought_volume" //Pas assé de volume dans l'orderbook pour acheter/vendre la qté voulu
 export const NOT_DATA_IN_ORDERBOOK = "not_data_in_orderbook" //Coinapi a renvoyer un orderbook vide sans infos
-export const NOT_BASEUSD_INFOS = "not_base_usd_infos"
-export const NO_SPREAD_QUOTE = "no_spread_quote"
+export const NOT_BASEUSD_INFOS = "not_base_usd_infos" //Si l'asset en BASE n'as pas la valeur en USD
+export const NO_SPREAD_QUOTE = null //Si le spread en QUOTE n'est pas défini

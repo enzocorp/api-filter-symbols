@@ -18,6 +18,7 @@ import {Price} from "../../../../models/interphace/price";
 import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../../config_bests";
 import ErrorsGenerator from "../../../../../services/ErrorsGenerator";
 import {StatusCodes} from "http-status-codes";
+import {Podium} from "../../../../models/interphace/podium";
 
 interface orderbook {
   symbol_id: string
@@ -69,24 +70,25 @@ const aggregateSymbols = [
 
 const debug = debuger("api:index-calcul")
 
+
 //Incrémente de +1 la pté "isBestFreq" sur la meilleur pair de chaque categorie de prix (100, 200, 400 ...)
-function awardPairs(pairs: Pair[], podium: Record<number, string>[]) : Pair[] {
+async function awardPairs(pairs: Pair[], podium: Podium[]) : Promise<Pair[]> {
   let pairsCopy : Pair[] = [...pairs]
-  for (let i = START_GRAPH; i <= END_GRAPH; i += PAS_GRAPH){
-    if(podium[i]){
-      const index : number = pairs.findIndex(pair => pair.name === podium[i])
+  podium.forEach(item => {
+    if(item?.index){
+      const index : number = pairs.findIndex(pair => pair.name === item.pair)
       if (index !== -1)
-        ++pairsCopy[index].isfor[i].isBestFreq
+        ++pairsCopy[index].isfor[item.index].isBestFreq
       else
-        debug(`-----ERREUR : Le best "${i}" de '${podium[i]}' n'as pa pue être attribué----`)
+        debug(`-----ERREUR : Le best "${item.index}" de '${podium[item.index]}' n'as pa pue être attribué----`)
     }
-  }
+  })
   return pairsCopy
 }
 
 
 //Incrémente de +1 la pté "isBestFreq" sur le meilleur market de chaque symbole qui a été positif (100, 200, 400 ...)
-function awardMarkets (symbols : Symbol[],  bests : Best[]) : Symbol[]{
+async function awardMarkets (symbols : Symbol[],  bests : Best[]) : Promise<Symbol[]>{
   bests.forEach(best => {
     for (let i = START_GRAPH; i <= END_GRAPH; i += PAS_GRAPH){
       let indexBuy : number = symbols.findIndex(symb => symb.name === best.isfor[i].buy.symbol)
@@ -144,7 +146,7 @@ async function getOrderbooks (requestGroup : Array<string[]> ) : Promise<orderbo
 }
 
 //Execute chaque parties du programme
-async function programmeBests () : Promise<{ positivesBests : Best[], symbols : Symbol[], pairs : Pair[]}>{
+async function programmeBests () : Promise<{ positivesBests : Best[], symbols : Symbol[], pairs : Pair[], podium : Podium[]}>{
   const [symbsGroups,assets, markets] : [ Array<{_id : string,symbs:string[] }>, Asset[],Market[] ] = await Promise.all([
     modelSymbol.aggregate(aggregateSymbols),
     modelAsset.find().lean(),
@@ -172,15 +174,18 @@ async function programmeBests () : Promise<{ positivesBests : Best[], symbols : 
     makeBests(prices)
   ])
   const positivesBests : Best[] = ejectNegativesBests(bests)
-  let [uptPairs, podium] : [Pair[], podium : Record<number, string>[]] = await Promise.all([
+  let [uptPairs, podium] : [Pair[], Podium[]] = await Promise.all([
     updatePairs(bests),
     makePodium(positivesBests)
   ])
 
-  const uptPairs2 = awardPairs(uptPairs, podium)
-  const uptSymbols2 = awardMarkets(uptSymbols,positivesBests)
+  let [uptPairs2, uptSymbols2] : [Pair[], Symbol[]] = await Promise.all([
+    awardPairs(uptPairs, podium),
+    awardMarkets(uptSymbols,positivesBests)
+  ])
 
-  return {positivesBests, symbols : uptSymbols2, pairs : uptPairs2}
+
+  return {positivesBests, symbols : uptSymbols2, pairs : uptPairs2, podium}
 }
 
 

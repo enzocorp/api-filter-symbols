@@ -3,7 +3,7 @@ import {Price, PriceIsfor} from "../../../../models/interphace/price";
 import modelSymbol from "../../../../models/mongoose/model.symbol";
 import {
   END_GRAPH,
-  NO_SPREAD_QUOTE, NOT_BASEUSD_INFOS,
+  NOT_BASEUSD_INFOS,
   NOT_DATA_IN_ORDERBOOK,
   NOT_ENOUGHT_VOLUME,
   PAS_GRAPH,

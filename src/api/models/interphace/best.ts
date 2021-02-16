@@ -14,7 +14,7 @@ export interface BestFor {
     volume_base : number|string
   }
   spread_quote : number|string
-  spread_usd : number|string
+  spread_usd : number
 }
 
 export interface Best {

@@ -9,7 +9,7 @@ const schema = new Schema({
     base : {type : String, required:'Vous devez entrer la base'},
     quote : {type : String, required:'Vous devez entrer la quote'},
     marketsForThis : {type : Number, default : 0},
-    isfor : Object,
+    isfor : {type : Object, required : true},
     exclusion : {
         isExclude : {type : Boolean, default : false},
         reasons : [{type : String, required : 'Vous devez renseigner aumoins 1 raison'}],

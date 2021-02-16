@@ -1,8 +1,10 @@
 import {Best, BestFor} from "../../../../models/interphace/best";
 import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../../config_bests";
+import {Podium} from "../../../../models/interphace/podium";
+
 
 //Trouve le Best d'une marche du podium
-async function calculPodium(isFor : number, bests : Best[]) : Promise<{[key:number]: string}> {
+async function calculPodium(isFor : number, bests : Best[]) : Promise<Podium> {
   let theBest : Best = undefined
   bests.forEach(best => {
     if(best.isfor[isFor].spread_quote && best.isfor[isFor].spread_usd){
@@ -12,17 +14,25 @@ async function calculPodium(isFor : number, bests : Best[]) : Promise<{[key:numb
         theBest = best
     }
   })
-  const result : string = theBest ? theBest.pair : null
-  return {[isFor]: result}
+
+  return theBest ? {
+    nameBest  : theBest.name,
+    spread_usd : +theBest.isfor[isFor].spread_usd,
+    pair : theBest.pair,
+    groupId : `${theBest.groupId}`,
+   index : isFor,
+  } : null
+
 }
 
 //Fabrique le podium de chaque valeur en dollar
-async function makePodium (bests : Best[]) : Promise<Record<number, string>[]>{
-  const promises: Promise<{[key:number]: string}>[] = []
+async function makePodium (bests : Best[]) : Promise<Podium[]>{
+  const promises: Promise<Podium>[] = []
   for (let i = START_GRAPH; i <= END_GRAPH; i += PAS_GRAPH){
     promises.push(calculPodium(i,bests))
   }
-  return await Promise.all(promises)
-}
+  const result : Podium[] =  await Promise.all(promises)
+  return result
 
+}
 export default makePodium

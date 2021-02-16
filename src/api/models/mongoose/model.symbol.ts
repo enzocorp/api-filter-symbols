@@ -11,7 +11,7 @@ const schema = new Schema({
     symbolCoinapi : {type : String, required:'Vous devez entrer le symbole CoinApi'},
     base : {type : String, required:'Vous devez entrer la base'},
     quote : {type : String, required:'Vous devez entrer la quote'},
-    isfor : Object,
+    isfor : {type : Object, required : true},
     date : {type : Date, default : ()=> new Date() },
 })
 

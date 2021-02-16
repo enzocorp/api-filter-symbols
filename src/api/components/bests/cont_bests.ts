@@ -4,6 +4,7 @@ import modelBest from "../../models/mongoose/model.best";
 import modelSymbol from "../../models/mongoose/model.symbol";
 import {RequesterMongo} from "../../../services/requesterMongo";
 import {Best} from "../../models/interphace/best";
+import modelPodium from "../../models/mongoose/model.podium";
 
 export const get_bests = async  (req,res,next)=>{
     try{
@@ -25,6 +26,15 @@ export const get_best = async  (req,res,next)=>{
     }
 }
 
+export const get_podium = async  (req,res,next)=>{
+  try {
+    const podium = await modelPodium.find({groupId : req.params.groupId})
+    res.status(200).json({data : podium})
+  }catch (error){
+    return  next(error)
+  }
+}
+
 
 export const get_last_groupId = async  (req, res,next)=>{
     try{
@@ -39,7 +49,7 @@ export const get_last_groupId = async  (req, res,next)=>{
 
 export const calcul_bests = async  (req,res,next)=>{
   try{
-    let {positivesBests,pairs,symbols} = await programmeBests()
+    let {positivesBests,pairs,symbols,podium} = await programmeBests()
 
     const bulkPairs = pairs.map(pair => ({
         updateOne: {
@@ -54,14 +64,15 @@ export const calcul_bests = async  (req,res,next)=>{
             update: { $set: symbol },
         }
     }));
-    const [updtPairs,bests,updtSymbs] = await Promise.all([
-        modelPair.collection.bulkWrite(bulkPairs),
-        modelBest.insertMany(positivesBests),
-        modelSymbol.collection.bulkWrite(bulkSymbols)
+    const [insertedPairs,insertedBests,insertedPodium,insertedSymbs] = await Promise.all([
+      modelPair.collection.bulkWrite(bulkPairs),
+      modelBest.insertMany(positivesBests),
+      modelPodium.insertMany(podium),
+      modelSymbol.collection.bulkWrite(bulkSymbols)
     ])
 
     console.log('calcul fini avec succes')
-    res.status(200).json({title : "Calcul effectué avec succès",data : bests, metadata : {pairs : updtPairs, symbols : updtSymbs}})
+    res.status(200).json({title : "Calcul effectué avec succès",data : insertedBests, metadata : {pairs : insertedPairs, symbols : insertedSymbs}})
   }
    catch (error){
        return  next(error)

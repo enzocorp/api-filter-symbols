@@ -10,7 +10,7 @@ const schema = new Schema({
   base : {type : String, required:"Vous devez entrer la base"},
   groupId : {type : String, required: true},
   createdBy : {type : String, required : true},
-  isfor : Object,
+  isfor : {type : Object, required : true},
   date : {type : Date, default : ()=> new Date()},
 });
 
