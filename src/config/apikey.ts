@@ -12,13 +12,13 @@ export const coinapi_key = async () : Promise<Apikey['key']> => {
 }
 
 const change_key = async (prevkey : Apikey = null) : Promise<Apikey> => {
-  if (!prevkey){
+  if (prevkey)
     await modelApikey.findOneAndUpdate({used : true}, {used : false})
-  }
+
   const newkey = ( await modelApikey.find({}).sort({'remaining': -1}).limit(1)  )[0] //Recupère la meilleur clée
-  if(newkey){
+  if(newkey)
     await modelApikey.findOneAndUpdate({key : newkey.key},{used : true})
-  }
+
   return newkey
 }
 
