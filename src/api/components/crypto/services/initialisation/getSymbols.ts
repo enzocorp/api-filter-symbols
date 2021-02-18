@@ -1,11 +1,11 @@
 import axios from 'axios'
-import {Market} from "../../../models/interphace/market";
-import {Symbol, SymbolFor} from "../../../models/interphace/symbol";
+import {Market} from "../../../../models/interphace/market";
+import {Symbol, SymbolFor} from "../../../../models/interphace/symbol";
 
-import {Asset} from "../../../models/interphace/asset";
-import {COINAPI_URL} from "../../../../config/globals";
-import {symbol_type, symbol_volume_usd1day} from "../config_init";
-import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../../bests/config_bests";
+import {Asset} from "../../../../models/interphace/asset";
+import {COINAPI_URL} from "../../../../../config/globals";
+import {symbol_type, symbol_volume_usd1day} from "../../config_init";
+import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../../../bests/config_bests";
 
 
 interface resp_symbols {

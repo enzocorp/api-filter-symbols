@@ -1,6 +1,5 @@
 import {Document, model, Schema} from 'mongoose'
 import uniqueValidator from 'mongoose-unique-validator'
-import {Symbol} from "../interphace/symbol";
 import {Asset} from "../interphace/asset";
 
 interface IAssetDoc extends Document,Asset {}

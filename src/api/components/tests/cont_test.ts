@@ -1,20 +1,22 @@
-import getMarkets from "../crypto/initialisation/getMarkets";
-import getAsssets from "../crypto/initialisation/getAsssets";
-import buildPairs from "../crypto/initialisation/buildPairs";
+import getMarkets from "../crypto/services/initialisation/getMarkets";
+import getAsssets from "../crypto/services/initialisation/getAsssets";
+import buildPairs from "../crypto/services/initialisation/buildPairs";
 import modelPair from "../../models/mongoose/model.pair";
 import modelMarket from "../../models/mongoose/model.market";
 import modelGlobal from "../../models/mongoose/model.global";
 import modelReason from "../../models/mongoose/model.reason";
-import getSymbols from "../crypto/initialisation/getSymbols";
+import getSymbols from "../crypto/services/initialisation/getSymbols";
 import modelSymbol from "../../models/mongoose/model.symbol";
 import modelAsset from "../../models/mongoose/model.asset";
-import finalFilters from "../crypto/initialisation/finalFilters";
+import finalFilters from "../crypto/services/initialisation/finalFilters";
 import {Pair} from "../../models/interphace/pair";
 import {Asset} from "../../models/interphace/asset";
-import patchMiss from "../crypto/initialisation/patchMissing";
+import patchMiss from "../crypto/services/initialisation/patchMissing";
 import {Market} from "../../models/interphace/market";
 import {Best} from "../../models/interphace/best";
 import modelBest from "../../models/mongoose/model.best";
+import {COINAPI_URL} from "../../../config/globals";
+import axios from "axios";
 
 export const ping = async (req,res,next)=> {
     try {
@@ -128,38 +130,9 @@ export const test3 = async  (req,res,next)=>{
 
 export const test4 = async  (req,res,next)=>{
     try{
-        let [tempMarkets,tempAssets] = await Promise.all([
-            getMarkets(),
-            getAsssets()
-        ])
-        let symbols = await getSymbols(tempMarkets,tempAssets)
-        let [missAssets,missMarkets] = await patchMiss(tempMarkets,tempAssets,symbols)
-
-        let [[assets,markets],pairs] : [[Asset[],Market[]],Pair[]] = await Promise.all([
-            finalFilters(symbols,tempAssets.concat(missAssets),tempMarkets.concat(missMarkets)),
-            buildPairs(symbols)
-        ])
-        const createBulk = async (items : Array<{name : string} & any>) => items.map(item => ({
-            updateOne: {
-                filter: { name : item.name },
-                update: { $setOnInsert: {...item} },
-                upsert: true
-            }
-        })); //Seul les INSERTION seront traitées grace au "$setOnInsert"!
-
-        const [bulkOpsPairs,bulkOpsMarkets,bulkOpsAssets,bulkOpsSymbols] = await Promise.all([
-            createBulk(pairs),
-            createBulk(markets),
-            createBulk(assets),
-            createBulk(symbols)
-        ])
-        const [resPairs,resMarkets,resSymbols,resAssets] = await Promise.all([
-            modelPair.collection.bulkWrite(bulkOpsPairs),
-            modelMarket.collection.bulkWrite(bulkOpsMarkets),
-            modelSymbol.collection.bulkWrite(bulkOpsSymbols),
-            modelAsset.collection.bulkWrite(bulkOpsAssets),
-        ])
-        res.status(200).json({title : 'Initialisation effectuée avec succès',data : {resPairs, resMarkets,resSymbols,resAssets}})
+        let {data} = await axios.get(`${COINAPI_URL}/v1/assets/BTC`)
+        console.log("okay")
+        res.status(200).json({ok : "salut salut", data})
     }
     catch (error){
         return  next(error)

@@ -15,5 +15,5 @@ const defUrl = () => {
   }
 }
 
-export const COINAPI_KEY = process.env.COINAPI_KEY
+
 export const COINAPI_URL = defUrl()

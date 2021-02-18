@@ -1,13 +1,13 @@
-import modelGlobal from "../models/mongoose/model.global";
-import {Coinapi} from "../models/interphace/global";
+import modelApikey from "../models/mongoose/model.apikey";
+import {Apikey} from "../models/interphace/apikey";
 
 export async function coinapiLimit(req, res, next) {
   const oldSend = res.send;
   res.send = async function(data){
     try{
-      const infos : Coinapi = await modelGlobal.findOne({name :'coinapi'}).lean()
+      const apikey : Apikey = await modelApikey.findOne({used :true}).lean()
       let arg = JSON.parse(arguments[0] || '{}')
-      arguments[0] = JSON.stringify({...arg,coinapi : verifyDate(infos)})
+      arguments[0] = JSON.stringify({...arg,coinapi : verifyDate(apikey)})
       oldSend.apply(res, arguments);
     }
     catch (err){
@@ -17,9 +17,9 @@ export async function coinapiLimit(req, res, next) {
   next();
 }
 
-function verifyDate(infos : Coinapi) : Coinapi{
-  if (Date.parse(infos.dateReflow) < Date.now())
-    return {dateReflow : infos.dateReflow, remaining : '100', limit : '100'}
+function verifyDate(apikey : Apikey) : Apikey{
+  if (apikey.dateReflow.getTime() < Date.now())
+    return {...apikey, dateReflow : apikey.dateReflow, remaining : apikey.limit, limit : apikey.limit}
   else
-    return infos
+    return apikey
 }

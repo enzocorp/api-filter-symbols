@@ -1,6 +1,6 @@
-import {Pair, PairFor} from "../../../models/interphace/pair";
-import {Symbol} from "../../../models/interphace/symbol";
-import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../../bests/config_bests";
+import {Pair, PairFor} from "../../../../models/interphace/pair";
+import {Symbol} from "../../../../models/interphace/symbol";
+import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../../../bests/config_bests";
 
 
 //Construit les pairs a partir des symboles finaux

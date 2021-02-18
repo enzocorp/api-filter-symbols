@@ -1,14 +1,15 @@
 import schedule from "node-schedule";
 import axios from "axios";
 import app from "./api/app";
-import {API_PORT, API_NAME, COINAPI_KEY, COINAPI_URL, NODE_ENV} from "./config/globals";
+import {API_PORT, API_NAME, COINAPI_URL, NODE_ENV} from "./config/globals";
 import {dbConnexion} from "./config/db";
+import {coinapi_key} from "./config/apikey";
 
 //-------------------Connexion à la BDD ------------------------------------------
 dbConnexion()
 
 console.log(`Le nom de l'api est --"${API_NAME}"-- `)
-console.log("LA clé d'api est",COINAPI_KEY)
+coinapi_key().then(key => console.log("La clé d'api est",key))
 console.log("L'url de CoinAPI est : ",COINAPI_URL)
 
 app.listen(API_PORT,()=>{

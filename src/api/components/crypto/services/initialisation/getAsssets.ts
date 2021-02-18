@@ -1,8 +1,8 @@
 import axios from 'axios'
-import {Asset} from "../../../models/interphace/asset";
-import {COINAPI_KEY, COINAPI_URL} from "../../../../config/globals";
-import {asset_symbolsCount, asset_volume_usd1day} from "../config_init";
-import ErrorsGenerator from "../../../../services/ErrorsGenerator";
+import {Asset} from "../../../../models/interphace/asset";
+import {COINAPI_URL} from "../../../../../config/globals";
+import {asset_symbolsCount, asset_volume_usd1day} from "../../config_init";
+import ErrorsGenerator from "../../../../../services/ErrorsGenerator";
 import {StatusCodes} from "http-status-codes";
 import path from "path";
 import debuger, {Debugger} from "debug";

@@ -1,34 +1,50 @@
 import modelGlobal from "../models/mongoose/model.global";
 import debuger, {Debugger} from "debug";
+import modelApikey from "../models/mongoose/model.apikey";
+import axios from "axios";
+import {coinapi_key} from "../../config/apikey";
 
 const debug : Debugger = debuger('api:axiosInterceptor')
 
 export async function saveCoinapiLimitSucces (resp) {
-  if (resp && resp.headers['x-ratelimit-used'])
-    await modelGlobal.updateOne(
-      {name : 'coinapi'},
-      {
-        name : 'coinapi',
-        limit : resp.headers['x-ratelimit-limit'],
-        remaining : resp.headers['x-ratelimit-remaining'],
-        dateReflow : resp.headers['x-ratelimit-reset']
-      },
-      { upsert : true})
-  return resp;
+  try{
+    const usedKey = resp?.config?.headers['X-CoinAPI-Key']
+    if (usedKey && resp.headers['x-ratelimit-limit'])
+      await modelApikey.updateOne(
+        {used : true, key : usedKey},
+        {
+          limit : +resp.headers['x-ratelimit-limit'],
+          remaining : +resp.headers['x-ratelimit-remaining'],
+          dateReflow : resp.headers['x-ratelimit-reset']
+        },
+        { upsert : false}
+      )
+    coinapi_key().then(key => axios.defaults.headers.common['X-CoinAPI-Key'] = key)// A la fin de chaque requetes axios on met a jour la clé d'api
+    return resp;
+  }
+  catch (err){
+    return resp;
+  }
 }
 
 
 export async function saveCoinapiLimitError (error) {
-  const {response} = error
-  if (response && response.headers['x-ratelimit-used'])
-    await modelGlobal.updateOne(
-      {name : 'coinapi'},
-      {
-        name : 'coinapi',
-        limit : response.headers['x-ratelimit-limit'],
-        remaining : response.headers['x-ratelimit-remaining'],
-        dateReflow : response.headers['x-ratelimit-reset']
-      },
-      { upsert : true})
-  return error;
+  try{
+    const {response} = error
+    const usedKey = response?.config?.headers['X-CoinAPI-Key']
+    if (usedKey && response.headers['x-ratelimit-limit'])
+      await modelGlobal.updateOne(
+        {used : true, },
+        {
+          limit : +response.headers['x-ratelimit-limit'],
+          remaining : +response.headers['x-ratelimit-remaining'],
+          dateReflow : response.headers['x-ratelimit-reset']
+        },
+        { upsert : false})
+    coinapi_key().then(key => axios.defaults.headers.common['X-CoinAPI-Key'] = key)//Si une requêtes axios échoue on met a jour la clé d'api qu'utilisera l'app
+    return error;
+  }
+  catch (catchedErr){
+    return error
+  }
 }

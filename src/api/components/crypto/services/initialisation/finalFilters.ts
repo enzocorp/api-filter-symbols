@@ -1,7 +1,7 @@
-import {Symbol} from "../../../models/interphace/symbol";
-import {Asset} from "../../../models/interphace/asset";
-import {Market} from "../../../models/interphace/market";
-import modelAsset from "../../../models/mongoose/model.asset";
+import {Symbol} from "../../../../models/interphace/symbol";
+import {Asset} from "../../../../models/interphace/asset";
+import {Market} from "../../../../models/interphace/market";
+import modelAsset from "../../../../models/mongoose/model.asset";
 
 
 

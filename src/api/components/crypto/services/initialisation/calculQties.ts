@@ -1,6 +1,6 @@
-import modelSymbol from "../../../models/mongoose/model.symbol";
-import modelPair from "../../../models/mongoose/model.pair";
-import modelMarket from "../../../models/mongoose/model.market";
+import modelSymbol from "../../../../models/mongoose/model.symbol";
+import modelPair from "../../../../models/mongoose/model.pair";
+import modelMarket from "../../../../models/mongoose/model.market";
 
 
 //Calcul la qté de market présent pour une paire

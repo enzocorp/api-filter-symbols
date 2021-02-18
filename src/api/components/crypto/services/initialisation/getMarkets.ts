@@ -1,9 +1,9 @@
 import axios from 'axios'
-import {Market} from "../../../models/interphace/market";
-import {COINAPI_URL} from "../../../../config/globals";
-import {market_symbolsCount, market_volume_usd1day} from "../config_init";
+import {Market} from "../../../../models/interphace/market";
+import {COINAPI_URL} from "../../../../../config/globals";
+import {market_symbolsCount, market_volume_usd1day} from "../../config_init";
 import debuger, {Debugger} from "debug";
-import ErrorsGenerator from "../../../../services/ErrorsGenerator";
+import ErrorsGenerator from "../../../../../services/ErrorsGenerator";
 import {StatusCodes} from "http-status-codes";
 import path from "path";
 
