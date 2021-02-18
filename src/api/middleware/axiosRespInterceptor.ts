@@ -1,4 +1,3 @@
-import modelGlobal from "../models/mongoose/model.global";
 import debuger, {Debugger} from "debug";
 import modelApikey from "../models/mongoose/model.apikey";
 import axios from "axios";
@@ -33,7 +32,7 @@ export async function saveCoinapiLimitError (error) {
     const {response} = error
     const usedKey = response?.config?.headers['X-CoinAPI-Key']
     if (usedKey && response.headers['x-ratelimit-limit'])
-      await modelGlobal.updateOne(
+      await modelApikey.updateOne(
         {used : true, },
         {
           limit : +response.headers['x-ratelimit-limit'],

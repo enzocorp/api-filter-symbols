@@ -1,18 +1,4 @@
-import getMarkets from "../crypto/services/initialisation/getMarkets";
-import getAsssets from "../crypto/services/initialisation/getAsssets";
-import buildPairs from "../crypto/services/initialisation/buildPairs";
-import modelPair from "../../models/mongoose/model.pair";
-import modelMarket from "../../models/mongoose/model.market";
-import modelGlobal from "../../models/mongoose/model.global";
 import modelReason from "../../models/mongoose/model.reason";
-import getSymbols from "../crypto/services/initialisation/getSymbols";
-import modelSymbol from "../../models/mongoose/model.symbol";
-import modelAsset from "../../models/mongoose/model.asset";
-import finalFilters from "../crypto/services/initialisation/finalFilters";
-import {Pair} from "../../models/interphace/pair";
-import {Asset} from "../../models/interphace/asset";
-import patchMiss from "../crypto/services/initialisation/patchMissing";
-import {Market} from "../../models/interphace/market";
 import {Best} from "../../models/interphace/best";
 import modelBest from "../../models/mongoose/model.best";
 import {COINAPI_URL} from "../../../config/globals";
@@ -106,8 +92,7 @@ export const test1 = async  (req,res,next)=>{
 
 export const test2 = async  (req,res,next)=>{
     try{
-        const infos = await modelGlobal.findOne({name :'coinapi'})
-        res.status(200).json({data : infos})
+        res.status(200).json({data : "yoyo"})
     }
     catch (error){
         res.status(500).json({title : "Une error lors de l'init est survenue", message : error.message})

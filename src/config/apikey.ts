@@ -15,7 +15,7 @@ const change_key = async (prevkey : Apikey = null) : Promise<Apikey> => {
   if (prevkey)
     await modelApikey.findOneAndUpdate({used : true}, {used : false})
 
-  const newkey = ( await modelApikey.find({}).sort({'remaining': -1}).limit(1)  )[0] //Recupère la meilleur clée
+  const newkey = ( await modelApikey.find({}).sort({'remaining': -1}).limit(1)  )[0] //Recupère la meilleur clé
   if(newkey)
     await modelApikey.findOneAndUpdate({key : newkey.key},{used : true})
 

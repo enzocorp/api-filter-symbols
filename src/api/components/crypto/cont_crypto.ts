@@ -10,15 +10,12 @@ import getSymbols from "./services/initialisation/getSymbols";
 import modelSymbol from "../../models/mongoose/model.symbol";
 import modelAsset from "../../models/mongoose/model.asset";
 import finalFilters from "./services/initialisation/finalFilters";
-import {Pair} from "../../models/interphace/pair";
 import {Asset} from "../../models/interphace/asset";
 import patchMiss from "./services/initialisation/patchMissing";
 import {Market} from "../../models/interphace/market";
 import calculQties from "./services/initialisation/calculQties";
-import modelGlobal from "../../models/mongoose/model.global";
 import ErrorsGenerator from "../../../services/ErrorsGenerator";
 import {StatusCodes} from "http-status-codes";
-import {Coinapi} from "../../models/interphace/global";
 import {Symbol} from "../../models/interphace/symbol";
 import {Apikey} from "../../models/interphace/apikey";
 import modelApikey from "../../models/mongoose/model.apikey";
@@ -75,7 +72,7 @@ export const get_coinapi = async  (req,res,next)=>{
         let apikey : Apikey = await modelApikey.findOne({used : true})
         if (!apikey) throw new ErrorsGenerator(
               "Clée d'api manquante",
-              "La base de donnée ne contient aucune clées d'api",
+              "La base de donnée ne contient aucune clés d'api",
               StatusCodes.NOT_FOUND
             )
         if (apikey.dateReflow.getTime() < Date.now())
