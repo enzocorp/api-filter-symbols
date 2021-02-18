@@ -9,7 +9,7 @@ import {Reason} from "../../models/interphace/reason";
 import getSymbols from "./initialisation/getSymbols";
 import modelSymbol from "../../models/mongoose/model.symbol";
 import modelAsset from "../../models/mongoose/model.asset";
-import filterAssetsMarkets from "./initialisation/filterAssetsMarkets";
+import finalFilters from "./initialisation/finalFilters";
 import {Pair} from "../../models/interphace/pair";
 import {Asset} from "../../models/interphace/asset";
 import patchMiss from "./initialisation/patchMissing";
@@ -19,18 +19,25 @@ import modelGlobal from "../../models/mongoose/model.global";
 import ErrorsGenerator from "../../../services/ErrorsGenerator";
 import {StatusCodes} from "http-status-codes";
 import {Coinapi} from "../../models/interphace/global";
+import {Symbol} from "../../models/interphace/symbol";
 
 export const init_app = async  (req,res,next)=>{
     try{
-        let tempAssets = await getAsssets()
-        let tempMarkets = await getMarkets()
-        let symbols = await getSymbols(tempMarkets,tempAssets)
-        let [missAssets,missMarkets] = await patchMiss(tempMarkets,tempAssets,symbols)
+        //On recupere les asset et les market pour construire nos symboles
+        let assetsGetted : Asset[] = await getAsssets()
+        let marketsGetted : Market[] = await getMarkets()
 
-        let [[assets,markets],pairs] : [[Asset[],Market[]],Pair[]] = await Promise.all([
-            filterAssetsMarkets(symbols,tempAssets.concat(missAssets),tempMarkets.concat(missMarkets)),
-            buildPairs(symbols)
-        ])
+        //On recupere les sumboles grace aux assets et aux markets
+        let symbolsGetted : Symbol[] = await getSymbols(marketsGetted,assetsGetted)
+
+        //On esseye de recuperer les markets et assets manquant dans les symboles
+        let [missAssets,missMarkets] = await patchMiss(marketsGetted,assetsGetted,symbolsGetted)
+        assetsGetted.push(...missAssets)
+        marketsGetted.push(...missMarkets)
+
+        const {markets,assets, symbols} = await finalFilters(symbolsGetted,assetsGetted,marketsGetted )
+        const pairs = await buildPairs(symbols)
+
         const createBulk = async (items : Array<{name : string} & any>) => items.map(item => ({
             updateOne: {
                 filter: { name : item.name },

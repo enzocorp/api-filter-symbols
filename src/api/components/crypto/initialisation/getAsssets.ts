@@ -50,21 +50,26 @@ async function getAsssets (params = {}) : Promise<Asset[]> {
 
     return <Asset[]>(
       assets.filter(asset=> asset.volume_1day_usd >= asset_volume_usd1day && asset.data_symbols_count >= asset_symbolsCount)
-        .map(asset => ({
-          name: asset.asset_id,
-          longName: asset.name,
-          price_usd: asset.price_usd || 1,
-          typeIsCrypto: !!asset.type_is_crypto,
-          inPairCount : asset.data_symbols_count,
-          exclusion: {
-            isExclude: false,
-            reasons: [],
-            severity: 0,
-            excludeBy: null,
-            note: null
-          },
-          date : new Date()
-        }))
+        .map(asset => {
+          //Si coinapi ne renvois pas la valeur d'un asset indexé sur le dollar, alors on lui attribue 1$ en valeur par defaut
+          let usd = null
+          if (/USD/i.test(asset.asset_id)) usd = 1
+          return {
+            name: asset.asset_id ,
+            longName: asset.name,
+            price_usd: asset.price_usd || usd,
+            typeIsCrypto: !!asset.type_is_crypto,
+            inPairCount : asset.data_symbols_count,
+            exclusion: {
+              isExclude: false,
+              reasons: [],
+              severity: 0,
+              excludeBy: null,
+              note: null
+            },
+            date : new Date()
+          }
+        })
     )
 }
 
