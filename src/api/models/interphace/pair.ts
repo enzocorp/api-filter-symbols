@@ -18,6 +18,7 @@ export interface Pair {
   marketsForThis? : number
   isfor : Record<number, PairFor>
   exclusion : {
+    severityHistoric : number
     isExclude : boolean
     reasons : string[]
     severity : number

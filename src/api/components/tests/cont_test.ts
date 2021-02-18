@@ -8,7 +8,7 @@ import modelReason from "../../models/mongoose/model.reason";
 import getSymbols from "../crypto/initialisation/getSymbols";
 import modelSymbol from "../../models/mongoose/model.symbol";
 import modelAsset from "../../models/mongoose/model.asset";
-import filterAssetsMarkets from "../crypto/initialisation/filterAssetsMarkets";
+import finalFilters from "../crypto/initialisation/finalFilters";
 import {Pair} from "../../models/interphace/pair";
 import {Asset} from "../../models/interphace/asset";
 import patchMiss from "../crypto/initialisation/patchMissing";
@@ -136,7 +136,7 @@ export const test4 = async  (req,res,next)=>{
         let [missAssets,missMarkets] = await patchMiss(tempMarkets,tempAssets,symbols)
 
         let [[assets,markets],pairs] : [[Asset[],Market[]],Pair[]] = await Promise.all([
-            filterAssetsMarkets(symbols,tempAssets.concat(missAssets),tempMarkets.concat(missMarkets)),
+            finalFilters(symbols,tempAssets.concat(missAssets),tempMarkets.concat(missMarkets)),
             buildPairs(symbols)
         ])
         const createBulk = async (items : Array<{name : string} & any>) => items.map(item => ({

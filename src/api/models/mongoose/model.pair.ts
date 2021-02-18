@@ -11,6 +11,7 @@ const schema = new Schema({
     marketsForThis : {type : Number, default : 0},
     isfor : {type : Object, required : true},
     exclusion : {
+        severityHistoric : {type: Number, required : "Veuillez entrer l'historique de sévérité"},
         isExclude : {type : Boolean, default : false},
         reasons : [{type : String, required : 'Vous devez renseigner aumoins 1 raison'}],
         severity : {type: Number, required : 'vous devez entrer la severité'},

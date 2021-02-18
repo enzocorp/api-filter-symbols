@@ -30,6 +30,7 @@ async function buildPairs (symbols : Symbol[]) :Promise< Pair[]> {
         quote : symbol.quote,
         isfor,
         exclusion: {
+          severityHistoric : null, //Null signifie qu'aucun asset n'est ban, s'il y a un nombre alors aumoins 1 asset qui est ban
           isExclude: false,
           reasons: [],
           severity: 0,
