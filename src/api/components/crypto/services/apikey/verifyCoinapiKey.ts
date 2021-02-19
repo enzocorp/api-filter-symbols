@@ -7,7 +7,7 @@ import modelApikey from "../../../../models/mongoose/model.apikey";
 
 interface axios_resp  {
   data? : any
-  response? : { data : {error : string} }
+  response? : { data : Object, headers : Object, config : {headers : Object}}
   headers : Object
 }
 
@@ -32,12 +32,19 @@ async function verifyCoinapiKey (key : string) : Promise<{limit : number, remain
   }
 
   let url = `${COINAPI_URL}/v1/assets/BTC`
-  let {headers} : axios_resp =  await axios.get(url, {headers: { 'X-CoinAPI-Key' : key } })
+  let {headers,response} : axios_resp =  await axios.get(url, {headers: { 'X-CoinAPI-Key' : key } })
   if (headers && headers['x-ratelimit-limit']){
     return {
       limit : +headers['x-ratelimit-limit'],
       remaining : +headers['x-ratelimit-remaining'],
       dateReflow : headers['x-ratelimit-reset']
+    }
+  }
+  else if (response && response.headers['x-ratelimit-limit']){
+    return {
+      limit : +response.headers['x-ratelimit-limit'],
+      remaining : +response.headers['x-ratelimit-remaining'],
+      dateReflow : response.headers['x-ratelimit-reset']
     }
   }
   else {
@@ -49,5 +56,6 @@ async function verifyCoinapiKey (key : string) : Promise<{limit : number, remain
     )
   }
 }
+
 
 export default verifyCoinapiKey

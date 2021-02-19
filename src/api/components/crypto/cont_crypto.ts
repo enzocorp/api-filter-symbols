@@ -19,9 +19,10 @@ import {StatusCodes} from "http-status-codes";
 import {Symbol} from "../../models/interphace/symbol";
 import {Apikey} from "../../models/interphace/apikey";
 import modelApikey from "../../models/mongoose/model.apikey";
-import verifyCoinapiKey from "./services/apikey/verifyCoinapiKey";
 import axios from "axios";
 import {coinapi_key} from "../../../config/apikey";
+import path from "path";
+import {COINAPI_URL} from "../../../config/globals";
 
 export const init_app = async  (req,res,next)=>{
     try{
@@ -161,6 +162,27 @@ export const choose_apikey = async  (req, res, next)=> {
         }else  {
             throw "Erreur de clés"
         }
+    }
+    catch (error){
+        return next(error)
+    }
+}
+
+export const refresh_apikey = async  (req, res, next)=> {
+    try{
+        const key = req.params.key
+        if(!key || key.length === 0){
+            throw new ErrorsGenerator(
+              "Il faut indiquer la clé d'api",
+              "Vous devez fournir une clé d'api",
+              StatusCodes.BAD_REQUEST,
+              "/" + path.basename(__filename)
+            )
+        }
+        let url = `${COINAPI_URL}/v1/assets/BTC`
+        //On effectue simplement une requête axios, les middlewares déjà existants se chargeront traiter la réponse et de mettre a jour la clé.
+        await axios.get(url, {headers: { 'X-CoinAPI-Key' : key } })
+        res.status(200).json({title : "Raffraichissement effectué"})
     }
     catch (error){
         return next(error)
