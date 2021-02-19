@@ -1,10 +1,11 @@
 import axios from 'axios'
-import {Market} from "../../../models/interphace/market";
-import {Symbol, SymbolFor} from "../../../models/interphace/symbol";
+import {Market} from "../../../../models/interphace/market";
+import {Symbol, SymbolFor} from "../../../../models/interphace/symbol";
 
-import {Asset} from "../../../models/interphace/asset";
-import {COINAPI_URL} from "../../../../config/globals";
-import {symbol_type, symbol_volume_usd1day} from "./config_filter";
+import {Asset} from "../../../../models/interphace/asset";
+import {COINAPI_URL} from "../../../../../config/globals";
+import {symbol_type, symbol_volume_usd1day} from "../../config_init";
+import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../../../bests/config_bests";
 
 
 interface resp_symbols {
@@ -31,7 +32,8 @@ async function  strAssetsNames(assets : Asset[]) : Promise<string> {
   return str
 }
 
-async function findSymbols (markets : Market[],assets : Asset[]) :  Promise<Symbol[]> {
+//Recupere les symbols sur coinapi en fonction des markets et des paires demandées
+async function getSymbols (markets : Market[], assets : Asset[]) :  Promise<Symbol[]> {
   let url = `${COINAPI_URL}/v1/symbols`
   let [strMarkets, strAssets] = await Promise.all([
     strMarketsNames(markets),
@@ -49,10 +51,15 @@ async function findSymbols (markets : Market[],assets : Asset[]) :  Promise<Symb
     notEnoughVolFreq : 0,
     prixMoyen_quote :null
   }
-  const isFor : SymbolFor = {
-    buy : side,
-    sell : side,
+
+  let isfor = {}
+  for (let i = START_GRAPH; i <= END_GRAPH; i += PAS_GRAPH){
+    isfor[i] = {
+      buy : side,
+      sell : side,
+    }
   }
+
   symbols = symbols.filter(symbol=> symbol.volume_1day_usd >= symbol_volume_usd1day && symbol.symbol_type === symbol_type)
   return <Symbol[]>(
    symbols.filter(symbol=> (
@@ -65,9 +72,7 @@ async function findSymbols (markets : Market[],assets : Asset[]) :  Promise<Symb
       symbolCoinapi: symb.symbol_id,
       base : symb.asset_id_base,
       quote : symb.asset_id_quote,
-      for1k : isFor,
-      for15k : isFor,
-      for30k : isFor,
+      isfor,
       exclusion: {
         isExclude: false,
         reasons: [],
@@ -81,4 +86,4 @@ async function findSymbols (markets : Market[],assets : Asset[]) :  Promise<Symb
 }
 
 
-export default findSymbols
+export default getSymbols

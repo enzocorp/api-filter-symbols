@@ -8,7 +8,8 @@ import cookieParser from "cookie-parser";
 import axios from "axios";
 import {saveCoinapiLimitError, saveCoinapiLimitSucces} from "./middleware/axiosRespInterceptor";
 import router from "./routes";
-import {API_NAME, COINAPI_KEY} from "../config/globals";
+import {API_NAME} from "../config/globals";
+import {coinapi_key} from "../config/apikey";
 
 const app = express()
 app.use(helmet())
@@ -31,10 +32,14 @@ app.use((req, res, next) => {
 
 //---------------------------Definition des headers de requête ------------------
 
-axios.defaults.headers.common['X-CoinAPI-Key'] = COINAPI_KEY;
-axios.defaults.headers.common['Accept-Encoding'] = 'deflate, gzip';
-axios.defaults.headers.common['Accept'] = 'application/json';
-axios.interceptors.response.use( saveCoinapiLimitSucces,saveCoinapiLimitError);
+let defineHeaders = async () : Promise<void> => {
+  axios.defaults.headers.common['X-CoinAPI-Key'] = await coinapi_key()
+  axios.defaults.headers.common['Accept-Encoding'] = 'deflate, gzip';
+  axios.defaults.headers.common['Accept'] = 'application/json';
+  axios.interceptors.response.use( saveCoinapiLimitSucces,saveCoinapiLimitError);
+}
+defineHeaders().then()
+
 
 
 //-------------------Les Routes ------------------------------------------

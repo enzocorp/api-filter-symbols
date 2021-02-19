@@ -11,36 +11,7 @@ const schema = new Schema({
     symbolCoinapi : {type : String, required:'Vous devez entrer le symbole CoinApi'},
     base : {type : String, required:'Vous devez entrer la base'},
     quote : {type : String, required:'Vous devez entrer la quote'},
-    sell : {
-        testedFreq :{type : Number, required : true},
-        notData :{type : Number, required : true},
-        notEnoughVolume_1kusd :{type : Number, required : true},
-        notEnoughVolume_15kusd :{type : Number, required : true},
-        notEnoughVolume_30kusd :{type : Number, required : true},
-
-        prixMoyen_for1kusd_quote :{type : Number, required : true},
-        prixMoyen_for15kusd_quote :{type : Number, required : true},
-        prixMoyen_for30kusd_quote :{type : Number, required : true},
-    },
-    buy : {
-        testedFreq :{type : Number, required : true},
-        notData :{type : Number, required : true},
-        notEnoughVolume_1kusd :{type : Number, required : true},
-        notEnoughVolume_15kusd :{type : Number, required : true},
-        notEnoughVolume_30kusd :{type : Number, required : true},
-
-        prixMoyen_for1kusd_quote :{type : Number, required : true},
-        prixMoyen_for15kusd_quote :{type : Number, required : true},
-        prixMoyen_for30kusd_quote :{type : Number, required : true},
-    },
-    exclusion : {
-        isExclude : {type : Boolean, default : false},
-        reasons : [{type : String, required : 'Vous devez renseigner aumoins 1 raison'}],
-        severity : {type: Number, required : 'vous devez entrer la severité'},
-        excludeBy : {type: String, required : 'vous devez entrer le nom du commenditaire'},
-        note : {type: String, default : ''},
-        date : {type : Date}
-    },
+    isfor : {type : Object, required : true},
     date : {type : Date, default : ()=> new Date() },
 })
 

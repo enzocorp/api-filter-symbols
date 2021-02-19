@@ -61,14 +61,15 @@ export const group_pairs_unreport = async  (req,res,next)=>{
     const names : string[] = req.body.data
     const bulkPair = names.map(name => ({
       updateOne: {
-        filter: { name : name },
+        filter: { name : name, "exclusion.severityHistoric" : null}, //Aucune actions n'est possible sur des pairs ban a cause de leurs symboles
         update: { $set: {
             exclusion : {
+              severityHistoric : null,
               isExclude : false,
               reasons : [],
               severity : 0,
               excludeBy : null,
-              note : null
+              note : null,
             }},
         },
         option : {upsert: false}
@@ -87,9 +88,10 @@ export const group_pairs_report = async  (req,res,next)=>{
     const {pairs : names ,...data} = req.body.data
     const bulkPairs = names.map(name => ({
       updateOne: {
-        filter: { name : name },
+        filter: { name : name, "exclusion.severityHistoric" : null}, //Aucune actions n'est possible sur des pairs ban a cause de leurs symboles
         update: { $set: {
             exclusion : {
+              severityHistoric : null,
               isExclude : data.severity === 4,
               reasons : data.reasons,
               severity : data.severity,

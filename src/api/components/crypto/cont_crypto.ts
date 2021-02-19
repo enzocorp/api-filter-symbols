@@ -1,39 +1,44 @@
-import findMarkets from "./initialisation/findMarkets";
-import findAssets from "./initialisation/findAssets";
-import makeInitPairs from "./initialisation/makePairs";
+import getMarkets from "./services/initialisation/getMarkets";
+import getAsssets from "./services/initialisation/getAsssets";
+import buildPairs from "./services/initialisation/buildPairs";
 import modelPair from "../../models/mongoose/model.pair";
 import modelMarket from "../../models/mongoose/model.market";
 import modelReason from "../../models/mongoose/model.reason";
 import modelSeverity from "../../models/mongoose/model.severity";
 import {Reason} from "../../models/interphace/reason";
-import findSymbols from "./initialisation/findSymbols";
+import getSymbols from "./services/initialisation/getSymbols";
 import modelSymbol from "../../models/mongoose/model.symbol";
 import modelAsset from "../../models/mongoose/model.asset";
-import filterAssetsMarkets from "./initialisation/filterAssetsMarkets";
-import {Pair} from "../../models/interphace/pair";
+import finalFilters from "./services/initialisation/finalFilters";
 import {Asset} from "../../models/interphace/asset";
-import patchMiss from "./initialisation/patchMissing";
+import patchMiss from "./services/initialisation/patchMissing";
 import {Market} from "../../models/interphace/market";
-import calculQties from "./initialisation/calculQties";
-import modelGlobal from "../../models/mongoose/model.global";
-import {Global} from "../../models/interphace/global";
+import calculQties from "./services/initialisation/calculQties";
 import ErrorsGenerator from "../../../services/ErrorsGenerator";
 import {StatusCodes} from "http-status-codes";
+import {Symbol} from "../../models/interphace/symbol";
+import {Apikey} from "../../models/interphace/apikey";
+import modelApikey from "../../models/mongoose/model.apikey";
+import axios from "axios";
+import {coinapi_key} from "../../../config/apikey";
+import path from "path";
+import {COINAPI_URL} from "../../../config/globals";
 
 export const init_app = async  (req,res,next)=>{
     try{
-        let tempAssets = await findAssets()
-        console.log("markets ok")
-        let tempMarkets = await findMarkets()
+        //On recupere les asset et les market pour construire nos symboles
+        let assetsGetted : Asset[] = await getAsssets()
+        let marketsGetted : Market[] = await getMarkets()
+        //On recupere les sumboles grace aux assets et aux markets
+        let symbolsGetted : Symbol[] = await getSymbols(marketsGetted,assetsGetted)
+        //On esseye de recuperer les markets et assets manquant dans les symboles
+        let [missAssets,missMarkets] = await patchMiss(marketsGetted,assetsGetted,symbolsGetted)
+        assetsGetted.push(...missAssets)
+        marketsGetted.push(...missMarkets)
 
+        const {markets,assets, symbols} = await finalFilters(symbolsGetted,assetsGetted,marketsGetted )
+        const pairs = await buildPairs(symbols)
 
-        let symbols = await findSymbols(tempMarkets,tempAssets)
-        let [missAssets,missMarkets] = await patchMiss(tempMarkets,tempAssets,symbols)
-
-        let [[assets,markets],pairs] : [[Asset[],Market[]],Pair[]] = await Promise.all([
-            filterAssetsMarkets(symbols,tempAssets.concat(missAssets),tempMarkets.concat(missMarkets)),
-            makeInitPairs(symbols)
-        ])
         const createBulk = async (items : Array<{name : string} & any>) => items.map(item => ({
             updateOne: {
                 filter: { name : item.name },
@@ -54,7 +59,6 @@ export const init_app = async  (req,res,next)=>{
             modelSymbol.collection.bulkWrite(bulkOpsSymbols),
             modelAsset.collection.bulkWrite(bulkOpsAssets),
         ])
-
         await calculQties()
         res.status(200).json({title : 'Initialisation effectuée avec succès',data : {resPairs, resMarkets,resSymbols,resAssets}})
     }
@@ -66,17 +70,16 @@ export const init_app = async  (req,res,next)=>{
 
 export const get_coinapi = async  (req,res,next)=>{
     try{
-        const coinapi : Global['coinapi'] = await modelGlobal.findOne({name :'coinapi'}).lean()
-        if (!coinapi)
-            throw new ErrorsGenerator("Pas de données","La base de donnée n'as pas d'infos sur les res CoinAPI restantes",StatusCodes.NOT_FOUND)
-        const verifyDate = (coin_api) => {
-            if (Date.parse(coin_api.dateReflow) < Date.now())
-                return {dateReflow : coin_api.dateReflow, remaining : '100', limit : '100'}
-            else
-                return coin_api
-        }
-        const infos = verifyDate(coinapi)
-          res.status(200).json({title : "Les infos de CoinAPI ont été récup de la base de donnée",coinapi : infos})
+        let apikey : Apikey = await modelApikey.findOne({used : true})
+        if (!apikey) throw new ErrorsGenerator(
+              "Clée d'api manquante",
+              "La base de donnée ne contient aucune clés d'api",
+              StatusCodes.NOT_FOUND
+            )
+        if (apikey.dateReflow.getTime() < Date.now())
+            apikey = {...apikey, dateReflow : apikey.dateReflow, remaining : apikey.limit, limit : apikey.limit}
+
+        res.status(200).json({title : "Les infos de CoinAPI ont été récup de la base de donnée",coinapi : apikey})
     }
     catch (error){
         return next(error)
@@ -94,7 +97,6 @@ export const autocompleteReasons = async  (req,res,next)=>{
     catch (error){
         return next(error)
     }
-
 }
 
 export const autocompleteSeverity= async  (req,res,next)=>{
@@ -105,7 +107,6 @@ export const autocompleteSeverity= async  (req,res,next)=>{
     catch (error){
         return next(error)
     }
-
 }
 
 export const newReason = async  (req,res,next)=>{
@@ -116,5 +117,85 @@ export const newReason = async  (req,res,next)=>{
     catch (error){
         return next(error)
     }
+}
 
+export const getall_apikeys = async  (req, res, next)=> {
+    try{
+        const apikeys : Apikey[] = await modelApikey.find({})
+        res.status(200).json({data : apikeys})
+    }
+    catch (error){
+        return next(error)
+    }
+}
+
+export const add_apikey = async  (req, res, next)=> {
+    try{
+        const key = req?.body?.key ? req.body.key.trim() : null
+        const data = await verifyCoinapiKey(key)
+        const apikey : Apikey = {
+            ...req.body,
+            key : key,
+            user_owner : 'unknow',
+            limit : +data.limit,
+            remaining : +data.remaining,
+            dateReflow : data.dateReflow,
+            used : false,
+
+        }
+        const newkey : Apikey = await new modelApikey(apikey).save()
+        res.status(200).json({title : "Ajout effectué", data : newkey})
+    }
+    catch (error){
+        return next(error)
+    }
+}
+
+export const choose_apikey = async  (req, res, next)=> {
+    try{
+        const key = req.params.key
+        let newChoice = await modelApikey.findOneAndUpdate({key : key}, {used : true})
+        if (newChoice){
+            axios.defaults.headers.common['X-CoinAPI-Key'] = newChoice.key
+            await modelApikey.updateOne({used : true,key : {$ne : newChoice.key}}, {used : false})
+            res.status(200).json({title : "Modifications effectuées"})
+        }else  {
+            throw "Erreur de clés"
+        }
+    }
+    catch (error){
+        return next(error)
+    }
+}
+
+export const refresh_apikey = async  (req, res, next)=> {
+    try{
+        const key = req.params.key
+        if(!key || key.length === 0){
+            throw new ErrorsGenerator(
+              "Il faut indiquer la clé d'api",
+              "Vous devez fournir une clé d'api",
+              StatusCodes.BAD_REQUEST,
+              "/" + path.basename(__filename)
+            )
+        }
+        let url = `${COINAPI_URL}/v1/assets/BTC`
+        //On effectue simplement une requête axios, les middlewares déjà existants se chargeront traiter la réponse et de mettre a jour la clé.
+        await axios.get(url, {headers: { 'X-CoinAPI-Key' : key } })
+        res.status(200).json({title : "Raffraichissement effectué"})
+    }
+    catch (error){
+        return next(error)
+    }
+}
+
+export const delete_apikey = async  (req,res,next)=> {
+    try{
+        await modelApikey.deleteOne({key : req.params.key})
+        axios.defaults.headers.common['X-CoinAPI-Key'] = await coinapi_key()
+        res.status(200).json({title : "Suppression effectué"})
+    }
+    catch (error){
+        return next(error)
+    }
 }

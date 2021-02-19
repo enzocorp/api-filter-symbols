@@ -3,17 +3,17 @@ export interface BestFor {
     market : string
     symbol : string
     website: string
-    price_quote : number
-    volume_base : number
+    price_quote : number|string
+    volume_base : number|string
   }
   sell : {
-    price_quote : number
     market : string
     symbol : string
     website: string
-    volume_base : number
+    price_quote : number|string
+    volume_base : number|string
   }
-  spread_quote : number
+  spread_quote : number|string
   spread_usd : number
 }
 
@@ -24,8 +24,6 @@ export interface Best {
   quote : string
   groupId : string
   createdBy : string,
-  for1k : BestFor
-  for15k : BestFor
-  for30k : BestFor
+  isfor : Record<number, BestFor>
   date? : Date
 }

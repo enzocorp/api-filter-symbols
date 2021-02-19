@@ -1,8 +1,10 @@
-import modelSymbol from "../../../models/mongoose/model.symbol";
-import modelPair from "../../../models/mongoose/model.pair";
-import modelMarket from "../../../models/mongoose/model.market";
+import modelSymbol from "../../../../models/mongoose/model.symbol";
+import modelPair from "../../../../models/mongoose/model.pair";
+import modelMarket from "../../../../models/mongoose/model.market";
 
-async function qtieMarketsInPairs() : Promise<any[]>{
+
+//Calcul la qté de market présent pour une paire
+async function qtyMarketsForPair() : Promise<any[]>{
   const counts  : Array<{_id : string, markets : string[]}> = await modelSymbol.aggregate([
     {$group :{_id: "$pair", markets: { $addToSet: "$market" }}},
   ])
@@ -15,7 +17,8 @@ async function qtieMarketsInPairs() : Promise<any[]>{
     }}))
 }
 
-async function qtiePairsInMarkets() : Promise<any[]>{
+//Calcul la qté de paires présentes dans un market
+async function qtyPairsInMarket() : Promise<any[]>{
   const counts  : Array<{_id : string, pairs : string[]}>= await modelSymbol.aggregate([
     {$group :{_id: "$market", pairs: { $addToSet: "$pair" }}},
   ])
@@ -28,10 +31,11 @@ async function qtiePairsInMarkets() : Promise<any[]>{
     }}))
 }
 
+//Pour chaque market et paire, calcul la qté de paire/market présent dans le/la market/pair
 async function calculQties(){
   const [bulkPairs,bulkMarkets] = await Promise.all([
-    qtieMarketsInPairs(),
-    qtiePairsInMarkets()
+    qtyMarketsForPair(),
+    qtyPairsInMarket()
   ])
   await Promise.all([
     modelPair.collection.bulkWrite(bulkPairs),

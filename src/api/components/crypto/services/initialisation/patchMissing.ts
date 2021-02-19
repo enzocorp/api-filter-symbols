@@ -1,12 +1,13 @@
-import {Market} from "../../../models/interphace/market";
-import {Symbol} from "../../../models/interphace/symbol";
-import {Asset} from "../../../models/interphace/asset";
-import findAssets from "./findAssets";
-import findMarkets from "./findMarkets";
+import {Market} from "../../../../models/interphace/market";
+import {Symbol} from "../../../../models/interphace/symbol";
+import {Asset} from "../../../../models/interphace/asset";
+import getAsssets from "./getAsssets";
+import getMarkets from "./getMarkets";
 import debuger from "debug";
 
 const debug = debuger("api:patchMissing")
 
+//recherche si des markets manquaient et les recupèrent sur coinapi
 async function  searchMissAssets(assets : Asset[], symbs : Symbol[]) : Promise<Asset[]> {
   const miss = new Set()
   symbs.forEach(symb => {
@@ -20,11 +21,12 @@ async function  searchMissAssets(assets : Asset[], symbs : Symbol[]) : Promise<A
   const tabmiss = [...miss]
   if (tabmiss.length){
     debug('il manquais des assets : ', tabmiss.toString())
-    return await findAssets({filter_asset_id : tabmiss.toString()})
+    return await getAsssets({filter_asset_id : tabmiss.toString()})
   }
   return  []
 }
 
+//recherche si des asset manquaient et les recupèrent sur coinapi
 async function  searchMissMarkets(markets : Market[], symbs : Symbol[]) : Promise<Market[]> {
   const miss = new Set()
   symbs.forEach(symb => {
@@ -35,11 +37,12 @@ async function  searchMissMarkets(markets : Market[], symbs : Symbol[]) : Promis
   const tabmiss = [...miss]
   if (tabmiss.length){
     debug('il manquais des markets : ', tabmiss.toString())
-    return await findMarkets({filter_exchange_id : tabmiss.toString()})
+    return await getMarkets({filter_exchange_id : tabmiss.toString()})
   }
   return  []
 }
 
+//Recherche et Récupère les eventuels markets et assets manquants par rapport aux symboles récupérés
 async function patchMiss (markets : Market[], assets : Asset[],symbols : Symbol[]) :  Promise<[Asset[],Market[]]> {
   try {
     const [missingAssets, missingMarkets] = await Promise.all([
