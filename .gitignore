@@ -1,5 +1,5 @@
 node_modules
 dist/**
-!dist/readme.txt
+!dist/readme.*
 .env
 .idea
