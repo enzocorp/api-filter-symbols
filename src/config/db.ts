@@ -8,6 +8,7 @@ export function dbConnexion(){
     MONGO_HOSTNAME,
     MONGO_INITDB_USERNAME : user,
     MONGO_INITDB_PASSWORD : pwd,
+    MONGO_URI
 
   } = process.env
 
@@ -20,6 +21,8 @@ export function dbConnexion(){
   let url : string
   if(process.env.NODE_ENV === 'development')
     url = `mongodb://${user}:${pwd}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB_DEV}?authSource=${MONGO_DB}`
+  else if(process.env.NODE_ENV === 'production')
+    url = `mongodb+srv://${user}:${pwd}@${MONGO_URI}/${MONGO_DB}?retryWrites=true&w=majority`
   else
     url = `mongodb://${user}:${pwd}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}`
 
