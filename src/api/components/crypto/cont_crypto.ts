@@ -23,6 +23,7 @@ import axios from "axios";
 import {coinapi_key} from "../../../config/apikey";
 import path from "path";
 import {COINAPI_URL} from "../../../config/globals";
+import verifyCoinapiKey from "./services/apikey/verifyCoinapiKey";
 
 export const init_app = async  (req,res,next)=>{
     try{
@@ -72,7 +73,7 @@ export const get_coinapi = async  (req,res,next)=>{
     try{
         let apikey : Apikey = await modelApikey.findOne({used : true})
         if (!apikey) throw new ErrorsGenerator(
-              "Clée d'api manquante",
+              "Auncune clé d'api enregistrée",
               "La base de donnée ne contient aucune clés d'api",
               StatusCodes.NOT_FOUND
             )
