@@ -1,4 +1,5 @@
 import {connect} from 'mongoose'
+import {NODE_ENV} from "./globals";
 
 export function dbConnexion(){
   const {
@@ -17,10 +18,11 @@ export function dbConnexion(){
     useCreateIndex : true ,
     useFindAndModify: false
   }
+
   let url : string
-  if(process.env.NODE_ENV === 'development')
+  if(NODE_ENV === 'development')
     url = `mongodb://${user}:${pwd}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB_DEV}?authSource=${MONGO_DB}`
-  else if(process.env.NODE_ENV === 'production')
+  else if(NODE_ENV === 'production')
     url = `mongodb+srv://${user}:${pwd}@${MONGO_URI}/${MONGO_DB}?retryWrites=true&w=majority`
   else
     url = `mongodb://${user}:${pwd}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}`

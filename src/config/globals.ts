@@ -2,6 +2,8 @@ export const API_NAME = process.env.API_NAME  || 'api1'
 export const API_PORT =  process.env.API_PORT || 3000
 export const NODE_ENV = process.env.NODE_ENV
 
+
+
 const defUrl = () => {
   switch (NODE_ENV) {
     case 'production' :
