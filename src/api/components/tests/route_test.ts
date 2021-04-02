@@ -1,9 +1,9 @@
 import express from 'express'
-import {ping, test1, test2, test3, test4} from "./cont_test";
+import {healthchecking, test1, test2, test3, test4} from "./cont_test";
 
 const routerTest = express.Router()
 
-routerTest.get('/',ping)
+routerTest.get('/',healthchecking)
 routerTest.get('/1',test1)
 routerTest.get('/2',test2)
 

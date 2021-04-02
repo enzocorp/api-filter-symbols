@@ -9,7 +9,6 @@ export function dbConnexion(){
     MONGO_INITDB_USERNAME : user,
     MONGO_INITDB_PASSWORD : pwd,
     MONGO_URI
-
   } = process.env
 
   const options = {
@@ -31,6 +30,6 @@ export function dbConnexion(){
     console.log('BDD MONGO EST CONNECTE SUR : ',url)
   })
     .catch((err)=>{
-      console.log('IL Y A UNE UNE ERREUR DE BASE DE DONNE !! : ',err)
+      console.log('IL Y A UNE UNE ERREUR DE BASE DE DONNE !! : ',`\n L'url DB : ${url}`,`\nl'erreur est : \n`,err)
     })
 }

@@ -8,13 +8,14 @@ import {coinapi_key} from "./config/apikey";
 //-------------------Connexion à la BDD ------------------------------------------
 dbConnexion()
 
+console.log(`L'environemment est en mode --"${NODE_ENV}"-- `)
 console.log(`Le nom de l'api est --"${API_NAME}"-- `)
 coinapi_key().then(key => console.log("La clé d'api est",key))
 console.log("L'url de CoinAPI est : ",COINAPI_URL)
-
 app.listen(API_PORT,()=>{
   console.log('Mon node js ecoute sur le port : ',API_PORT);
 })
+
 
 
 //-------------------Executions récurantes ------------------------------------------
