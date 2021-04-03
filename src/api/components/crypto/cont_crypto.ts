@@ -85,7 +85,6 @@ export const get_coinapi = async  (req,res,next)=>{
     catch (error){
         return next(error)
     }
-
 }
 
 

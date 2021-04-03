@@ -6,6 +6,7 @@ const debug : Debugger = debuger("api:md_error")
 
 function errorsHandler(error, req, res, next) {
     if(error instanceof ErrorsGenerator){
+      debug('%O',error)
       res.status(error.status)
         .send({
           title : error.title,
@@ -16,7 +17,7 @@ function errorsHandler(error, req, res, next) {
         });
     }
     else{
-        debug(error)
+      console.log('error-middleware',error)
         res.status(StatusCodes.SERVICE_UNAVAILABLE)
           .json( {
               status : error.status,

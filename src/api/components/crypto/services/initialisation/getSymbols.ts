@@ -32,6 +32,20 @@ async function  strAssetsNames(assets : Asset[]) : Promise<string> {
   return str
 }
 
+/*To fixed
+market 125 = 1000
+asset 1515 = 7320
+total = 8300
+ERROR
+----------------
+markets 125 = 1000
+asset 1300 = 6200
+total = 7200
+SUCESS --> Maximum de caracteres dans l'url doit être de 7200 caracteres
+*/
+
+
+
 //Recupere les symbols sur coinapi en fonction des markets et des paires demandées
 async function getSymbols (markets : Market[], assets : Asset[]) :  Promise<Symbol[]> {
   let url = `${COINAPI_URL}/v1/symbols`

@@ -2,7 +2,7 @@
 /*Ces parametres doivent êtres defini avant la premiere initialisation !! */
 
 //ASSETS
-export const asset_volume_usd1day : number = 200000 //Volume d"echange journalier minimum
+export const asset_volume_usd1day : number = 450000 //Volume d'echange journalier minimum
 export const asset_symbolsCount : number = 1 //Nombre minimum de symboles que dois contenir un asset
 
 //MARKETS
