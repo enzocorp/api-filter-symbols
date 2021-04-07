@@ -22,7 +22,7 @@ export function dbConnexion(){
   let url : string
   if(NODE_ENV === 'development')
     url = `mongodb://${user}:${pwd}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB_DEV}?authSource=${MONGO_DB}`
-  else if(NODE_ENV === 'production')
+  else if(MONGO_URI)
     url = `mongodb+srv://${user}:${pwd}@${MONGO_URI}/${MONGO_DB}?retryWrites=true&w=majority`
   else
     url = `mongodb://${user}:${pwd}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}`
