@@ -17,7 +17,7 @@ function errorsHandler(error, req, res, next) {
         });
     }
     else{
-      console.log('error-middleware',error)
+      console.log('unplanned error: ',error)
         res.status(StatusCodes.SERVICE_UNAVAILABLE)
           .json( {
               status : error.status,

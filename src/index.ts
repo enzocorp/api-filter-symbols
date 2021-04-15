@@ -33,9 +33,8 @@ schedule.scheduleJob('0 */15 * * *', async () =>{
 });
 
 
-
-//Lance un calcul des best tous les jours à 14h00(UTC Coordinated Universal Time) = 15h00 UTC+1 (Paris)
-schedule.scheduleJob('0 14 * * *', async () =>{
+//Lance un calcul des best tous les jours à 14h00 Paris
+schedule.scheduleJob({hour: 14, tz: 'Europe/Paris'}, async () =>{
   try{
     if (NODE_ENV === "production")
       await axios.get(`http://127.0.0.1:${API_PORT}/${API_NAME}/bests/calcul`)

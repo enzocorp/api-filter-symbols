@@ -40,7 +40,7 @@ export const unBanLinkedPairs = async  (assets : string[],side:'base'|'quote',st
     setReasons.delete(status)
     const keepExclude : boolean = setReasons.has(BAN_BASE) || setReasons.has(BAN_QUOTE)
     pair.exclusion = {
-      //On eneleve le ban uniquement si les 2 assets qui constituent la paire ne sont pas ban !! !!
+      //On enleve le ban uniquement si les 2 assets qui constituent la paire ne sont pas ban !! !!
       severityHistoric : keepExclude ? pair.exclusion.severityHistoric : null,
       isExclude : keepExclude ? true : pair.exclusion.severityHistoric === 4,
       reasons : [...setReasons],

@@ -32,14 +32,13 @@ export const init_app = async  (req,res,next)=>{
         let marketsGetted : Market[] = await getMarkets()
         //On recupere les sumboles grace aux assets et aux markets
         let symbolsGetted : Symbol[] = await getSymbols(marketsGetted,assetsGetted)
+        console.log(symbolsGetted)
         //On esseye de recuperer les markets et assets manquant dans les symboles
         let [missAssets,missMarkets] = await patchMiss(marketsGetted,assetsGetted,symbolsGetted)
         assetsGetted.push(...missAssets)
         marketsGetted.push(...missMarkets)
-
         const {markets,assets, symbols} = await finalFilters(symbolsGetted,assetsGetted,marketsGetted )
         const pairs = await buildPairs(symbols)
-
         const createBulk = async (items : Array<{name : string} & any>) => items.map(item => ({
             updateOne: {
                 filter: { name : item.name },
@@ -47,7 +46,6 @@ export const init_app = async  (req,res,next)=>{
                 upsert: true
             }
         })); //Seul les INSERTION seront traitées grace au "$setOnInsert"!
-
         const [bulkOpsPairs,bulkOpsMarkets,bulkOpsAssets,bulkOpsSymbols] = await Promise.all([
             createBulk(pairs),
             createBulk(markets),

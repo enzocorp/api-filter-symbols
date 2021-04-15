@@ -19,6 +19,8 @@ export interface Pair {
   isfor : Record<number, PairFor>
   exclusion : {
     severityHistoric : number
+    /*pour une pair déjà report et qui va être éliminée a cause de ses assets : cela permet de converver sa 'severity' original
+    dans le cas où ses assets son deban */
     isExclude : boolean
     reasons : string[]
     severity : number

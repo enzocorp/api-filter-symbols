@@ -58,6 +58,7 @@ async function getSymbols (markets : Market[], assets : Asset[]) :  Promise<Symb
         filter_exchange_id : strMarkets,
         filter_asset_id : strAssets
       }})
+  // console.log(symbols)
   const side : SymbolFor['buy' | 'sell'] = {
     bestMarketFreq : 0,
     okFreq : 0,
