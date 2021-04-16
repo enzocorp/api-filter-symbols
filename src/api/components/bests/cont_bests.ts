@@ -49,8 +49,10 @@ export const get_last_groupId = async  (req, res,next)=>{
 
 export const calcul_bests = async  (req,res,next)=>{
   try{
+    console.log("1- C'est partie pour le calcul !")
     let {positivesBests,pairs,symbols,podium} = await programmeBests()
 
+    console.log("10- Sauvegarde des pairs")
     const bulkPairs = pairs.map(pair => ({
         updateOne: {
             filter: { name : pair.name },
@@ -58,12 +60,14 @@ export const calcul_bests = async  (req,res,next)=>{
         }
     }));
 
+    console.log("11- Sauvegarde des symbs")
     const bulkSymbols = symbols.map(symbol => ({
         updateOne: {
             filter: { name : symbol.name },
             update: { $set: symbol },
         }
     }));
+    console.log("10- Save Mongo pair, symb, bests et podium")
     const [insertedPairs,insertedBests,insertedPodium,insertedSymbs] = await Promise.all([
       modelPair.collection.bulkWrite(bulkPairs),
       modelBest.insertMany(positivesBests),

@@ -29,9 +29,17 @@ schedule.scheduleJob('0 */15 * * *', async () =>{
   }catch (err){
     console.log(" --HOLALALA ! LES ASSETS N'ONT PAS PUE ETRE REFRESH :( !! : ", err.message)
   }
-
 });
 
+//Refresh les assets 5min avant le lancement du calcul des bests
+schedule.scheduleJob({hour: 13,minute:55 , tz: 'Europe/Paris'}, async () =>{
+  try{
+    await axios.get(`http://127.0.0.1:${API_PORT}/${API_NAME}/assets/refresh`)
+    console.log(" ---Il EST L'HEURE ! LES ASSETS ONT ETE REFRESH ! :D ")
+  }catch (err){
+    console.log(" --HOLALALA ! LES ASSETS N'ONT PAS PUE ETRE REFRESH :( !! : ", err.message)
+  }
+});
 
 //Lance un calcul des best tous les jours à 14h00 Paris
 schedule.scheduleJob({hour: 14, tz: 'Europe/Paris'}, async () =>{

@@ -69,12 +69,12 @@ async function updatePairs (bests : Best[]) : Promise<Pair[]>{
       if (pair)
         promisePairs.push(updatePair(best, pair))
       else
-        debug(`--- Attention : La pair ${best.pair} n'as pas pue être mise a jour car elle n'existe pas dans la BDD---`)
+        debug('%s',`--- Attention : La pair ${best.pair} n'as pas pue être mise a jour car elle n'existe pas dans la BDD---`)
     })
     return await Promise.all(promisePairs)
   }
   catch (err){
-    debug(err)
+    debug("%O", err)
   }
 }
 

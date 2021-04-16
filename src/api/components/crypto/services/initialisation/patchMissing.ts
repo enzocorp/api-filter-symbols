@@ -20,7 +20,7 @@ async function  searchMissAssets(assets : Asset[], symbs : Symbol[]) : Promise<A
   })
   const tabmiss = [...miss]
   if (tabmiss.length){
-    debug('il manquais des assets : ', tabmiss.toString())
+    debug('%O','il manquais des assets : ', tabmiss.toString())
     return await getAsssets({filter_asset_id : tabmiss.toString()})
   }
   return  []
@@ -36,7 +36,7 @@ async function  searchMissMarkets(markets : Market[], symbs : Symbol[]) : Promis
   })
   const tabmiss = [...miss]
   if (tabmiss.length){
-    debug('il manquais des markets : ', tabmiss.toString())
+    debug("%O",'il manquais des markets : ', tabmiss.toString())
     return await getMarkets({filter_exchange_id : tabmiss.toString()})
   }
   return  []

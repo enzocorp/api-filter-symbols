@@ -116,7 +116,7 @@ async function makeBests (prices : Price[]) : Promise<Best[]>{
     if (group.length > 1)
       tabPromises.push(makeBest(group,id,group[0].infos))
     else
-      debug(`----Attention : La pair ${group[0].infos.pair} n'est comparée que sur 1 market (${group[0].infos.market})----`)
+      debug('%s',`----Attention : La pair ${group[0].infos.pair} n'est comparée que sur 1 market (${group[0].infos.market})----`)
   } )
   return await Promise.all(tabPromises)
 }

@@ -131,7 +131,7 @@ async function getOrderbooks (requestGroup : Array<string[]> ) : Promise<orderbo
   let url = `${COINAPI_URL}/v1/orderbooks/current`
   const orderbooks : orderbook[] = []
   for(const group of requestGroup) {
-    debug("chargement: ", result.toFixed(0) , " %")
+    debug("%s", "chargement: ", result.toFixed(0) , " %")
     result += x
     let axiosResp : axiosResponse = await axios.get(url, {params: {filter_symbol_id: group.toString()}})
     if(axiosResp.isAxiosError)
@@ -147,11 +147,14 @@ async function getOrderbooks (requestGroup : Array<string[]> ) : Promise<orderbo
 
 //Execute chaque parties du programme
 async function programmeBests () : Promise<{ positivesBests : Best[], symbols : Symbol[], pairs : Pair[], podium : Podium[]}>{
+  console.log("2- Lancement du programme calcul")
+
   const [symbsGroups,assets, markets] : [ Array<{_id : string,symbs:string[] }>, Asset[],Market[] ] = await Promise.all([
     modelSymbol.aggregate(aggregateSymbols),
     modelAsset.find().lean(),
     modelMarket.find().lean(),
   ])
+  console.log("3- Recup symb,market, asset OK")
   if(!symbsGroups.length){
     throw new ErrorsGenerator(
       "Préconditons Requisent",
@@ -162,29 +165,32 @@ async function programmeBests () : Promise<{ positivesBests : Best[], symbols : 
   let symbols : string[] = []
   symbsGroups.forEach(group => symbols.push(...group.symbs))
   const requestGroup = createGroupsRequest([...symbsGroups])
+  console.log("4- Lancement recup long de l'order book")
   const raw_orderbooks = await getOrderbooks(requestGroup)
-
+  console.log("5- Filtrage orderbook")
   //Certains symboles ne seront pas renvoyée par l'API et d'autre seront en trop, on filtre celles en trop et on signal celles manquantes
   const orderbooks : orderbook[] = raw_orderbooks.filter(orderbook => symbols.includes(orderbook.symbol_id) )
 
+  console.log("6- Lancement 1er gros calcul --> Fabrication des prix")
   const prices : Price[] = await makePrices(orderbooks, assets, markets)
-
+  console.log("6- Lancement 2eme gros calcul --> Fabrication des Bests + updte prix des symbs")
   const [uptSymbols, bests] = await Promise.all([
     updateSymbols(prices),
     makeBests(prices)
   ])
+  console.log("7- update Paris et MakePodium")
   const positivesBests : Best[] = ejectNegativesBests(bests)
   let [uptPairs, podium] : [Pair[], Podium[]] = await Promise.all([
     updatePairs(bests),
     makePodium(positivesBests)
   ])
-
+  console.log("8- award pairs et awark markets")
   let [uptPairs2, uptSymbols2] : [Pair[], Symbol[]] = await Promise.all([
     awardPairs(uptPairs, podium),
     awardMarkets(uptSymbols,positivesBests)
   ])
 
-
+  console.log("9- Fin de l'exec du programme Best")
   return {positivesBests, symbols : uptSymbols2, pairs : uptPairs2, podium}
 }
 
