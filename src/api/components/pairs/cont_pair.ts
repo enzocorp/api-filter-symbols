@@ -1,6 +1,7 @@
 import modelPair from "../../models/mongoose/model.pair";
 import {RequesterMongo} from "../../../services/requesterMongo";
 import {Pair, PairFor} from "../../models/interphace/pair";
+import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../bests/config_bests";
 
 export const get_pairs = async  (req,res,next)=>{
     try{
@@ -29,7 +30,7 @@ export const get_pair = async (req,res,next)=> {
 
 export const reset_moyennes_pairs = async  (req,res,next)=>{
   try {
-    const updateFor : PairFor = {
+    const schema : PairFor = {
       isBestFreq : 0,
       errorFreq : 0,
       negativeFreq : 0,
@@ -40,13 +41,15 @@ export const reset_moyennes_pairs = async  (req,res,next)=>{
       volumeMoyen_base : null,
       hightestSpread_usd : null,
     }
+    let isfor = {}
+    for (let i = START_GRAPH; i <= END_GRAPH; i += PAS_GRAPH){
+      isfor[i] = schema
+    }
 
     const dataUpdated = await modelPair.updateMany(
       {'exclusion.isExclude' : false},
       {$set : {
-        for1k : updateFor,
-        for15k : updateFor,
-        for30k : updateFor,
+          isfor : isfor,
         }},
     )
     res.status(200).json({title : 'Les pairs ont été resets',data : dataUpdated})

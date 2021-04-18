@@ -2,7 +2,7 @@ import express from 'express'
 import {
   autocompleteReasons,
   autocompleteSeverity, delete_apikey, getall_apikeys,
-  get_coinapi, init_app, newReason, add_apikey, choose_apikey, refresh_apikey,
+  get_coinapi, init_app, newReason, add_apikey, choose_apikey, refresh_apikey, refresh_all_apikeys,
 } from "./cont_crypto";
 import {coinapiLimit} from "../../middleware/sendCoinapiLimit";
 
@@ -18,6 +18,7 @@ routerCrypto.post('/exclusion/reasons',newReason)
 routerCrypto.post('/apikey',coinapiLimit,add_apikey)
 routerCrypto.get('/apikey',coinapiLimit,getall_apikeys)
 routerCrypto.get('/apikey/choose/:key',choose_apikey)
+routerCrypto.get('/apikey/refresh/all',refresh_all_apikeys)
 routerCrypto.get('/apikey/refresh/:key',refresh_apikey)
 routerCrypto.delete('/apikey/:key',coinapiLimit,delete_apikey)
 

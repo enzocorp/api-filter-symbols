@@ -1,6 +1,7 @@
 import modelApikey from "../models/mongoose/model.apikey";
 import {Apikey} from "../models/interphace/apikey";
 
+//Permet d'envoyer les infos de la clé d'api dans le corp de la réponse
 export async function coinapiLimit(req, res, next) {
   const oldSend = res.send;
   res.send = async function(data){

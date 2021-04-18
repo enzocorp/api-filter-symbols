@@ -187,6 +187,22 @@ export const refresh_apikey = async  (req, res, next)=> {
     }
 }
 
+export const refresh_all_apikeys = async  (req, res, next)=> {
+    try{
+        const keys : Pick<Apikey, "key">[] = await modelApikey.find({}, 'key')
+        let url = `${COINAPI_URL}/v1/assets/BTC`
+        const coinapiPromises : Promise<any>[] = []
+        keys.forEach(item => coinapiPromises.push(
+          axios.get(url, {headers: { 'X-CoinAPI-Key' : item.key } })
+        ))
+        await Promise.all(coinapiPromises)
+        res.status(200).json({title : "Toutes les clés ont été Raffraichie"})
+    }
+    catch (error){
+        return next(error)
+    }
+}
+
 export const delete_apikey = async  (req,res,next)=> {
     try{
         await modelApikey.deleteOne({key : req.params.key})

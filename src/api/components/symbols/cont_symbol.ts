@@ -1,5 +1,7 @@
 import modelSymbol from "../../models/mongoose/model.symbol";
 import {RequesterMongo} from "../../../services/requesterMongo";
+import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../bests/config_bests";
+import {SymbolFor} from "../../models/interphace/symbol";
 
 
 export const get_symbols = async  (req,res,next)=>{
@@ -19,6 +21,37 @@ export const get_symbol = async (req,res,next)=> {
     try {
         const data = await modelSymbol.findOne({name : req.params.name})
         res.status(200).json({data})
+    }
+    catch (error){
+        return  next(error)
+    }
+}
+
+export const reset_moyennes_symbols = async  (req,res,next)=>{
+    try {
+        const side : SymbolFor['buy' | 'sell'] = {
+            bestMarketFreq : 0,
+            okFreq : 0,
+            notDataFreq : 0,
+            notEnoughVolFreq : 0,
+            prixMoyen_quote :null
+        }
+
+        let isfor = {}
+        for (let i = START_GRAPH; i <= END_GRAPH; i += PAS_GRAPH){
+            isfor[i] = {
+                buy : side,
+                sell : side,
+            }
+        }
+
+        const dataUpdated = await modelSymbol.updateMany(
+          {'exclusion.isExclude' : false},
+          {$set : {
+                  isfor : isfor,
+              }},
+        )
+        res.status(200).json({title : 'Les symbols ont été resets',data : dataUpdated})
     }
     catch (error){
         return  next(error)
