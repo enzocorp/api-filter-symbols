@@ -53,7 +53,9 @@ async function getAsssets (params = {}) : Promise<Asset[]> {
         .map(asset => {
           //Si coinapi ne renvois pas la valeur d'un asset indexé sur le dollar, alors on lui attribue 1$ en valeur par defaut
           let usd = null
-          if (/USD/i.test(asset.asset_id)) usd = 1
+          if (/USD/i.test(asset.asset_id)){
+            usd = 1
+          }
           return {
             name: asset.asset_id ,
             longName: asset.name,

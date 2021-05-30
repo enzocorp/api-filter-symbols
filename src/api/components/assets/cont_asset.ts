@@ -3,7 +3,7 @@ import {RequesterMongo} from "../../../services/requesterMongo";
 import {Asset} from "../../models/interphace/asset";
 import refreshAssetsPrice from "./services/refresh_assets";
  import {banLinkedPairs, unBanLinkedPairs} from "./services/ban-linked-pairs";
- import {BAN_BASE, BAN_QUOTE} from "./config_bancodes";
+ import {BAN_CODE_BASE, BAN_CODE_QUOTE} from "./config_banCodes";
 
 export const get_assets = async  (req,res,next)=>{
     try{
@@ -70,8 +70,8 @@ export const group_assets_unreport = async  (req,res,next)=>{
 
     //On deban les paires qui avaient été ban a cause d'un asset
     const filteredNames : string[] = prevAssets.filter(asset => asset.exclusion.severity === 4).map(asset => asset.name)
-    await unBanLinkedPairs(filteredNames, "base",BAN_BASE)
-    await unBanLinkedPairs(filteredNames, "quote",BAN_QUOTE)
+    await unBanLinkedPairs(filteredNames, "base",BAN_CODE_BASE)
+    await unBanLinkedPairs(filteredNames, "quote",BAN_CODE_QUOTE)
 
     res.status(200).json({title : 'Les assetes ont été blanchies',data : resp})
   }
@@ -102,16 +102,16 @@ export const group_assets_report = async  (req,res,next)=>{
       }}));
     const resp = await modelAsset.collection.bulkWrite(bulkAssets)
     if(data.severity === 4 ){
-      await banLinkedPairs(names, "base",BAN_BASE)
-      await banLinkedPairs(names, "quote",BAN_QUOTE)
+      await banLinkedPairs(names, "base",BAN_CODE_BASE)
+      await banLinkedPairs(names, "quote",BAN_CODE_QUOTE)
     }
     if(data.severity < 4 ){
-      //On utilise la ref pour agir que sur les asset qui étaient bans
+      //On utilise la ref pour agir que sur les asset qui étaient ban
       const filteredNames : string[] = prevAssets.filter(asset => asset.exclusion.severity === 4).map(asset => asset.name)
-      await unBanLinkedPairs(filteredNames, "base",BAN_BASE)
-      await unBanLinkedPairs(filteredNames, "quote",BAN_QUOTE)
+      await unBanLinkedPairs(filteredNames, "base",BAN_CODE_BASE)
+      await unBanLinkedPairs(filteredNames, "quote",BAN_CODE_QUOTE)
     }
-    res.status(200).json({title : 'Les assetes ont bien été signalés',data : resp})
+    res.status(200).json({title : 'Les assets ont bien été signalés',data : resp})
   }
   catch (error){
     return next(error)

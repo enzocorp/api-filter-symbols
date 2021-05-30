@@ -41,7 +41,7 @@ ERROR
 markets 125 = 1000
 asset 1300 = 6200
 total = 7200
-SUCESS --> Maximum de caracteres dans l'url doit être de 7200 caracteres
+SUCESS --> Donc Le maximum de caracteres dans l'url doit être de 7200 caracteres
 */
 
 
@@ -75,6 +75,7 @@ async function getSymbols (markets : Market[], assets : Asset[]) :  Promise<Symb
   }
 
   symbols = symbols.filter(symbol=> symbol.volume_1day_usd >= symbol_volume_usd1day && symbol.symbol_type === symbol_type)
+  symbols = symbols.filter(symbol => symbol.symbol_id.split('_').length === 4 ) //Filtre les symboles bizzares qui ne sont pas composés de 4 morceaux
   return <Symbol[]>(
    symbols.filter(symbol=> (
      symbols.some(symb => symb.exchange_id !== symbol.exchange_id && symbol.asset_id_quote === symb.asset_id_quote && symbol.asset_id_base === symb.asset_id_base)

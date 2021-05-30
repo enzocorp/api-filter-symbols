@@ -21,27 +21,17 @@ app.listen(API_PORT,()=>{
 //-------------------Executions récurantes ------------------------------------------
 
 
-//Execute un raffraichissement des assets toutes les 7 heures
-schedule.scheduleJob('0 */7 * * *', async () =>{
+//Lance un calcul des best tous les jours à 14h00(Paris)
+schedule.scheduleJob({hour: 14, minute:0, tz: 'Europe/Paris'}, async () =>{
   try{
-    await axios.get(`http://127.0.0.1:${API_PORT}/${API_NAME}/assets/refresh`)
-    console.log(" ---Il EST L'HEURE ! LES ASSETS ONT ETE REFRESH ! :D ")
-  }catch (err){
-    console.log(" --HOLALALA ! LES ASSETS N'ONT PAS PUE ETRE REFRESH :( !! : ", err.message)
-  }
-});
-
-
-//Lance un calcul des best tous les jours à 14h00 Paris
-schedule.scheduleJob({hour: 14, tz: 'Europe/Paris'}, async () =>{
-  try{
+    console.log(" ---EXECUTION AUTOMATIQUE D'UN NOUVEAU CALCUL DES BESTS ! :D ")
     if (NODE_ENV === "production") {
       await axios.get(`http://127.0.0.1:${API_PORT}/${API_NAME}/crypto/apikey/refresh`)
-      await axios.get(`http://127.0.0.1:${API_PORT}/${API_NAME}/assets/refresh/all`)
+      await axios.get(`http://127.0.0.1:${API_PORT}/${API_NAME}/assets/refresh`)
       await axios.get(`http://127.0.0.1:${API_PORT}/${API_NAME}/bests/calcul`)
     }
-    console.log(" ---EXECUTION AUTOMATIQUE D'UN NOUVEAU CALCUL DES BESTS ! :D ")
   }catch (err){
     console.log(" --OUPS ! UNE ERREUR S'EST PRODUITE PENDANT LE CALCUL AUTOTMAIQUE DES BEST !! : /n ", err.message)
   }
+
 });

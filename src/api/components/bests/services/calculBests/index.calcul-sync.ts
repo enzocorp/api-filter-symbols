@@ -19,6 +19,7 @@ import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../../config_bests";
 import ErrorsGenerator from "../../../../../services/ErrorsGenerator";
 import {StatusCodes} from "http-status-codes";
 import {Podium} from "../../../../models/interphace/podium";
+import modelOrderbook from "../../../../models/mongoose/model.orderbook";
 
 interface orderbook {
   symbol_id: string
@@ -126,6 +127,7 @@ function createGroupsRequest(symbolsGroups : Array<{_id : string,symbs:string[] 
 
 //On récupère l'orderbook de chaque symbole de manière synchrone
 async function getOrderbooks (requestGroup : Array<string[]> ) : Promise<orderbook[]>{
+  /*DEBUGAGE*/await modelOrderbook.deleteMany({})/*DEBUGAGE*/
   const x = 100/ requestGroup.length
   let result = 0
   let url = `${COINAPI_URL}/v1/orderbooks/current`
@@ -140,10 +142,13 @@ async function getOrderbooks (requestGroup : Array<string[]> ) : Promise<orderbo
         statusText  : axiosResp.response.statusText,
         data : axiosResp.response.data
       }
+    /*DEBUGAGE*/await modelOrderbook.insertMany(axiosResp.data)/*DEBUGAGE*/
     orderbooks.push(...axiosResp.data)
   }
   return orderbooks
 }
+
+
 
 //Execute chaque parties du programme
 async function programmeBests () : Promise<{ positivesBests : Best[], symbols : Symbol[], pairs : Pair[], podium : Podium[]}>{
@@ -151,8 +156,8 @@ async function programmeBests () : Promise<{ positivesBests : Best[], symbols : 
 
   const [symbsGroups,assets, markets] : [ Array<{_id : string,symbs:string[] }>, Asset[],Market[] ] = await Promise.all([
     modelSymbol.aggregate(aggregateSymbols),
-    modelAsset.find().lean(),
-    modelMarket.find().lean(),
+    modelAsset.find({}).lean(),
+    modelMarket.find({}).lean(),
   ])
   console.log("3- Recup symb,market, asset OK")
   if(!symbsGroups.length){
@@ -167,9 +172,10 @@ async function programmeBests () : Promise<{ positivesBests : Best[], symbols : 
   const requestGroup = createGroupsRequest([...symbsGroups])
   console.log("4- Lancement recup long de l'order book")
   const raw_orderbooks = await getOrderbooks(requestGroup)
+
   console.log("5- Filtrage orderbook")
-  //Certains symboles ne seront pas renvoyée par l'API et d'autre seront en trop, on filtre celles en trop et on signal celles manquantes
-  const orderbooks : orderbook[] = raw_orderbooks.filter(orderbook => symbols.includes(orderbook.symbol_id) )
+  //Certains symboles ne seront pas renvoyée par l'API et d'autre seront en trop, on filtre ceux en trop et on signal ceux manquants
+  const orderbooks : orderbook[] = raw_orderbooks.filter(raw_orderbook => symbols.includes(raw_orderbook.symbol_id) )
 
   console.log("6- Lancement 1er gros calcul --> Fabrication des prix")
   const prices : Price[] = await makePrices(orderbooks, assets, markets)

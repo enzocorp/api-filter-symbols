@@ -1,6 +1,6 @@
 import modelPair from "../../../models/mongoose/model.pair";
 import {Pair} from "../../../models/interphace/pair";
-import {BAN_BASE, BAN_QUOTE} from "../config_bancodes";
+import {BAN_CODE_BASE, BAN_CODE_QUOTE} from "../config_banCodes";
 
 export const banLinkedPairs = async  (assets : string[],side : 'base' | 'quote',status : string) : Promise<void> =>{
   const pairs : Pair[] = await modelPair.find({[side] : {$in: assets }}  ).lean()
@@ -38,7 +38,7 @@ export const unBanLinkedPairs = async  (assets : string[],side:'base'|'quote',st
   const uptPairs = pairs.map(pair => {
     const setReasons : Set<string> = new Set([...pair.exclusion.reasons])
     setReasons.delete(status)
-    const keepExclude : boolean = setReasons.has(BAN_BASE) || setReasons.has(BAN_QUOTE)
+    const keepExclude : boolean = setReasons.has(BAN_CODE_BASE) || setReasons.has(BAN_CODE_QUOTE)
     pair.exclusion = {
       //On enleve le ban uniquement si les 2 assets qui constituent la paire ne sont pas ban !! !!
       severityHistoric : keepExclude ? pair.exclusion.severityHistoric : null,
