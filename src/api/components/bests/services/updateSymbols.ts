@@ -1,6 +1,6 @@
-import {Symbol, SymbolFor} from "../../../../models/interphace/symbol";
-import {Price, PriceIsfor} from "../../../../models/interphace/price";
-import modelSymbol from "../../../../models/mongoose/model.symbol";
+import {Symbol, SymbolFor} from "../../../models/interphace/symbol";
+import {Price, PriceIsfor} from "../../../models/interphace/price";
+import modelSymbol from "../../../models/mongoose/model.symbol";
 import {
   END_GRAPH,
   NOT_BASEUSD_INFOS,
@@ -8,7 +8,7 @@ import {
   NOT_ENOUGHT_VOLUME,
   PAS_GRAPH,
   START_GRAPH
-} from "../../config_bests";
+} from "../config_bests";
 
 //Effectue le calcul des nouvelles données pour un isfor[x]
 async function calculIsFor(isfor : number, pricefor : PriceIsfor,symbolFor:SymbolFor):Promise<{[key: number]: SymbolFor}> {

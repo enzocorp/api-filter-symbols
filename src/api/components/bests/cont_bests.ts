@@ -1,4 +1,4 @@
-import programmeBests from "./services/calculBests/index.calcul-sync";
+import programmeBests from "./services/index.calcul-sync";
 import modelPair from "../../models/mongoose/model.pair";
 import modelBest from "../../models/mongoose/model.best";
 import modelSymbol from "../../models/mongoose/model.symbol";

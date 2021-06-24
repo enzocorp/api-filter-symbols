@@ -2,7 +2,7 @@ import {Document, model, Schema} from 'mongoose'
 import uniqueValidator from 'mongoose-unique-validator'
 import {Pair} from "../interphace/pair";
 
-interface IPairDoc extends Document,Pair {}
+export interface IPairDoc extends Document,Pair {}
 
 const schema = new Schema({
     name : {type : String, required:'Vous devez entrer le nom',unique : true},

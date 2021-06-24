@@ -1,6 +1,7 @@
 import modelPair from "../../../models/mongoose/model.pair";
 import {Pair} from "../../../models/interphace/pair";
-import {BAN_CODE_BASE, BAN_CODE_QUOTE} from "../config_banCodes";
+import {BAN_CODE_BASE, BAN_CODE_QUOTE} from "../constantes-asset";
+import updatePairs from "../../bests/services/updatePairs";
 
 export const banLinkedPairs = async  (assets : string[],side : 'base' | 'quote',status : string) : Promise<void> =>{
   const pairs : Pair[] = await modelPair.find({[side] : {$in: assets }}  ).lean()
@@ -10,7 +11,7 @@ export const banLinkedPairs = async  (assets : string[],side : 'base' | 'quote',
     setReasons.add(status)
     pair.exclusion = {
       //Attention on ne doit appliquer l'historique de "ban-asset" uniquement sur une pair ne possedant pas deja un historique !!
-      severityHistoric : pair.exclusion.severityHistoric === null ? pair.exclusion.severity : pair.exclusion.severityHistoric,
+      severityHistoric : pair.exclusion.severityHistoric/* === null ? pair.exclusion.severity : pair.exclusion.severityHistoric*/,
       isExclude : true,
       reasons : [...setReasons],
       severity : 4,

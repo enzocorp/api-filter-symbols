@@ -3,7 +3,7 @@ import {RequesterMongo} from "../../../services/requesterMongo";
 import {Asset} from "../../models/interphace/asset";
 import refreshAssetsPrice from "./services/refresh_assets";
  import {banLinkedPairs, unBanLinkedPairs} from "./services/ban-linked-pairs";
- import {BAN_CODE_BASE, BAN_CODE_QUOTE} from "./config_banCodes";
+ import {BAN_CODE_BASE, BAN_CODE_QUOTE} from "./constantes-asset";
 
 export const get_assets = async  (req,res,next)=>{
     try{

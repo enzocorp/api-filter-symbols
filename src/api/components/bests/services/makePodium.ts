@@ -1,6 +1,6 @@
-import {Best, BestFor} from "../../../../models/interphace/best";
-import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../../config_bests";
-import {Podium} from "../../../../models/interphace/podium";
+import {Best, BestFor} from "../../../models/interphace/best";
+import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../config_bests";
+import {Podium} from "../../../models/interphace/podium";
 
 
 //Trouve le Best d'une marche du podium

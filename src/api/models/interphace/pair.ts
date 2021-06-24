@@ -20,7 +20,7 @@ export interface Pair {
   exclusion : {
     severityHistoric : number
     /*pour une pair déjà report et qui va être éliminée a cause de ses assets : cela permet de converver sa 'severity' original
-    dans le cas où ses assets son deban */
+    afin de la restituer dans un éventuel deban de l'asset*/
     isExclude : boolean
     reasons : string[]
     severity : number

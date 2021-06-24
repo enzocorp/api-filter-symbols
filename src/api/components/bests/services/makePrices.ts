@@ -1,6 +1,6 @@
-import {Asset} from "../../../../models/interphace/asset";
-import {Price} from "../../../../models/interphace/price";
-import {Market} from "../../../../models/interphace/market";
+import {Asset} from "../../../models/interphace/asset";
+import {Price} from "../../../models/interphace/price";
+import {Market} from "../../../models/interphace/market";
 import debuger from "debug";
 import {
   END_GRAPH,
@@ -9,7 +9,7 @@ import {
   NOT_ENOUGHT_VOLUME,
   PAS_GRAPH,
   START_GRAPH
-} from "../../config_bests";
+} from "../config_bests";
 
 
 interface orderbook {

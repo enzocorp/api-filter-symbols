@@ -1,5 +1,5 @@
-import {Best, BestFor} from "../../../../models/interphace/best";
-import {Price} from "../../../../models/interphace/price";
+import {Best, BestFor} from "../../../models/interphace/best";
+import {Price} from "../../../models/interphace/price";
 import debuger from "debug";
 import {
   END_GRAPH, NO_SPREAD_QUOTE,
@@ -8,7 +8,7 @@ import {
   NOT_ENOUGHT_VOLUME,
   PAS_GRAPH,
   START_GRAPH
-} from "../../config_bests";
+} from "../config_bests";
 
 const debug = debuger("api:makeBests")
 /*

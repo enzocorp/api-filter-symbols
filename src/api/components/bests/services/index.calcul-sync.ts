@@ -1,25 +1,25 @@
 import axios from 'axios'
-import modelSymbol from "../../../../models/mongoose/model.symbol";
+import modelSymbol from "../../../models/mongoose/model.symbol";
 import makePrices from "./makePrices";
-import {Asset} from "../../../../models/interphace/asset";
-import modelAsset from "../../../../models/mongoose/model.asset";
+import {Asset} from "../../../models/interphace/asset";
+import modelAsset from "../../../models/mongoose/model.asset";
 import updateSymbols from "./updateSymbols";
-import {Market} from "../../../../models/interphace/market";
-import modelMarket from "../../../../models/mongoose/model.market";
+import {Market} from "../../../models/interphace/market";
+import modelMarket from "../../../models/mongoose/model.market";
 import makeBests from "./makeBests";
-import {Best} from "../../../../models/interphace/best";
-import {Symbol} from "../../../../models/interphace/symbol";
-import {Pair} from "../../../../models/interphace/pair";
+import {Best} from "../../../models/interphace/best";
+import {Symbol} from "../../../models/interphace/symbol";
+import {Pair} from "../../../models/interphace/pair";
 import updatePairs from "./updatePairs";
 import makePodium from "./makePodium";
 import debuger from "debug";
-import {COINAPI_URL} from "../../../../../config/globals";
-import {Price} from "../../../../models/interphace/price";
-import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../../config_bests";
-import ErrorsGenerator from "../../../../../services/ErrorsGenerator";
+import {COINAPI_URL} from "../../../../config/globals";
+import {Price} from "../../../models/interphace/price";
+import {END_GRAPH, PAS_GRAPH, START_GRAPH} from "../config_bests";
+import ErrorsGenerator from "../../../../services/ErrorsGenerator";
 import {StatusCodes} from "http-status-codes";
-import {Podium} from "../../../../models/interphace/podium";
-import modelOrderbook from "../../../../models/mongoose/model.orderbook";
+import {Podium} from "../../../models/interphace/podium";
+import modelOrderbook from "../../../models/mongoose/model.orderbook";
 
 interface orderbook {
   symbol_id: string
@@ -169,9 +169,9 @@ async function programmeBests () : Promise<{ positivesBests : Best[], symbols : 
   }
   let symbols : string[] = []
   symbsGroups.forEach(group => symbols.push(...group.symbs))
-  const requestGroup = createGroupsRequest([...symbsGroups])
+  const requestGroup = bestIndexUtils.createGroupsRequest([...symbsGroups])
   console.log("4- Lancement recup long de l'order book")
-  const raw_orderbooks = await getOrderbooks(requestGroup)
+  const raw_orderbooks = await bestIndexUtils.getOrderbooks(requestGroup)
 
   console.log("5- Filtrage orderbook")
   //Certains symboles ne seront pas renvoyée par l'API et d'autre seront en trop, on filtre ceux en trop et on signal ceux manquants
@@ -185,20 +185,29 @@ async function programmeBests () : Promise<{ positivesBests : Best[], symbols : 
     makeBests(prices)
   ])
   console.log("7- update Paris et MakePodium")
-  const positivesBests : Best[] = ejectNegativesBests(bests)
+  const positivesBests : Best[] = bestIndexUtils.ejectNegativesBests(bests)
   let [uptPairs, podium] : [Pair[], Podium[]] = await Promise.all([
     updatePairs(bests),
     makePodium(positivesBests)
   ])
   console.log("8- award pairs et awark markets")
   let [uptPairs2, uptSymbols2] : [Pair[], Symbol[]] = await Promise.all([
-    awardPairs(uptPairs, podium),
-    awardMarkets(uptSymbols,positivesBests)
+    bestIndexUtils.awardPairs(uptPairs, podium),
+    bestIndexUtils.awardMarkets(uptSymbols,positivesBests)
   ])
 
   console.log("9- Fin de l'exec du programme Best")
   return {positivesBests, symbols : uptSymbols2, pairs : uptPairs2, podium}
 }
 
+
+
+export const bestIndexUtils = {
+  getOrderbooks,
+  createGroupsRequest,
+  ejectNegativesBests,
+  awardMarkets,
+  awardPairs,
+}
 
 export default programmeBests

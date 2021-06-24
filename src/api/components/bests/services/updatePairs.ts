@@ -1,6 +1,6 @@
-import {Pair, PairFor} from "../../../../models/interphace/pair";
-import modelPair from "../../../../models/mongoose/model.pair";
-import {Best, BestFor} from "../../../../models/interphace/best";
+import {Pair, PairFor} from "../../../models/interphace/pair";
+import modelPair from "../../../models/mongoose/model.pair";
+import {Best, BestFor} from "../../../models/interphace/best";
 import debuger from "debug";
 import {
   END_GRAPH,
@@ -9,7 +9,7 @@ import {
   NOT_ENOUGHT_VOLUME,
   PAS_GRAPH,
   START_GRAPH
-} from "../../config_bests";
+} from "../config_bests";
 
 const debug = debuger("api:updatePairs")
 
